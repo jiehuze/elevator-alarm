@@ -1,0 +1,121 @@
+2025-08-20T09:13:46.055+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : Starting SupervisoryApplication using Java 17.0.12 with PID 3520 (/Users/jiehu/works/lavie/supervisory-system/target/classes started by jiehu in /Users/jiehu/works/lavie/supervisory-system)
+2025-08-20T09:13:46.059+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : The following 1 profile is active: "dev"
+2025-08-20T09:13:47.634+08:00  INFO 3520 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T09:13:47.649+08:00  INFO 3520 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T09:13:47.650+08:00  INFO 3520 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-08-20T09:13:47.715+08:00  INFO 3520 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
+2025-08-20T09:13:47.715+08:00  INFO 3520 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1606 ms
+2025-08-20T09:13:49.268+08:00 DEBUG 3520 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 133 mappings in 'requestMappingHandlerMapping'
+2025-08-20T09:13:49.352+08:00 DEBUG 3520 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T09:13:49.376+08:00 DEBUG 3520 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T09:13:49.414+08:00 DEBUG 3520 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T09:13:49.594+08:00  INFO 3520 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/duban'
+2025-08-20T09:13:49.611+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : Started SupervisoryApplication in 4.292 seconds (process running for 4.958)
+2025-08-20T09:14:01.127+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T09:14:01.127+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T09:14:01.127+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-08-20T09:14:01.128+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-08-20T09:14:01.128+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-08-20T09:14:01.129+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@d70e9a
+2025-08-20T09:14:01.129+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@478967eb
+2025-08-20T09:14:01.130+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-20T09:14:01.130+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2025-08-20T09:14:01.140+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : PUT "/duban/external/consult", parameters={}
+2025-08-20T09:14:01.152+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.supervisory.controller.ExternalController#createExternalConsult(Consultation)
+2025-08-20T09:14:01.249+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Consultation(id=null, content=关于环保验收的咨询, person=李四, phone=13900005678, createTime=null, leadingDepar (truncated)...]
+2025-08-20T09:14:01.308+08:00  WARN 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-08-20T09:14:01.310+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T09:14:01.797+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1c5194e1
+2025-08-20T09:14:01.801+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T09:14:03.610+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-08-20T09:14:03.612+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=success, data=true, err=0)]
+2025-08-20T09:14:03.626+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-08-20T09:15:13.365+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Starting CustomApplicationTests using Java 17.0.12 with PID 3645 (started by jiehu in /Users/jiehu/works/lavie/supervisory-system)
+2025-08-20T09:15:13.367+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : The following 1 profile is active: "dev"
+2025-08-20T09:15:13.407+08:00 DEBUG 3645 --- [supervisory-system] [main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d
+2025-08-20T09:15:16.533+08:00 DEBUG 3645 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 133 mappings in 'requestMappingHandlerMapping'
+2025-08-20T09:15:16.634+08:00 DEBUG 3645 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T09:15:16.672+08:00 DEBUG 3645 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T09:15:16.710+08:00 DEBUG 3645 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T09:15:16.910+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Started CustomApplicationTests in 4.02 seconds (process running for 5.183)
+2025-08-20T09:15:17.911+08:00 DEBUG 3645 --- [supervisory-system] [SpringApplicationShutdownHook] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d, started on Wed Aug 20 09:15:13 CST 2025
+2025-08-20T09:58:08.330+08:00  INFO 5169 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 5169 (/Users/jiehu/works/lavie/elevator/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator)
+2025-08-20T09:58:08.333+08:00  INFO 5169 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-08-20T09:58:09.358+08:00  INFO 5169 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T09:58:09.371+08:00  INFO 5169 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T09:58:09.371+08:00  INFO 5169 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-08-20T09:58:09.422+08:00  INFO 5169 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
+2025-08-20T09:58:09.422+08:00  INFO 5169 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1047 ms
+2025-08-20T09:58:09.962+08:00 DEBUG 5169 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-08-20T09:58:10.044+08:00 DEBUG 5169 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T09:58:10.063+08:00 DEBUG 5169 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T09:58:10.100+08:00 DEBUG 5169 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T09:58:10.229+08:00  WARN 5169 --- [supervisory-system] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-08-20T09:58:10.252+08:00  INFO 5169 --- [supervisory-system] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-20T09:58:10.268+08:00 ERROR 5169 --- [supervisory-system] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2025-08-20T09:58:39.879+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 5179 (/Users/jiehu/works/lavie/elevator/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator)
+2025-08-20T09:58:39.881+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-08-20T09:58:40.944+08:00  INFO 5179 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T09:58:40.958+08:00  INFO 5179 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T09:58:40.958+08:00  INFO 5179 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-08-20T09:58:41.008+08:00  INFO 5179 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
+2025-08-20T09:58:41.009+08:00  INFO 5179 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1088 ms
+2025-08-20T09:58:41.480+08:00 DEBUG 5179 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-08-20T09:58:41.561+08:00 DEBUG 5179 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T09:58:41.579+08:00 DEBUG 5179 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T09:58:41.614+08:00 DEBUG 5179 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T09:58:41.741+08:00  INFO 5179 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/duban'
+2025-08-20T09:58:41.752+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.388 seconds (process running for 2.944)
+2025-08-20T11:02:28.469+08:00  INFO 6673 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 6673 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-08-20T11:02:28.471+08:00  INFO 6673 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-08-20T11:02:29.533+08:00  INFO 6673 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T11:02:29.546+08:00  INFO 6673 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T11:02:29.546+08:00  INFO 6673 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-08-20T11:02:29.596+08:00  INFO 6673 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-08-20T11:02:29.596+08:00  INFO 6673 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1073 ms
+2025-08-20T11:02:30.100+08:00 DEBUG 6673 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-08-20T11:02:30.183+08:00 DEBUG 6673 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T11:02:30.202+08:00 DEBUG 6673 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T11:02:30.235+08:00 DEBUG 6673 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T11:02:30.362+08:00  WARN 6673 --- [supervisory-system] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-08-20T11:02:30.378+08:00  INFO 6673 --- [supervisory-system] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-20T11:02:30.395+08:00 ERROR 6673 --- [supervisory-system] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2025-08-20T11:04:12.431+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Starting CustomApplicationTests using Java 17.0.12 with PID 6899 (started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-08-20T11:04:12.433+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : The following 1 profile is active: "dev"
+2025-08-20T11:04:12.463+08:00 DEBUG 6899 --- [supervisory-system] [main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d
+2025-08-20T11:04:14.187+08:00 DEBUG 6899 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
+2025-08-20T11:04:14.319+08:00 DEBUG 6899 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-20T11:04:14.355+08:00 DEBUG 6899 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-20T11:04:14.420+08:00 DEBUG 6899 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-20T11:04:14.603+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Started CustomApplicationTests in 2.612 seconds (process running for 3.591)
+2025-08-20T11:04:15.748+08:00 DEBUG 6899 --- [supervisory-system] [SpringApplicationShutdownHook] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d, started on Wed Aug 20 11:04:12 CST 2025

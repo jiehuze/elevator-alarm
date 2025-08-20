@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /sys
+spring:
+  application:
+    name: custom-app
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+  pagination:
+    page-size: 10 # 默认每页大小
