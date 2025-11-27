@@ -2,6 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.service.IWorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/work-order")
+@RequestMapping("/work-order")
 public class WorkOrderController {
 
     @Autowired
     private IWorkOrderService workOrderService;
 
-    @PostMapping
+    @PostMapping("/add")
     public BaseResponse create(@RequestBody WorkOrder workOrder) {
         workOrderService.save(workOrder);
         return new BaseResponse(HttpStatus.OK.value(), "添加成功", workOrder, null);
@@ -27,7 +28,7 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", workOrder, null);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public BaseResponse update(@RequestBody WorkOrder workOrder) {
         workOrderService.updateById(workOrder);
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", workOrder, null);
@@ -39,11 +40,12 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public BaseResponse list(
             @RequestParam(defaultValue = "1") int current,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<WorkOrder> page = new Page<>(current, size);
-        return new BaseResponse(HttpStatus.OK.value(), "查询成功", page, null);
+            @RequestParam(defaultValue = "10") int size,
+            @ModelAttribute WorkOrderDTO workOrderDTO) {
+        Page<WorkOrder> workOrderPage = workOrderService.queryByConditionsPage(workOrderDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", workOrderPage, null);
     }
 }

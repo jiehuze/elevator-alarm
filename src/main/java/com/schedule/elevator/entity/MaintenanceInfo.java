@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 救援单位 信息
+ */
 @Data
 @TableName("maintenance_info")
 public class MaintenanceInfo implements Serializable {

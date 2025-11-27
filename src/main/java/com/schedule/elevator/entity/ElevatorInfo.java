@@ -27,6 +27,7 @@ public class ElevatorInfo {
     private BigDecimal longitude;     // 经度
     private String managerPhone;      // 电梯负责人电话
     private String backupContact;     // 电梯备用联系人
+    private String backupPhone;       // 备用联系人电话
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

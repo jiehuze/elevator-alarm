@@ -7,6 +7,9 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 报警工单信息
+ */
 @Data
 @Accessors(chain = true)
 @TableName(value = "work_order", autoResultMap = true)
@@ -19,6 +22,11 @@ public class WorkOrder implements Serializable {
 
     @TableField("order_no")
     private String orderNo;
+    /**
+     * 是否为重大事项：0-否，1-是
+     */
+    @TableField("is_major_incident")
+    private Boolean isMajorIncident;
 
     @TableField("alarm_time")
     private LocalDateTime alarmTime;
