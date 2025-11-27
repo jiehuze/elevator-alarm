@@ -3,7 +3,7 @@ package com.schedule.elevator.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
-import com.schedule.elevator.dto.SearchInfoDTO;
+import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +45,9 @@ public class ElevatorInfoController {
     public BaseResponse list(
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
-            @ModelAttribute SearchInfoDTO searchInfoDto) {
+            @ModelAttribute ElevatorInfoDTO elevatorInfoDTO) {
         Page<ElevatorInfo> page = new Page<>(current, size);
-        IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, searchInfoDto);
+        IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, elevatorInfoDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 }

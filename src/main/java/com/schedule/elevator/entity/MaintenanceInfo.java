@@ -53,9 +53,7 @@ public class MaintenanceInfo implements Serializable {
     @TableField("company_level")
     private Integer companyLevel; // 1:初级, 2:中级, 3:高级
 
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

@@ -1,10 +1,12 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.WorkOrderMapper;
+import com.schedule.elevator.dto.HandleProgressDTO;
 import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.service.IWorkOrderService;
@@ -34,7 +36,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 精确匹配字段
         query.eq(dto.getStatus() != null, WorkOrder::getStatus, dto.getStatus());
         query.eq(dto.getIsMajorIncident() != null, WorkOrder::getIsMajorIncident, dto.getIsMajorIncident());
-        query.eq(dto.getOrderTypeId() != null, WorkOrder::getOrderTypeId, dto.getOrderTypeId());
+        query.eq(dto.getOrderType() != null, WorkOrder::getOrderType, dto.getOrderType());
 
         // 时间范围
         query.ge(dto.getAlarmTimeStart() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeStart());
@@ -46,5 +48,41 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.orderByDesc(WorkOrder::getCreateTime);
 
         return this.page(page, query);
+    }
+
+    @Override
+    public Boolean createRescueInfo(WorkOrder workOrder) {
+        LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(WorkOrder::getId, workOrder.getId());
+        updateWrapper.set(WorkOrder::getRescueLevel, workOrder.getRegisterCode()); //救援等级
+        updateWrapper.set(WorkOrder::getRescueUnit, workOrder.getRescueUnit()); //救援单位
+        updateWrapper.set(WorkOrder::getUnitFixedPhone, workOrder.getUnitFixedPhone()); //固定电话
+        updateWrapper.set(WorkOrder::getMaintenanceWorker, workOrder.getMaintenanceWorker()); //维保人员
+        updateWrapper.set(WorkOrder::getWorkerPhone, workOrder.getWorkerPhone()); //维保人员电话
+        updateWrapper.set(WorkOrder::getHandlerName, workOrder.getHandlerName()); //处理人
+        updateWrapper.set(WorkOrder::getHandlerPhone, workOrder.getHandlerPhone()); //处理人电话
+        updateWrapper.set(WorkOrder::getRescueHotline, workOrder.getRescueHotline()); //救援热线
+
+        return update(updateWrapper);
+    }
+
+    @Override
+    public Boolean updateStatus(WorkOrder workOrder) {
+        LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(WorkOrder::getId, workOrder.getId());
+        updateWrapper.set(WorkOrder::getStatus, workOrder.getStatus()); //救援等级
+
+        return update(updateWrapper);
+    }
+
+    /**
+     * 处理工单进度
+     *
+     * @param handleProgressDTO
+     * @return
+     */
+    @Override
+    public Boolean handleWorkOrder(HandleProgressDTO handleProgressDTO) {
+        return null;
     }
 }

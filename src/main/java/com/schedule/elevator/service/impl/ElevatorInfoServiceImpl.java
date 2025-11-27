@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ElevatorInfoMapper;
-import com.schedule.elevator.dto.SearchInfoDTO;
+import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         implements IElevatorInfoService {
 
     @Override
-    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, SearchInfoDTO searchInfoDTO) {
+    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);

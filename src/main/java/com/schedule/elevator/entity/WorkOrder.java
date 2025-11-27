@@ -22,6 +22,8 @@ public class WorkOrder implements Serializable {
 
     @TableField("order_no")
     private String orderNo;
+    private String alarmSource;          // 报警来源
+    private String creatorJobNumber;     // 创建人工号
     /**
      * 是否为重大事项：0-否，1-是
      */
@@ -55,8 +57,11 @@ public class WorkOrder implements Serializable {
     @TableField("contact_phone")
     private String contactPhone;
 
-    @TableField("order_type_id")
-    private Integer orderTypeId;
+    /**
+     * 工单类型: 困人工单，故障工单，投诉，咨询
+     */
+    @TableField("order_type")
+    private String orderType;
 
     @TableField("incident_description")
     private String incidentDescription;
@@ -88,9 +93,8 @@ public class WorkOrder implements Serializable {
     @TableField("status")
     private Byte status; // TINYINT: 0=待处理, 1=处理中, 2=已关闭
 
-    @TableField(fill = FieldFill.INSERT)
+    @TableField("is_reported")
+    private Boolean isReported;
     private LocalDateTime createTime;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

@@ -40,6 +40,5 @@ public class WorkOrderProgress implements Serializable {
     @TableField("recorder")
     private String recorder;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

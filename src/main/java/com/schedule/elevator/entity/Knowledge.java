@@ -22,9 +22,7 @@ public class Knowledge implements Serializable {
     private String fileUrl;         // 文件地址（如 PDF、音频等）
     private String creatorName;     // 创建人姓名
 
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

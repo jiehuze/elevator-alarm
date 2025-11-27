@@ -14,7 +14,7 @@ public class WorkOrderDTO implements Serializable {
     @ApiModelProperty("工单编号")
     private String orderNo;
 
-    @ApiModelProperty("电梯数据码")
+    @ApiModelProperty("电梯救援码")
     private String elevatorCode;
 
     @ApiModelProperty("电梯注册码")
@@ -36,7 +36,7 @@ public class WorkOrderDTO implements Serializable {
     private Boolean isMajorIncident;
 
     @ApiModelProperty("工单类型ID")
-    private Integer orderTypeId;
+    private String orderType;
 
     @ApiModelProperty("报警开始时间")
     private LocalDateTime alarmTimeStart;
