@@ -19,7 +19,7 @@ public class KnowledgeController {
     /**
      * 分页查询知识库文章
      */
-    @GetMapping
+    @GetMapping("/list")
     public BaseResponse list(KnowledgeQueryDTO dto) {
         Page<Knowledge> knowledgePage = knowledgeService.queryByConditions(dto);
         return new BaseResponse(HttpStatus.OK.value(), "success", knowledgePage, null);
@@ -28,7 +28,7 @@ public class KnowledgeController {
     /**
      * 新增知识库文章
      */
-    @PostMapping
+    @PostMapping("/add")
     public BaseResponse create(@RequestBody Knowledge knowledge) {
         knowledgeService.save(knowledge);
         return new BaseResponse(HttpStatus.OK.value(), "success", knowledge, null);
