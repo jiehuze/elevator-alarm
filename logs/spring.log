@@ -1,121 +1,287 @@
-2025-08-20T09:13:46.055+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : Starting SupervisoryApplication using Java 17.0.12 with PID 3520 (/Users/jiehu/works/lavie/supervisory-system/target/classes started by jiehu in /Users/jiehu/works/lavie/supervisory-system)
-2025-08-20T09:13:46.059+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : The following 1 profile is active: "dev"
-2025-08-20T09:13:47.634+08:00  INFO 3520 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-08-20T09:13:47.649+08:00  INFO 3520 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-08-20T09:13:47.650+08:00  INFO 3520 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2025-08-20T09:13:47.715+08:00  INFO 3520 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
-2025-08-20T09:13:47.715+08:00  INFO 3520 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1606 ms
-2025-08-20T09:13:49.268+08:00 DEBUG 3520 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 133 mappings in 'requestMappingHandlerMapping'
-2025-08-20T09:13:49.352+08:00 DEBUG 3520 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T09:13:49.376+08:00 DEBUG 3520 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T09:13:49.414+08:00 DEBUG 3520 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T09:13:49.594+08:00  INFO 3520 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/duban'
-2025-08-20T09:13:49.611+08:00  INFO 3520 --- [supervisory-system] [main] com.schedule.ElevatorApplication      : Started SupervisoryApplication in 4.292 seconds (process running for 4.958)
-2025-08-20T09:14:01.127+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-08-20T09:14:01.127+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2025-08-20T09:14:01.127+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
-2025-08-20T09:14:01.128+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
-2025-08-20T09:14:01.128+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
-2025-08-20T09:14:01.129+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@d70e9a
-2025-08-20T09:14:01.129+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@478967eb
-2025-08-20T09:14:01.130+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
-2025-08-20T09:14:01.130+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
-2025-08-20T09:14:01.140+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : PUT "/duban/external/consult", parameters={}
-2025-08-20T09:14:01.152+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.supervisory.controller.ExternalController#createExternalConsult(Consultation)
-2025-08-20T09:14:01.249+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Consultation(id=null, content=关于环保验收的咨询, person=李四, phone=13900005678, createTime=null, leadingDepar (truncated)...]
-2025-08-20T09:14:01.308+08:00  WARN 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
-2025-08-20T09:14:01.310+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-08-20T09:14:01.797+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1c5194e1
-2025-08-20T09:14:01.801+08:00  INFO 3520 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-08-20T09:14:03.610+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-08-20T09:14:03.612+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=success, data=true, err=0)]
-2025-08-20T09:14:03.626+08:00 DEBUG 3520 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2025-08-20T09:15:13.365+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Starting CustomApplicationTests using Java 17.0.12 with PID 3645 (started by jiehu in /Users/jiehu/works/lavie/supervisory-system)
-2025-08-20T09:15:13.367+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : The following 1 profile is active: "dev"
-2025-08-20T09:15:13.407+08:00 DEBUG 3645 --- [supervisory-system] [main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d
-2025-08-20T09:15:16.533+08:00 DEBUG 3645 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 133 mappings in 'requestMappingHandlerMapping'
-2025-08-20T09:15:16.634+08:00 DEBUG 3645 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T09:15:16.672+08:00 DEBUG 3645 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T09:15:16.710+08:00 DEBUG 3645 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T09:15:16.910+08:00  INFO 3645 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Started CustomApplicationTests in 4.02 seconds (process running for 5.183)
-2025-08-20T09:15:17.911+08:00 DEBUG 3645 --- [supervisory-system] [SpringApplicationShutdownHook] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d, started on Wed Aug 20 09:15:13 CST 2025
-2025-08-20T09:58:08.330+08:00  INFO 5169 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 5169 (/Users/jiehu/works/lavie/elevator/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator)
-2025-08-20T09:58:08.333+08:00  INFO 5169 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
-2025-08-20T09:58:09.358+08:00  INFO 5169 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-08-20T09:58:09.371+08:00  INFO 5169 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-08-20T09:58:09.371+08:00  INFO 5169 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2025-08-20T09:58:09.422+08:00  INFO 5169 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
-2025-08-20T09:58:09.422+08:00  INFO 5169 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1047 ms
-2025-08-20T09:58:09.962+08:00 DEBUG 5169 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
-2025-08-20T09:58:10.044+08:00 DEBUG 5169 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T09:58:10.063+08:00 DEBUG 5169 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T09:58:10.100+08:00 DEBUG 5169 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T09:58:10.229+08:00  WARN 5169 --- [supervisory-system] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2025-08-20T09:58:10.252+08:00  INFO 5169 --- [supervisory-system] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-08-20T09:58:10.268+08:00 ERROR 5169 --- [supervisory-system] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Web server failed to start. Port 8080 was already in use.
-
-Action:
-
-Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
-
-2025-08-20T09:58:39.879+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 5179 (/Users/jiehu/works/lavie/elevator/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator)
-2025-08-20T09:58:39.881+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
-2025-08-20T09:58:40.944+08:00  INFO 5179 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-08-20T09:58:40.958+08:00  INFO 5179 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-08-20T09:58:40.958+08:00  INFO 5179 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2025-08-20T09:58:41.008+08:00  INFO 5179 --- [supervisory-system] [main] o.a.c.c.C.[Tomcat].[localhost].[/duban]  : Initializing Spring embedded WebApplicationContext
-2025-08-20T09:58:41.009+08:00  INFO 5179 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1088 ms
-2025-08-20T09:58:41.480+08:00 DEBUG 5179 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
-2025-08-20T09:58:41.561+08:00 DEBUG 5179 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T09:58:41.579+08:00 DEBUG 5179 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T09:58:41.614+08:00 DEBUG 5179 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T09:58:41.741+08:00  INFO 5179 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/duban'
-2025-08-20T09:58:41.752+08:00  INFO 5179 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.388 seconds (process running for 2.944)
-2025-08-20T11:02:28.469+08:00  INFO 6673 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 6673 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
-2025-08-20T11:02:28.471+08:00  INFO 6673 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
-2025-08-20T11:02:29.533+08:00  INFO 6673 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-08-20T11:02:29.546+08:00  INFO 6673 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-08-20T11:02:29.546+08:00  INFO 6673 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2025-08-20T11:02:29.596+08:00  INFO 6673 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
-2025-08-20T11:02:29.596+08:00  INFO 6673 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1073 ms
-2025-08-20T11:02:30.100+08:00 DEBUG 6673 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
-2025-08-20T11:02:30.183+08:00 DEBUG 6673 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T11:02:30.202+08:00 DEBUG 6673 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T11:02:30.235+08:00 DEBUG 6673 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T11:02:30.362+08:00  WARN 6673 --- [supervisory-system] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2025-08-20T11:02:30.378+08:00  INFO 6673 --- [supervisory-system] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-08-20T11:02:30.395+08:00 ERROR 6673 --- [supervisory-system] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Web server failed to start. Port 8080 was already in use.
-
-Action:
-
-Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
-
-2025-08-20T11:04:12.431+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Starting CustomApplicationTests using Java 17.0.12 with PID 6899 (started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
-2025-08-20T11:04:12.433+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : The following 1 profile is active: "dev"
-2025-08-20T11:04:12.463+08:00 DEBUG 6899 --- [supervisory-system] [main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d
-2025-08-20T11:04:14.187+08:00 DEBUG 6899 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 3 mappings in 'requestMappingHandlerMapping'
-2025-08-20T11:04:14.319+08:00 DEBUG 6899 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-08-20T11:04:14.355+08:00 DEBUG 6899 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-08-20T11:04:14.420+08:00 DEBUG 6899 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-08-20T11:04:14.603+08:00  INFO 6899 --- [supervisory-system] [main] com.schedule.CustomApplicationTests      : Started CustomApplicationTests in 2.612 seconds (process running for 3.591)
-2025-08-20T11:04:15.748+08:00 DEBUG 6899 --- [supervisory-system] [SpringApplicationShutdownHook] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@7b44b63d, started on Wed Aug 20 11:04:12 CST 2025
+2025-11-28T09:13:25.370+08:00  INFO 94766 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 94766 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T09:13:25.373+08:00  INFO 94766 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T09:13:26.197+08:00  INFO 94766 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T09:13:26.207+08:00  INFO 94766 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T09:13:26.208+08:00  INFO 94766 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T09:13:26.257+08:00  INFO 94766 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T09:13:26.257+08:00  INFO 94766 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 851 ms
+2025-11-28T09:13:26.864+08:00 DEBUG 94766 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 38 mappings in 'requestMappingHandlerMapping'
+2025-11-28T09:13:26.931+08:00 DEBUG 94766 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T09:13:26.945+08:00 DEBUG 94766 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T09:13:26.966+08:00 DEBUG 94766 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T09:13:27.060+08:00  INFO 94766 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T09:13:27.068+08:00  INFO 94766 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.08 seconds (process running for 5.577)
+2025-11-28T09:14:25.568+08:00  INFO 95032 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 95032 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T09:14:25.569+08:00  INFO 95032 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T09:14:26.399+08:00  INFO 95032 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T09:14:26.415+08:00  INFO 95032 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T09:14:26.415+08:00  INFO 95032 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T09:14:26.458+08:00  INFO 95032 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T09:14:26.459+08:00  INFO 95032 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 857 ms
+2025-11-28T09:14:27.032+08:00 DEBUG 95032 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 38 mappings in 'requestMappingHandlerMapping'
+2025-11-28T09:14:27.097+08:00 DEBUG 95032 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T09:14:27.112+08:00 DEBUG 95032 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T09:14:27.134+08:00 DEBUG 95032 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T09:14:27.229+08:00  INFO 95032 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T09:14:27.238+08:00  INFO 95032 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.067 seconds (process running for 2.513)
+2025-11-28T09:14:32.894+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T09:14:32.894+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T09:14:32.894+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T09:14:32.894+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T09:14:32.895+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T09:14:32.895+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5ed0b4e3
+2025-11-28T09:14:32.896+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@3815146b
+2025-11-28T09:14:32.896+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T09:14:32.896+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-28T09:14:32.902+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : POST "/elevator/work-order/handle", parameters={}
+2025-11-28T09:14:32.911+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.schedule.utils.GlobalExceptionHandler#handleGeneralException(Exception)
+2025-11-28T09:14:32.942+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T09:14:32.944+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [BaseResponse(code=500, msg=org.springframework.web.HttpRequestMethodNotSupportedException: Request m (truncated)...]
+2025-11-28T09:14:32.955+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'POST' is not supported]
+2025-11-28T09:14:32.956+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-11-28T09:14:53.605+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : PUT "/elevator/work-order/handle", parameters={}
+2025-11-28T09:14:53.609+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.WorkOrderController#HandleWorkOrder(WorkOrderProgress)
+2025-11-28T09:14:53.650+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [WorkOrderProgress(id=null, orderNo=WO20251127002, progress=选择救援, result=成功, status=1, remark=, fault (truncated)...]
+2025-11-28T09:14:53.706+08:00  WARN 95032 --- [supervisory-system] [http-nio-8080-exec-2] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T09:14:53.707+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T09:14:54.318+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-2] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@73bff33d
+2025-11-28T09:14:54.320+08:00  INFO 95032 --- [supervisory-system] [http-nio-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T09:14:54.521+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.schedule.utils.GlobalExceptionHandler#handleGeneralException(Exception)
+2025-11-28T09:14:54.521+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T09:14:54.522+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [BaseResponse(code=500, msg=org.springframework.dao.DataIntegrityViolationException: <EOL>### Error updat (truncated)...]
+2025-11-28T09:14:54.522+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.dao.DataIntegrityViolationException: <EOL>### Error updating database.  Cause: java.sql.SQLException: Field 'employee_id' doesn't have a default value<EOL>### The error may exist in com/schedule/elevator/dao/mapper/WorkOrderProgressMapper.java (best guess)<EOL>### The error may involve com.schedule.elevator.dao.mapper.WorkOrderProgressMapper.insert-Inline<EOL>### The error occurred while setting parameters<EOL>### SQL: INSERT INTO work_order_progress  ( order_no, progress, result, status, remark, fault_content, fault_content_id )  VALUES (  ?, ?, ?, ?, ?, ?, ?  )<EOL>### Cause: java.sql.SQLException: Field 'employee_id' doesn't have a default value<EOL>; Field 'employee_id' doesn't have a default value]
+2025-11-28T09:14:54.522+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-11-28T09:15:27.838+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : PUT "/elevator/work-order/handle", parameters={}
+2025-11-28T09:15:27.838+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.WorkOrderController#HandleWorkOrder(WorkOrderProgress)
+2025-11-28T09:15:27.839+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [WorkOrderProgress(id=null, orderNo=WO20251127002, progress=选择救援, result=成功, status=1, remark=, fault (truncated)...]
+2025-11-28T09:15:28.113+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T09:15:28.113+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=更新成功, data=true, err=null)]
+2025-11-28T09:15:28.115+08:00 DEBUG 95032 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T09:22:34.954+08:00  INFO 95032 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-28T09:22:34.956+08:00  INFO 95032 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-28T09:22:41.334+08:00  INFO 97063 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 97063 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T09:22:41.336+08:00  INFO 97063 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T09:22:42.179+08:00  INFO 97063 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T09:22:42.190+08:00  INFO 97063 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T09:22:42.191+08:00  INFO 97063 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T09:22:42.234+08:00  INFO 97063 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T09:22:42.235+08:00  INFO 97063 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 871 ms
+2025-11-28T09:22:42.838+08:00 DEBUG 97063 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 38 mappings in 'requestMappingHandlerMapping'
+2025-11-28T09:22:42.900+08:00 DEBUG 97063 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T09:22:42.916+08:00 DEBUG 97063 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T09:22:42.938+08:00 DEBUG 97063 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T09:22:43.033+08:00  INFO 97063 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T09:22:43.042+08:00  INFO 97063 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.076 seconds (process running for 5.659)
+2025-11-28T09:23:51.799+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T09:23:51.800+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T09:23:51.800+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T09:23:51.800+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T09:23:51.800+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T09:23:51.801+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@3e9beef2
+2025-11-28T09:23:51.801+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@7558633
+2025-11-28T09:23:51.802+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T09:23:51.802+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-28T09:23:51.807+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/list", parameters={}
+2025-11-28T09:23:51.813+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceInfoController#list(int, int)
+2025-11-28T09:23:51.938+08:00  WARN 97063 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T09:23:51.939+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T09:23:52.458+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@9c578e0
+2025-11-28T09:23:52.460+08:00  INFO 97063 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T09:23:52.627+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T09:23:52.628+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=com.baomidou.mybatisplus.extension.plugins.pagination.Page@738 (truncated)...]
+2025-11-28T09:23:52.654+08:00 DEBUG 97063 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:28:27.933+08:00  INFO 97063 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-28T10:28:27.981+08:00  INFO 97063 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-28T10:28:35.296+08:00  INFO 13830 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 13830 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T10:28:35.297+08:00  INFO 13830 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T10:28:36.158+08:00  INFO 13830 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T10:28:36.169+08:00  INFO 13830 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T10:28:36.169+08:00  INFO 13830 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T10:28:36.219+08:00  INFO 13830 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T10:28:36.220+08:00  INFO 13830 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 890 ms
+2025-11-28T10:28:36.854+08:00 DEBUG 13830 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 39 mappings in 'requestMappingHandlerMapping'
+2025-11-28T10:28:36.914+08:00 DEBUG 13830 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T10:28:36.928+08:00 DEBUG 13830 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T10:28:36.952+08:00 DEBUG 13830 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T10:28:37.054+08:00  INFO 13830 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T10:28:37.064+08:00  INFO 13830 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.153 seconds (process running for 5.65)
+2025-11-28T10:30:15.484+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T10:30:15.484+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T10:30:15.485+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T10:30:15.485+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T10:30:15.485+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T10:30:15.486+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@589fb74d
+2025-11-28T10:30:15.486+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@6f1fa1d0
+2025-11-28T10:30:15.486+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T10:30:15.486+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-11-28T10:30:15.492+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.987654&longitude=118.012345&distanceKm=10", parameters={masked}
+2025-11-28T10:30:15.499+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:30:15.535+08:00  WARN 13830 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T10:30:15.536+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T10:30:16.066+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21973ed3
+2025-11-28T10:30:16.067+08:00  INFO 13830 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T10:30:16.186+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:30:16.188+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=2.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:30:16.241+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:38:02.118+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.987654&longitude=118.012345&distanceKm=10", parameters={masked}
+2025-11-28T10:38:02.137+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:38:02.267+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:38:02.269+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=2.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:38:02.274+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:44:35.085+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.975241&longitude=117.925091&distanceKm=10", parameters={masked}
+2025-11-28T10:44:35.091+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:44:35.197+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:44:35.198+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=5.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:44:35.202+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:44:51.851+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.975241&longitude=117.925091&distanceKm=16", parameters={masked}
+2025-11-28T10:44:51.852+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:44:51.949+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:44:51.950+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=5.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:44:51.951+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:45:03.129+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.975241&longitude=117.925091&distanceKm=100", parameters={masked}
+2025-11-28T10:45:03.129+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:45:03.234+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:45:03.234+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=5.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:45:03.235+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T10:45:46.499+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.975241&longitude=117.925091&distanceKm=10000", parameters={masked}
+2025-11-28T10:45:46.500+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T10:45:46.605+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T10:45:46.605+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=5.06), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T10:45:46.607+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:08:56.923+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=10", parameters={masked}
+2025-11-28T11:08:56.932+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:08:57.097+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:08:57.097+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:08:57.119+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:15:20.888+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:15:20.894+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:15:21.010+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:15:21.011+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:15:21.015+08:00 DEBUG 13830 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:19:03.380+08:00  INFO 13830 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-28T11:19:03.408+08:00  INFO 13830 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-28T11:19:09.757+08:00  INFO 26031 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 26031 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T11:19:09.759+08:00  INFO 26031 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T11:19:10.633+08:00  INFO 26031 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T11:19:10.644+08:00  INFO 26031 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T11:19:10.645+08:00  INFO 26031 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T11:19:10.690+08:00  INFO 26031 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T11:19:10.690+08:00  INFO 26031 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 897 ms
+2025-11-28T11:19:11.322+08:00 DEBUG 26031 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 39 mappings in 'requestMappingHandlerMapping'
+2025-11-28T11:19:11.380+08:00 DEBUG 26031 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T11:19:11.394+08:00 DEBUG 26031 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T11:19:11.418+08:00 DEBUG 26031 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T11:19:11.519+08:00  INFO 26031 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T11:19:11.527+08:00  INFO 26031 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.152 seconds (process running for 5.645)
+2025-11-28T11:19:16.632+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T11:19:16.633+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T11:19:16.633+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T11:19:16.633+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T11:19:16.633+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T11:19:16.634+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@7f12094d
+2025-11-28T11:19:16.634+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@3a0b6a
+2025-11-28T11:19:16.635+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T11:19:16.635+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-28T11:19:16.641+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:19:16.648+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:19:16.685+08:00  WARN 26031 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T11:19:16.686+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T11:19:17.271+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3eb7e5e7
+2025-11-28T11:19:17.276+08:00  INFO 26031 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T11:19:17.475+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:19:17.477+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:19:17.523+08:00 DEBUG 26031 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:21:19.520+08:00  INFO 26031 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-28T11:21:19.522+08:00  INFO 26031 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-28T11:21:25.454+08:00  INFO 26567 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 26567 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T11:21:25.455+08:00  INFO 26567 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T11:21:26.312+08:00  INFO 26567 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T11:21:26.325+08:00  INFO 26567 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T11:21:26.326+08:00  INFO 26567 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T11:21:26.378+08:00  INFO 26567 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T11:21:26.379+08:00  INFO 26567 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 890 ms
+2025-11-28T11:21:26.991+08:00 DEBUG 26567 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 39 mappings in 'requestMappingHandlerMapping'
+2025-11-28T11:21:27.050+08:00 DEBUG 26567 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T11:21:27.064+08:00 DEBUG 26567 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T11:21:27.087+08:00 DEBUG 26567 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T11:21:27.185+08:00  INFO 26567 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T11:21:27.193+08:00  INFO 26567 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.115 seconds (process running for 5.656)
+2025-11-28T11:21:36.860+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T11:21:36.861+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T11:21:36.861+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T11:21:36.861+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T11:21:36.861+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T11:21:36.862+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@1471b98d
+2025-11-28T11:21:36.862+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@18ffca6c
+2025-11-28T11:21:36.863+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T11:21:36.863+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-28T11:21:36.869+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:21:36.877+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:21:36.919+08:00  WARN 26567 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T11:21:36.920+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T11:21:37.536+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1aaa4378
+2025-11-28T11:21:37.537+08:00  INFO 26567 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T11:21:37.665+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:21:37.666+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:21:37.687+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:23:40.794+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:23:40.802+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:23:40.931+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:23:40.932+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:23:40.936+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:27:25.377+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:27:25.378+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:27:25.479+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:27:25.480+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:27:25.481+08:00 DEBUG 26567 --- [supervisory-system] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:34:13.773+08:00  INFO 26567 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-28T11:34:13.786+08:00  INFO 26567 --- [supervisory-system] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-28T11:34:17.178+08:00  INFO 29717 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 29717 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T11:34:17.180+08:00  INFO 29717 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T11:34:18.053+08:00  INFO 29717 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T11:34:18.077+08:00  INFO 29717 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T11:34:18.088+08:00  INFO 29717 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T11:34:18.140+08:00  INFO 29717 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T11:34:18.141+08:00  INFO 29717 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 928 ms
+2025-11-28T11:34:18.768+08:00 DEBUG 29717 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 39 mappings in 'requestMappingHandlerMapping'
+2025-11-28T11:34:18.828+08:00 DEBUG 29717 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T11:34:18.842+08:00 DEBUG 29717 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T11:34:18.866+08:00 DEBUG 29717 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T11:34:18.963+08:00  INFO 29717 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T11:34:18.971+08:00  INFO 29717 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.19 seconds (process running for 2.629)
+2025-11-28T11:34:54.971+08:00  INFO 29872 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Starting ElevatorApplication using Java 17.0.12 with PID 29872 (/Users/jiehu/works/lavie/elevator-alarm/target/classes started by jiehu in /Users/jiehu/works/lavie/elevator-alarm)
+2025-11-28T11:34:54.972+08:00  INFO 29872 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : The following 1 profile is active: "dev"
+2025-11-28T11:34:55.816+08:00  INFO 29872 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-28T11:34:55.826+08:00  INFO 29872 --- [supervisory-system] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-28T11:34:55.827+08:00  INFO 29872 --- [supervisory-system] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-28T11:34:55.867+08:00  INFO 29872 --- [supervisory-system] [main] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring embedded WebApplicationContext
+2025-11-28T11:34:55.867+08:00  INFO 29872 --- [supervisory-system] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 865 ms
+2025-11-28T11:34:56.508+08:00 DEBUG 29872 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 39 mappings in 'requestMappingHandlerMapping'
+2025-11-28T11:34:56.563+08:00 DEBUG 29872 --- [supervisory-system] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-11-28T11:34:56.577+08:00 DEBUG 29872 --- [supervisory-system] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-11-28T11:34:56.601+08:00 DEBUG 29872 --- [supervisory-system] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-11-28T11:34:56.709+08:00  INFO 29872 --- [supervisory-system] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/elevator'
+2025-11-28T11:34:56.718+08:00  INFO 29872 --- [supervisory-system] [main] com.schedule.ElevatorApplication         : Started ElevatorApplication in 2.112 seconds (process running for 5.642)
+2025-11-28T11:35:05.666+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.a.c.c.C.[.[localhost].[/elevator]      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-28T11:35:05.667+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-28T11:35:05.667+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2025-11-28T11:35:05.667+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2025-11-28T11:35:05.667+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2025-11-28T11:35:05.668+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@7f12094d
+2025-11-28T11:35:05.668+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@6486fe7b
+2025-11-28T11:35:05.669+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-11-28T11:35:05.669+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-28T11:35:05.675+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=1000", parameters={masked}
+2025-11-28T11:35:05.682+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:35:05.717+08:00  WARN 29872 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2025-11-28T11:35:05.718+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-28T11:35:06.436+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6f0ee6d2
+2025-11-28T11:35:06.437+08:00  INFO 29872 --- [supervisory-system] [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-28T11:35:06.565+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:35:06.566+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:35:06.587+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-11-28T11:35:24.231+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/elevator/maintenance/nearby?latitude=40.995021&longitude=117.911654&distanceKm=5", parameters={masked}
+2025-11-28T11:35:24.232+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.schedule.elevator.controller.MaintenanceController#getNearby(NearbyMaintenanceDTO)
+2025-11-28T11:35:24.333+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-11-28T11:35:24.334+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [BaseResponse(code=200, msg=查询成功, data=[NearbyMaintenanceDTO(distanceKm=1.69), NearbyMaintenanceDTO(d (truncated)...]
+2025-11-28T11:35:24.335+08:00 DEBUG 29872 --- [supervisory-system] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK

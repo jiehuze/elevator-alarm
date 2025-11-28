@@ -1,10 +1,10 @@
 server:
   port: 8080
   servlet:
-    context-path: /sys
+    context-path: /elevator
 spring:
   application:
-    name: custom-app
+    name: elevator-alarm
 
 mybatis-plus:
   configuration:

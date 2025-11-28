@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.WorkOrder;
+import com.schedule.elevator.entity.WorkOrderProgress;
 import com.schedule.elevator.entity.WorkOrderTrace;
+import com.schedule.elevator.service.IWorkOrderProgressService;
 import com.schedule.elevator.service.IWorkOrderService;
 import com.schedule.elevator.service.IWorkOrderTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class WorkOrderController {
     @Autowired
     private IWorkOrderTraceService workOrderTraceService;
 
+    @Autowired
+    private IWorkOrderProgressService workOrderProgressService;
+
     /**
      * 创建工单
      *
@@ -42,7 +47,7 @@ public class WorkOrderController {
             //添加记录
             WorkOrderTrace workOrderTrace = new WorkOrderTrace();
             workOrderTrace.setOrderNo(workOrder.getOrderNo())
-                    .setJobNumber(workOrder.getCreatorJobNumber())
+                    .setEmployeeId(workOrder.getEmployeeId())
                     .setDescription("创建了" + workOrder.getOrderType() + "工单");
             workOrderTraceService.save(workOrderTrace);
         }
@@ -64,7 +69,7 @@ public class WorkOrderController {
             //添加记录
             WorkOrderTrace workOrderTrace = new WorkOrderTrace();
             workOrderTrace.setOrderNo(workOrder.getOrderNo())
-                    .setJobNumber(workOrder.getCreatorJobNumber())
+                    .setEmployeeId(workOrder.getEmployeeId())
                     .setDescription("选择了" + workOrder.getRescueLevel() + "派单成功");
             workOrderTraceService.save(workOrderTrace);
         }
@@ -74,13 +79,18 @@ public class WorkOrderController {
     /**
      * 处理工单，更新进度
      *
-     * @param workOrder
+     * @param
      * @return
      */
     @PutMapping("/handle")
-    public BaseResponse HandleWorkOrder(@RequestBody WorkOrder workOrder) {
+    public BaseResponse HandleWorkOrder(@RequestBody WorkOrderProgress workOrderProgress) {
+        WorkOrder workOrder = new WorkOrder();
+        workOrder.setOrderNo(workOrderProgress.getOrderNo()).setStatus(workOrderProgress.getStatus());
 
-        return new BaseResponse(HttpStatus.OK.value(), "更新成功", workOrder, null);
+        boolean save = workOrderProgressService.save(workOrderProgress);
+        workOrderService.updateStatus(workOrder);
+
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", save, null);
     }
 
     @PutMapping("/update-status")

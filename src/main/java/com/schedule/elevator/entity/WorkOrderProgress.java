@@ -24,6 +24,9 @@ public class WorkOrderProgress implements Serializable {
     @TableField("result")
     private String result;  // 处理结果
 
+    @TableField("status")
+    private Byte status; // 转态和进度
+
     @TableField("remark")
     private String remark; // 处理备注
 
@@ -34,11 +37,10 @@ public class WorkOrderProgress implements Serializable {
     private Long faultContentId;     // 故障内容ID
 
     // 虽然 DB 有默认值，但仍建议 MP 填充以保证一致性
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField("recorder")
-    private String recorder;
+    @TableField("employee_id")
+    private String employeeId;
 
     private LocalDateTime updateTime;
 }

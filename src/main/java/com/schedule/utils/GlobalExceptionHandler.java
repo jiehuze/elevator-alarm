@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse> handleGeneralException(Exception ex) {
         // 处理其他类型的异常
-        BaseResponse response = new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error", null, null);
+        BaseResponse response = new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.toString(), null, null);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

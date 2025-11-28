@@ -20,8 +20,8 @@ public class WorkOrderTrace implements Serializable {
     @TableField("order_no")
     private String orderNo;
 
-    @TableField("job_number")
-    private String jobNumber;
+    @TableField("employee_id")
+    private String employeeId;
 
     @TableField("handled_at")
     private LocalDateTime handledAt;

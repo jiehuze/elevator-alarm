@@ -1,11 +1,20 @@
 package com.schedule.elevator.dto;
 
 import lombok.Getter;
+
 @Getter
 public enum WorkOrderStatusEnum {
-    PENDING(0, "待处理"),
-    PROCESSING(1, "处理中"),
-    CLOSED(2, "已关闭");
+    // —————— 流程进行中 ——————
+    SELECT_RESCUE(1, "确定救援"),
+    ASSIGNED(2, "已派单"),
+    EN_ROUTE(3, "赶往现场"),
+    ARRIVED(4, "到达现场"),
+    HANDLING(5, "故障处理"),
+    RECOVERED(6, "故障恢复"),
+
+    // —————— 最终状态 ——————
+    COMPLETED(100, "工单完成"),   // 整个流程走完
+    CANCELLED(99, "工单取消");   // 中途取消
 
     private final int code;
     private final String desc;
