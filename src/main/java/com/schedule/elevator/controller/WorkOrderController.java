@@ -93,6 +93,21 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", save, null);
     }
 
+    /**
+     * 设置重大事项
+     *
+     * @param workOrder
+     * @return
+     */
+    @PutMapping("/major_incident")
+    public BaseResponse setMajorIncident(@ModelAttribute WorkOrder workOrder) {
+        Boolean update = workOrderService.updateByOrderNo(workOrder);
+        if (!update) {
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "更新失败", null, null);
+        }
+        return new BaseResponse(HttpStatus.OK.value(), "设置重大事项成功", workOrder, null);
+    }
+
     @PutMapping("/update-status")
     public BaseResponse updateStatus(@ModelAttribute WorkOrder workOrder) {
         workOrder.setStatus(workOrder.getStatus());

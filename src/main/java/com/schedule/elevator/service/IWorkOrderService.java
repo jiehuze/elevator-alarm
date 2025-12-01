@@ -14,4 +14,6 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     Boolean updateStatus(WorkOrder workOrder);
 
     Boolean handleWorkOrder(HandleProgressDTO handleProgressDTO);
+
+    Boolean updateByOrderNo(WorkOrder workOrder);
 }

@@ -85,4 +85,39 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Boolean handleWorkOrder(HandleProgressDTO handleProgressDTO) {
         return null;
     }
+
+    @Override
+    public Boolean updateByOrderNo(WorkOrder workOrder) {
+        LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(WorkOrder::getOrderNo, workOrder.getOrderNo());
+        if (workOrder.getOrderNo() != null) {
+            updateWrapper.set(WorkOrder::getOrderNo, workOrder.getOrderNo());
+        }
+        if (workOrder.getElevatorCode() != null) {
+            updateWrapper.set(WorkOrder::getElevatorCode, workOrder.getElevatorCode());
+        }
+        if (workOrder.getRegisterCode() != null) {
+            updateWrapper.set(WorkOrder::getRegisterCode, workOrder.getRegisterCode());
+        }
+        if (workOrder.getAlarmPersonName() != null) {
+            updateWrapper.set(WorkOrder::getAlarmPersonName, workOrder.getAlarmPersonName());
+        }
+        if (workOrder.getAlarmPersonPhone() != null) {
+            updateWrapper.set(WorkOrder::getAlarmPersonPhone, workOrder.getAlarmPersonPhone());
+        }
+        if (workOrder.getUsingUnit() != null) {
+            updateWrapper.set(WorkOrder::getUsingUnit, workOrder.getUsingUnit());
+        }
+        if (workOrder.getIsMajorIncident() != null) {
+            updateWrapper.set(WorkOrder::getIsMajorIncident, workOrder.getIsMajorIncident());
+        }
+        if (workOrder.getOrderType() != null) {
+            updateWrapper.set(WorkOrder::getOrderType, workOrder.getOrderType());
+        }
+        if (workOrder.getAlarmTime() != null) {
+            updateWrapper.set(WorkOrder::getAlarmTime, workOrder.getAlarmTime());
+        }
+
+        return update(updateWrapper);
+    }
 }

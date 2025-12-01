@@ -2,6 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.schedule.elevator.entity.FaultCategory;
 import com.schedule.elevator.service.IFaultCategoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,10 +10,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/fault-category")
+@RequiredArgsConstructor
 public class FaultCategoryController {
 
-    @Autowired
-    private IFaultCategoryService faultCategoryService;
+//    @Autowired
+    private final IFaultCategoryService faultCategoryService;
 
     /**
      * 新增故障分类
