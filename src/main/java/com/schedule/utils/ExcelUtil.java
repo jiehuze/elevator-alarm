@@ -15,6 +15,8 @@ import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.schedule.elevator.entity.ElevatorInfo;
+import com.schedule.excel.ElevatorInfoTemplateExcel;
 import com.schedule.excel.FormTemplateExcel;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -170,7 +172,7 @@ public class ExcelUtil {
      * @param pojoClass 对象Class
      */
     public static void exportExcelWithTemplate2(HttpServletResponse response, String fileName, String sheetName, List<FormTemplateExcel> list,
-                                               Class<?> pojoClass, String templateFileName) throws IOException {
+                                                Class<?> pojoClass, String templateFileName) throws IOException {
         if (StringUtils.isBlank(fileName)) {
             //当前日期
             fileName = DateUtils.format(new Date());
@@ -208,6 +210,29 @@ public class ExcelUtil {
                     .sheet()
                     .needHead(false)
                     .doWrite(list);
+        }
+    }
+
+    /**
+     * 从 Excel 文件导入数据（通用）
+     *
+     * @param file        上传的 Excel 文件
+     * @param pojoClass   目标 DTO 类（如 ElevatorInfoTemplateExcel.class）
+     * @param <T>         泛型类型
+     * @return 解析后的 List<T>
+     * @throws IOException
+     */
+    public static <T> List<T> importExcel(MultipartFile file, Class<T> pojoClass) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("文件不能为空");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            return EasyExcel.read(inputStream)
+                    .head(pojoClass)
+                    .headRowNumber(1)
+                    .sheet()
+                    .doReadSync();
         }
     }
 }

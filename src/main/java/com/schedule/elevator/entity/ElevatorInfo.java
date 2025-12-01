@@ -19,6 +19,9 @@ public class ElevatorInfo {
     private Long id;
 
     private String elevatorNo;        // 电梯编号
+    private String province;           // 省份
+    private String city;               // 城市
+    private String district;           // 区县
     private String location;          // 电梯位置
     private String organization;      // 所属单位或小区
     private String managerName;       // 电梯负责人
