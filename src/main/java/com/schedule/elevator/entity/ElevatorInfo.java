@@ -198,14 +198,14 @@ public class ElevatorInfo {
     /**
      * 使用单位名称
      */
-    @TableField("user_unit")
-    private String userUnit;
+    @TableField("using_unit")
+    private String usingUnit;
 
     /**
      * 使用单位ID
      */
-    @TableField("user_unit_id")
-    private Long userUnitId;
+    @TableField("using_unit_id")
+    private Long usingUnitId;
 
     /**
      * 记录创建时间

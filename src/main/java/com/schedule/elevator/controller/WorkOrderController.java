@@ -39,20 +39,19 @@ public class WorkOrderController {
     public BaseResponse create(@RequestBody WorkOrder workOrder) {
         workOrder.setStatus(Byte.valueOf("1"));
         workOrder.setOrderNo(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-        boolean insert = workOrderService.save(workOrder);
-
-        if (!insert) {
-            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "添加失败", null, null);
-        } else {
+        try {
+            WorkOrder wd = workOrderService.createWorkOrder(workOrder);
             //添加记录
             WorkOrderTrace workOrderTrace = new WorkOrderTrace();
-            workOrderTrace.setOrderNo(workOrder.getOrderNo())
-                    .setEmployeeId(workOrder.getEmployeeId())
-                    .setDescription("创建了" + workOrder.getOrderType() + "工单");
+            workOrderTrace.setOrderNo(wd.getOrderNo())
+                    .setEmployeeId(wd.getEmployeeId())
+                    .setDescription("创建了" + wd.getOrderType() + "工单");
             workOrderTraceService.save(workOrderTrace);
-        }
 
-        return new BaseResponse(HttpStatus.OK.value(), "添加成功", workOrder, null);
+            return new BaseResponse(HttpStatus.OK.value(), "添加成功", wd, null);
+        } catch (Exception e) {
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "添加失败", null, null);
+        }
     }
 
     /**

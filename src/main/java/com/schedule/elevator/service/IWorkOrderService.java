@@ -9,6 +9,8 @@ import com.schedule.elevator.entity.WorkOrder;
 public interface IWorkOrderService extends IService<WorkOrder> {
     Page<WorkOrder> queryByConditionsPage(WorkOrderDTO wrokOrderDTO);
 
+    WorkOrder createWorkOrder(WorkOrder workOrder);
+
     Boolean createRescueInfo(WorkOrder workOrder);
 
     Boolean updateStatus(WorkOrder workOrder);

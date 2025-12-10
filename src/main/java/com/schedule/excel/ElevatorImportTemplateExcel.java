@@ -116,15 +116,15 @@ public class ElevatorImportTemplateExcel {
     // ========== 使用单位信息 ==========
     @ExcelProperty("使用单位名称")
     @ColumnWidth(25)
-    private String userUnit; // user_unit
+    private String usingUnit; // user_unit
 
     @ExcelProperty("使用单位负责人姓名")
     @ColumnWidth(15)
-    private String userUnitManager; // user_unit_manager
+    private String usingUnitManager; // user_unit_manager
 
     @ExcelProperty("使用单位负责人手机号")
     @ColumnWidth(15)
-    private String userUnitManagerPhone; // user_unit_manager_phone
+    private String usingUnitManagerPhone; // user_unit_manager_phone
 
     // ========== 安全员信息 ==========
     @ExcelProperty("安全员姓名")

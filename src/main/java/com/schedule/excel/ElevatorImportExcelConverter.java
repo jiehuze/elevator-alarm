@@ -45,7 +45,7 @@ public class ElevatorImportExcelConverter {
         entity.setProjectName(dto.getProjectName());
         entity.setRealEstateBrand(dto.getRealEstateBrand());
         entity.setProjectType(dto.getProjectType());
-        entity.setUserUnit(dto.getUserUnit());
+        entity.setUsingUnit(dto.getUsingUnit());
 
         return entity;
     }
@@ -75,9 +75,9 @@ public class ElevatorImportExcelConverter {
 
         PropertyInfo entity = new PropertyInfo();
 
-        entity.setUserUnit(dto.getUserUnit());
-        entity.setUserUnitManager(dto.getUserUnitManager());
-        entity.setUserUnitManagerPhone(dto.getUserUnitManagerPhone());
+        entity.setUsingUnit(dto.getUsingUnit());
+        entity.setUsingUnitManager(dto.getUsingUnitManager());
+        entity.setUsingUnitManagerPhone(dto.getUsingUnitManagerPhone());
         entity.setSafetyOfficerName(dto.getSafetyOfficerName());
         entity.setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
 
@@ -118,7 +118,7 @@ public class ElevatorImportExcelConverter {
         dto.setProjectName(entity.getProjectName());
         dto.setRealEstateBrand(entity.getRealEstateBrand());
         dto.setProjectType(entity.getProjectType());
-        dto.setUserUnit(entity.getUserUnit());
+        dto.setUsingUnit(entity.getUsingUnit());
 
         return dto;
     }

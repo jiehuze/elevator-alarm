@@ -119,7 +119,7 @@ public class ElevatorInfoController {
                         !"电梯编号".equals(elevatorInfo.getElevatorNo().trim())) {
                     //读取使用小区信息，并写入
                     PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
-                    long propertyId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
+                    long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
 
                     //读取维保信息，并写入
                     MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
@@ -130,7 +130,7 @@ public class ElevatorInfoController {
 
                     elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
                     elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
-                    elevatorInfo.setUserUnitId(propertyId);
+                    elevatorInfo.setUsingUnitId(UsingUnitId);
 
                     elevatorInfoService.createElevatorInfo(elevatorInfo);
                 }
