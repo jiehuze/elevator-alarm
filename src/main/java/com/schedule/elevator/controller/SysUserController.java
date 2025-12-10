@@ -5,8 +5,10 @@ import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.entity.UserToken;
 import com.schedule.elevator.service.ISysUserService;
 import com.schedule.elevator.service.IUserTokenService;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,8 +62,13 @@ public class SysUserController {
     }
 
     @GetMapping("/logout")
-    public BaseResponse logout(@RequestBody String token) {
-        Boolean logout = userTokenService.logout(token);
-        return new BaseResponse(HttpStatus.OK.value(), "登出成功", logout, null);
+    public BaseResponse logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            Boolean logout = userTokenService.logout(token);
+            return new BaseResponse(HttpStatus.OK.value(), "登出成功", logout, null);
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "登出失败", null, null);
     }
 }

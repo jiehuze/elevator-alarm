@@ -53,10 +53,10 @@ public class UserTokenServiceImpl extends ServiceImpl<UserTokenMapper, UserToken
     @Override
     public boolean isTokenValidForUser(Long userId, String jti) {
         UserToken token = this.getOne(new LambdaQueryWrapper<UserToken>()
-                .eq(UserToken::getUserId, userId)
-                .eq(UserToken::getToken, jti)
-                .eq(UserToken::getStatus, 1)
-                .gt(UserToken::getExpiresAt, LocalDateTime.now())
+//                .eq(UserToken::getUserId, userId)
+                        .eq(UserToken::getToken, jti)
+                        .eq(UserToken::getStatus, 1)
+                        .gt(UserToken::getExpiresAt, LocalDateTime.now())
         );
         return token != null;
     }
@@ -83,20 +83,16 @@ public class UserTokenServiceImpl extends ServiceImpl<UserTokenMapper, UserToken
     @Override
     public boolean logout(String jwtToken) {
         try {
-            Claims claims = jwtUtil.parseClaims(jwtToken);
-            String jti = claims.getId();
-            Long userId = Long.valueOf(claims.getSubject());
+//            Claims claims = jwtUtil.parseClaims(jwtToken);
+//            String jti = claims.getId();
+//            Long userId = Long.valueOf(claims.getSubject());
 
             // 将该用户的这个 token 标记为已注销
-            boolean updated = this.update(
+            return this.update(
                     new LambdaUpdateWrapper<UserToken>()
+                            .eq(UserToken::getToken, jwtToken)
                             .set(UserToken::getStatus, 0)
-                            .eq(UserToken::getUserId, userId)
-                            .eq(UserToken::getToken, jti)
-                            .eq(UserToken::getStatus, 1) // 只更新“有效”的 token
             );
-
-            return updated;
         } catch (Exception e) {
             // JWT 无效、已过期、格式错误等，视为登出成功（反正也无法使用）
             return true;

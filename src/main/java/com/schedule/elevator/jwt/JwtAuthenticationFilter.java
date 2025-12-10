@@ -1,5 +1,7 @@
-package com.schedule.config;
+package com.schedule.elevator.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.schedule.common.BaseResponse;
 import com.schedule.elevator.service.IUserTokenService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -7,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,7 +18,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -24,13 +29,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private IUserTokenService userTokenService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+
     // 配置无需认证的路径
     private static final List<String> WHITE_LIST = Arrays.asList(
+            "/elevator/sys-user/**",
             "/elevator/**",
             "/actuator/health"
     );
-
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(
@@ -53,6 +63,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 非白名单路径，尝试解析 Token
         String token = getTokenFromRequest(request);
 
+        if (!StringUtils.hasText(token) || !userTokenService.isTokenValidForUser(null, token)) {
+            System.out.println("无效的token：" + token);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "无效的token");
+            return;
+        }
+
         if (StringUtils.hasText(token) && userTokenService.validateToken(token)) {
             // Token 有效，设置 Authentication 到 SecurityContext
             Claims claims = userTokenService.parseClaims(token); // 你需要在 service 中提供这个方法
@@ -63,7 +79,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(userId, null, null);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        // 如果 Token 无效，不设置 Authentication，让 Security 的权限判断来处理
 
         filterChain.doFilter(request, response);
     }
@@ -74,5 +89,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        BaseResponse baseResponse = new BaseResponse(status, message, null, null);
+        response.getWriter().write(objectMapper.writeValueAsString(baseResponse));
     }
 }
