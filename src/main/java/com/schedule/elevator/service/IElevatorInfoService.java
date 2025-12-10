@@ -9,4 +9,6 @@ import com.schedule.elevator.entity.ElevatorInfo;
 public interface IElevatorInfoService extends IService<ElevatorInfo> {
 
     IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO);
+
+    boolean createElevatorInfo(ElevatorInfo elevatorInfo) throws Exception;
 }

@@ -1,8 +1,8 @@
 package com.schedule.elevator.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.schedule.elevator.dto.NearbyMaintenanceDTO;
-import com.schedule.elevator.entity.Maintenance;
+import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.entity.MaintenanceUnit;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
-public interface MaintenanceMapper extends BaseMapper<Maintenance> {
+public interface MaintenanceMapper extends BaseMapper<MaintenanceUnit> {
 
     /**
      * 查询指定坐标 N 公里范围内的维保单位（使用 Haversine 公式）
@@ -46,7 +46,7 @@ public interface MaintenanceMapper extends BaseMapper<Maintenance> {
             "ORDER BY distance_km",
             "</script>"
     })
-    List<NearbyMaintenanceDTO> selectNearby(
+    List<NearbyMaintenanceUnitDTO> selectNearby(
             @Param("centerLat") BigDecimal centerLat,
             @Param("centerLng") BigDecimal centerLng,
             @Param("radiusKm") BigDecimal radiusKm,

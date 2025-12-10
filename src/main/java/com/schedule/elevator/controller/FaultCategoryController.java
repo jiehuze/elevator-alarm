@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 故障分类
+ */
 @RestController
 @RequestMapping("/fault-category")
 @RequiredArgsConstructor

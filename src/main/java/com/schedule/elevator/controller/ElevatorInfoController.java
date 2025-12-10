@@ -1,26 +1,26 @@
 package com.schedule.elevator.controller;
 
-import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
-import com.schedule.excel.ElevatorInfoExcelConverter;
-import com.schedule.excel.ElevatorInfoTemplateExcel;
+import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
+import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.IMaintenanceTeamService;
+import com.schedule.elevator.service.IMaintenanceUnitService;
+import com.schedule.elevator.service.IPropertyInfoService;
+import com.schedule.excel.ElevatorImportExcelConverter;
+import com.schedule.excel.ElevatorImportTemplateExcel;
 import com.schedule.utils.ExcelUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.schedule.utils.ExcelUtil.isExcelFile;
 
@@ -30,6 +30,16 @@ public class ElevatorInfoController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    private IMaintenanceUnitService maintenanceUnitService;
+
+    @Autowired
+    private IMaintenanceTeamService maintenanceTeamService;
+
+    @Autowired
+    private IPropertyInfoService propertyInfoService;
+
 
     @PostMapping("/add")
     public BaseResponse create(@RequestBody ElevatorInfo elevator) {
@@ -65,27 +75,27 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
-    @GetMapping("/export")
-    public void exportElevators(HttpServletResponse response) throws Exception {
-        // 设置响应头
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-
-
-        List<ElevatorInfo> list = elevatorInfoService.list(); // 从数据库查所有
-
-        // 转换为 Excel DTO
-        List<ElevatorInfoTemplateExcel> dtoList = list.stream()
-                .map(ElevatorInfoExcelConverter::toDto)
-                .collect(Collectors.toList());
-
-        System.out.println("list size:" + dtoList.toString());
-
-        // 写入 Excel
-        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "电梯信息", dtoList, ElevatorInfoTemplateExcel.class, "doc/elevator.xlsx");
-    }
+//    @GetMapping("/export")
+//    public void exportElevators(HttpServletResponse response) throws Exception {
+//        // 设置响应头
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//        response.setCharacterEncoding("utf-8");
+//        String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+//        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+//
+//
+//        List<ElevatorInfo> list = elevatorInfoService.list(); // 从数据库查所有
+//
+//        // 转换为 Excel DTO
+//        List<ElevatorInfoTemplateExcel> dtoList = list.stream()
+//                .map(ElevatorInfoExcelConverter::toDto)
+//                .collect(Collectors.toList());
+//
+//        System.out.println("list size:" + dtoList.toString());
+//
+//        // 写入 Excel
+//        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "电梯信息", dtoList, ElevatorInfoTemplateExcel.class, "doc/elevator.xlsx");
+//    }
 
     @PostMapping("/import")
     public BaseResponse importElevators(@RequestParam("file") MultipartFile file) {
@@ -96,21 +106,38 @@ public class ElevatorInfoController {
             }
 
             // 2. 导入解析
-            List<ElevatorInfoTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorInfoTemplateExcel.class);
+            List<ElevatorImportTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorImportTemplateExcel.class);
 
             System.out.println("dtoList size:" + dtoList.size());
-            // 3. 转换为实体并保存（注意空值处理）
-            List<ElevatorInfo> entities = dtoList.stream()
-                    .map(ElevatorInfoExcelConverter::toEntity) // 使用你已有的静态方法
-                    .filter(e -> e != null &&
-                            StringUtils.isNotBlank(e.getElevatorNo()) &&
-                            !"电梯编号".equals(e.getElevatorNo().trim()))
-                    .collect(Collectors.toList());
+            System.out.println("dtoList:" + dtoList.toString());
 
-            // 4. 批量保存（根据业务决定是否去重、校验等）
-            elevatorInfoService.saveBatch(entities);
+            for (ElevatorImportTemplateExcel dto : dtoList) {
+                //读取电梯信息，并写入
+                ElevatorInfo elevatorInfo = ElevatorImportExcelConverter.toElevatorEntity(dto);
+                if (elevatorInfo != null &&
+                        StringUtils.isNotBlank(elevatorInfo.getElevatorNo()) &&
+                        !"电梯编号".equals(elevatorInfo.getElevatorNo().trim())) {
+                    //读取使用小区信息，并写入
+                    PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
+                    long propertyId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
 
-            return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + entities.size() + " 条电梯信息", null, null);
+                    //读取维保信息，并写入
+                    MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
+                    long maintenanceUnitId = maintenanceUnitService.getOrCreateMaintenanceUnitId(maintenanceEntity.getMaintenanceUnit());
+
+                    maintenanceEntity.getMaintenanceTeam().setMaintenanceUnitId(maintenanceUnitId);
+                    long maintenanceTeamId = maintenanceTeamService.getOrCreateMaintenanceTeamId(maintenanceEntity.getMaintenanceTeam());
+
+                    elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
+                    elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
+                    elevatorInfo.setUserUnitId(propertyId);
+
+                    elevatorInfoService.createElevatorInfo(elevatorInfo);
+                }
+            }
+
+            return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);
+//            return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + entities.size() + " 条电梯信息", entities, null);
         } catch (Exception e) {
             System.out.println("Excel 导入失败:" + e);
             return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "导入失败: " + e.getMessage(), null, null);

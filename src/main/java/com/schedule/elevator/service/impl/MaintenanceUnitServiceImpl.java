@@ -1,10 +1,13 @@
 package com.schedule.elevator.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.schedule.elevator.dto.NearbyMaintenanceDTO;
-import com.schedule.elevator.entity.Maintenance;
+import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.entity.MaintenanceTeam;
+import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.elevator.dao.mapper.MaintenanceMapper;
-import com.schedule.elevator.service.IMaintenanceService;
+import com.schedule.elevator.service.IMaintenanceUnitService;
+import org.apache.ibatis.annotations.One;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +17,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maintenance>
-        implements IMaintenanceService {
+public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, MaintenanceUnit>
+        implements IMaintenanceUnitService {
     @Autowired
     private MaintenanceMapper maintenanceMapper;
 
     @Override
-    public List<NearbyMaintenanceDTO> getNearby(BigDecimal centerLat, BigDecimal centerLng, BigDecimal radiusKm) {
+    public List<NearbyMaintenanceUnitDTO> getNearby(BigDecimal centerLat, BigDecimal centerLng, BigDecimal radiusKm) {
         // 1. 校验输入
         if (centerLat == null || centerLng == null || radiusKm == null) {
             throw new IllegalArgumentException("中心点或半径不能为空");
@@ -53,19 +56,39 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         BigDecimal lngMax = centerLng.add(lngDelta);
 
         // 5. 调用 Mapper
-        List<NearbyMaintenanceDTO> list = maintenanceMapper.selectNearby(
+        List<NearbyMaintenanceUnitDTO> list = maintenanceMapper.selectNearby(
                 centerLat, centerLng, radiusKm,
                 latMin, latMax,
                 lngMin, lngMax
         );
 
         // 6. 可选：统一距离精度
-        for (NearbyMaintenanceDTO dto : list) {
+        for (NearbyMaintenanceUnitDTO dto : list) {
             if (dto.getDistanceKm() != null) {
                 dto.setDistanceKm(dto.getDistanceKm().setScale(2, RoundingMode.HALF_UP));
             }
         }
 
         return list;
+    }
+
+    @Override
+    public long getOrCreateMaintenanceUnitId(MaintenanceUnit entity) throws Exception {
+        // 1. 先查询是否已存在
+        MaintenanceUnit existing = this.getOne(new LambdaQueryWrapper<MaintenanceUnit>()
+                .eq(MaintenanceUnit::getMaintainerUnitManagerPhone, entity.getMaintainerUnitManagerPhone()));
+
+        if (existing != null) {
+//            log.debug("维保单位已存在，ID: {}", existing.getId());
+            return existing.getId();
+        }
+
+        boolean saved = this.save(entity);
+        if (!saved) {
+            throw new RuntimeException("维保单位插入失败");
+        }
+
+//        log.info("新增维保单位成功，ID: {}, 单位编码: {}", maintenance.getId(), unitCode);
+        return entity.getId();
     }
 }

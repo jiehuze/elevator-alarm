@@ -10,22 +10,18 @@ package com.schedule.utils;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.converters.longconverter.LongStringConverter;
-import com.alibaba.excel.write.metadata.WriteSheet;
-import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
-import com.schedule.elevator.entity.ElevatorInfo;
-import com.schedule.excel.ElevatorInfoTemplateExcel;
 import com.schedule.excel.FormTemplateExcel;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -230,7 +226,7 @@ public class ExcelUtil {
         try (InputStream inputStream = file.getInputStream()) {
             return EasyExcel.read(inputStream)
                     .head(pojoClass)
-                    .headRowNumber(1)
+                    .headRowNumber(2)
                     .sheet()
                     .doReadSync();
         }
