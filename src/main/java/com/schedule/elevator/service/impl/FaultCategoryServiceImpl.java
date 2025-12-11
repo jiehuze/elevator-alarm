@@ -26,11 +26,13 @@ public class FaultCategoryServiceImpl extends ServiceImpl<FaultCategoryMapper, F
         Map<Long, FaultCategory> nodeMap = allCategories.stream()
                 .collect(Collectors.toMap(FaultCategory::getId, c -> c));
 
+        System.out.println(nodeMap);
+
         nodeMap.values().forEach(node -> node.setChildren(new ArrayList<>()));
 
         List<FaultCategory> roots = new ArrayList<>();
         for (FaultCategory node : allCategories) {
-            if (node.getParentId() == null) {
+            if (node.getParentId() == 0) {
                 roots.add(node);
             } else {
                 FaultCategory parent = nodeMap.get(node.getParentId());

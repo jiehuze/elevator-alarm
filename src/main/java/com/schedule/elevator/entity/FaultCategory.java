@@ -15,9 +15,28 @@ public class FaultCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private String name;
-    private Long parentId;
+    /**
+     * 层级：1级，2级
+     */
     private Byte level;
+    /**
+     * 具体故障代码（如 E101）
+     */
+    private String faultCode;
+
+    /**
+     * 故障分析（详细说明）
+     */
+    private String faultAnalysis;
+
+    /**
+     * 上一层ID
+     */
+    private Long parentId;
+
+    /**
+     * 创建时间
+     */
     private LocalDateTime createdAt;
 
     @TableField(exist = false)

@@ -1,5 +1,6 @@
 package com.schedule.elevator.controller;
 
+import com.schedule.common.BaseResponse;
 import com.schedule.elevator.entity.FaultCategory;
 import com.schedule.elevator.service.IFaultCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -16,32 +17,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FaultCategoryController {
 
-//    @Autowired
+    //    @Autowired
     private final IFaultCategoryService faultCategoryService;
 
     /**
      * 新增故障分类
      */
     @PostMapping("/add")
-    public FaultCategory create(@RequestBody FaultCategory category) {
+    public BaseResponse create(@RequestBody FaultCategory category) {
         faultCategoryService.save(category);
-        return category;
+
+        return new BaseResponse(200, "success", null, null);
     }
 
     /**
      * 根据 ID 查询
      */
     @GetMapping("/{id}")
-    public FaultCategory getById(@PathVariable Long id) {
-        return faultCategoryService.getById(id);
+    public BaseResponse getById(@PathVariable Long id) {
+        FaultCategory faultCategory = faultCategoryService.getById(id);
+        return new BaseResponse(200, "success", faultCategory, null);
     }
 
     /**
      * 修改故障分类（需传 id）
      */
     @PutMapping("/update")
-    public void update(@RequestBody FaultCategory category) {
-        faultCategoryService.updateById(category);
+    public BaseResponse update(@RequestBody FaultCategory category) {
+        boolean update = faultCategoryService.updateById(category);
+
+        return new BaseResponse(200, "success", update, null);
     }
 
     /**
@@ -56,15 +61,19 @@ public class FaultCategoryController {
      * 获取扁平列表（所有分类）
      */
     @GetMapping("/list")
-    public List<FaultCategory> listAll() {
-        return faultCategoryService.list();
+    public BaseResponse listAll() {
+        List<FaultCategory> list = faultCategoryService.list();
+
+        return new BaseResponse(200, "success", list, null);
     }
 
     /**
      * 获取树形结构（用于前端选择器）
      */
     @GetMapping("/tree")
-    public List<FaultCategory> getTree() {
-        return faultCategoryService.getFaultCategoryTree();
+    public BaseResponse getTree() {
+        List<FaultCategory> faultCategoryTree = faultCategoryService.getFaultCategoryTree();
+
+        return new BaseResponse(200, "success", faultCategoryTree, null);
     }
 }
