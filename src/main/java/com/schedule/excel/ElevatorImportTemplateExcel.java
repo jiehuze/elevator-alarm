@@ -99,7 +99,7 @@ public class ElevatorImportTemplateExcel {
 
     @ExcelProperty("电梯地址")
     @ColumnWidth(50)
-    private String location; // location（对应数据库 location）
+    private String address; // adress（对应数据库 location）
 
     @ExcelProperty("项目名")
     @ColumnWidth(25)

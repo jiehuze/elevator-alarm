@@ -183,17 +183,8 @@ public class ElevatorInfo {
     @TableField("project_name")
     private String projectName;
 
-    /**
-     * 小区所属地产品牌
-     */
-    @TableField("real_estate_brand")
-    private String realEstateBrand;
-
-    /**
-     * 项目类型
-     */
-    @TableField("project_type")
-    private String projectType;
+    @TableField("community_id")
+    private Long communityId;
 
     /**
      * 使用单位名称

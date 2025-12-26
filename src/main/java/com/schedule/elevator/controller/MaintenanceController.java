@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.dto.TeamPersonDTO;
+import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.IMaintenancePersonnelService;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import com.schedule.elevator.service.IMaintenanceUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class MaintenanceController {
 
     @Autowired
     private IMaintenanceTeamService maintenanceTeamService;
+
+    @Autowired
+    private IMaintenancePersonnelService maintenancePersonnelService;
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
@@ -83,22 +89,78 @@ public class MaintenanceController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", nearby, null);
     }
 
+    /****************************** 分组信息 *********************************/
     @GetMapping("/teams")
     public BaseResponse getMaintenanceTeams(@RequestParam(defaultValue = "1") int current,
                                             @RequestParam(defaultValue = "10") int size,
                                             @ModelAttribute MaintenanceTeam searchTeam) {
-        System.out.println("---------------searchTeam:" + searchTeam);
-
         IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
     }
 
     @PostMapping("/team/update")
     public BaseResponse updateMaintenanceTeam(@RequestBody MaintenanceTeam team) {
-        System.out.println("---------------team:" + team);
         maintenanceTeamService.updateById(team);
         return new BaseResponse(HttpStatus.OK.value(), "维保团队更新成功", team, null);
     }
+
+    @PostMapping("/team/add")
+    public BaseResponse create(@RequestBody MaintenanceTeam team) {
+        maintenanceTeamService.save(team);
+        return new BaseResponse(HttpStatus.OK.value(), "维保团队添加成功", team, null);
+    }
+
+    @PostMapping("/team/person")
+    public BaseResponse addTeamPerson(@RequestBody TeamPersonDTO teamPersonDTO) {
+        if (teamPersonDTO.getMaintenanceTeamId() == null) {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "参数错误", null, null);
+        }
+
+        if (teamPersonDTO.getAddMaintenancePersonnelIds() != null) {
+            for (Long id : teamPersonDTO.getAddMaintenancePersonnelIds()) {
+                MaintenancePersonnel personnel = maintenancePersonnelService.getById(id);
+                personnel.setMaintenanceTeamId(teamPersonDTO.getMaintenanceTeamId());
+                maintenancePersonnelService.updateById(personnel);
+            }
+        }
+        if (teamPersonDTO.getDeleteMaintenancePersonnelIds() != null) {
+            for (Long id : teamPersonDTO.getDeleteMaintenancePersonnelIds()) {
+                MaintenancePersonnel personnel = maintenancePersonnelService.getById(id);
+                personnel.setMaintenanceTeamId(null);
+                maintenancePersonnelService.updateById(personnel);
+            }
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "添加维保团队人员成功", null, null);
+    }
+
+    /****************************** 人员信息 *********************************/
+    @GetMapping("/persons")
+    public BaseResponse getMaintenancePersons(@RequestParam(defaultValue = "1") int current,
+                                              @RequestParam(defaultValue = "10") int size,
+                                              @ModelAttribute MaintenancePersonnel searchPerson) {
+        IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchPerson, current, size);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeamPage, null);
+    }
+
+    /**
+     * 添加维保人员
+     */
+    @PostMapping("/person/add")
+    public BaseResponse create(@RequestBody MaintenancePersonnel personnel) {
+        maintenancePersonnelService.save(personnel);
+        return new BaseResponse(HttpStatus.OK.value(), "添加成功", personnel, null);
+    }
+
+    /**
+     * 更新维保人员
+     */
+    @PutMapping("/person/update")
+    public BaseResponse update(@RequestBody MaintenancePersonnel personnel) {
+        maintenancePersonnelService.updateById(personnel);
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", personnel, null);
+    }
+
 
 //    @GetMapping("/export")
 //    public void exportElevators(HttpServletResponse response) throws Exception {

@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.MaintenanceTeamMapper;
 import com.schedule.elevator.entity.MaintenanceTeam;
-import com.schedule.elevator.entity.MaintenanceUnit;
-import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import org.springframework.stereotype.Service;
 
@@ -54,9 +52,6 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         queryWrapper.like(StringUtils.isNotBlank(mt.getTeamName()), MaintenanceTeam::getTeamName, mt.getTeamName());
         queryWrapper.like(StringUtils.isNotBlank(mt.getLeaderName()), MaintenanceTeam::getLeaderName, mt.getLeaderName());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getLeaderPhone()), MaintenanceTeam::getLeaderPhone, mt.getLeaderPhone());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getWorkerName()), MaintenanceTeam::getWorkerName, mt.getWorkerName());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getWorkerPhone()), MaintenanceTeam::getWorkerPhone, mt.getWorkerPhone());
-
         return this.page(page, queryWrapper);
     }
 

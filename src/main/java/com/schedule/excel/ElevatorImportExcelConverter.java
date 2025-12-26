@@ -1,10 +1,7 @@
 package com.schedule.excel;
 
 import com.schedule.elevator.dto.MaintenanceDTO;
-import com.schedule.elevator.entity.ElevatorInfo;
-import com.schedule.elevator.entity.MaintenanceTeam;
-import com.schedule.elevator.entity.MaintenanceUnit;
-import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.entity.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,18 +35,34 @@ public class ElevatorImportExcelConverter {
         entity.setInspectionAgency(dto.getInspectionAgency());
         entity.setRegistrationAuthority(dto.getRegistrationAuthority());
         entity.setRegistrationDate(parseDate(dto.getRegistrationDate()));
-        entity.setLocation(dto.getLocation());
+        entity.setLocation(dto.getAddress());
         entity.setProvince(dto.getProvince());
         entity.setCity(dto.getCity());
         entity.setDistrict(dto.getDistrict());
         entity.setProjectName(dto.getProjectName());
-        entity.setRealEstateBrand(dto.getRealEstateBrand());
-        entity.setProjectType(dto.getProjectType());
         entity.setUsingUnit(dto.getUsingUnit());
 
         return entity;
     }
 
+    public static Community toCommunityEntity(ElevatorImportTemplateExcel dto) {
+        if (dto == null) return null;
+        Community community = new Community();
+
+        community.setProjectName(dto.getProjectName())
+                .setProjectType(dto.getProjectType())
+                .setDistrict(dto.getDistrict())
+                .setCity(dto.getCity())
+                .setRealEstateBrand(dto.getRealEstateBrand())
+                .setProvince(dto.getProvince())
+                .setAddress(dto.getAddress());
+
+        return community;
+    }
+
+    /**
+     * 将 DTO 转换为 维保单位Entity
+     */
     public static MaintenanceDTO toMaintenanceEntity(ElevatorImportTemplateExcel dto) {
         if (dto == null) return null;
 
@@ -64,12 +77,13 @@ public class ElevatorImportExcelConverter {
         entity.getMaintenanceTeam().setTeamName(dto.getTeamName());
         entity.getMaintenanceTeam().setLeaderName(dto.getTeamLeaderName());
         entity.getMaintenanceTeam().setLeaderPhone(dto.getTeamLeaderPhone());
-        entity.getMaintenanceTeam().setWorkerName(dto.getWorkerName());
-        entity.getMaintenanceTeam().setWorkerPhone(dto.getWorkerPhone());
 
         return entity;
     }
 
+    /**
+     * 将 DTO 转换为 使用单位信息Entity
+     */
     public static PropertyInfo toPropertyEntity(ElevatorImportTemplateExcel dto) {
         if (dto == null) return null;
 
@@ -111,13 +125,11 @@ public class ElevatorImportExcelConverter {
         dto.setInspectionAgency(entity.getInspectionAgency());
         dto.setRegistrationAuthority(entity.getRegistrationAuthority());
         dto.setRegistrationDate(formatDate(entity.getRegistrationDate()));
-        dto.setLocation(entity.getLocation());
+        dto.setAddress(entity.getLocation());
         dto.setProvince(entity.getProvince());
         dto.setCity(entity.getCity());
         dto.setDistrict(entity.getDistrict());
         dto.setProjectName(entity.getProjectName());
-        dto.setRealEstateBrand(entity.getRealEstateBrand());
-        dto.setProjectType(entity.getProjectType());
         dto.setUsingUnit(entity.getUsingUnit());
 
         return dto;

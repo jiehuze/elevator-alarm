@@ -27,12 +27,6 @@ public class MaintenanceTeam {
     @TableField("leader_phone")
     private String leaderPhone; // 班组负责人电话
 
-    @TableField("worker_name")
-    private String workerName; // 班组成员
-
-    @TableField("worker_phone")
-    private String workerPhone; // 班组成员电话
-
     @TableField("created_at")
     private LocalDateTime createdAt;
 

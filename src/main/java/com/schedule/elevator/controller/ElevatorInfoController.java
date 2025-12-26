@@ -6,12 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.MaintenanceDTO;
+import com.schedule.elevator.entity.Community;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.PropertyInfo;
-import com.schedule.elevator.service.IElevatorInfoService;
-import com.schedule.elevator.service.IMaintenanceTeamService;
-import com.schedule.elevator.service.IMaintenanceUnitService;
-import com.schedule.elevator.service.IPropertyInfoService;
+import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
 import com.schedule.excel.ElevatorImportTemplateExcel;
 import com.schedule.utils.ExcelUtil;
@@ -40,6 +38,9 @@ public class ElevatorInfoController {
     @Autowired
     private IPropertyInfoService propertyInfoService;
 
+    @Autowired
+    private ICommunityService communityService;
+
 
     @PostMapping("/add")
     public BaseResponse create(@RequestBody ElevatorInfo elevator) {
@@ -53,7 +54,7 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public BaseResponse update(@RequestBody ElevatorInfo elevator) {
         elevatorInfoService.updateById(elevator);
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", elevator, null);
@@ -117,6 +118,9 @@ public class ElevatorInfoController {
                 if (elevatorInfo != null &&
                         StringUtils.isNotBlank(elevatorInfo.getElevatorNo()) &&
                         !"电梯编号".equals(elevatorInfo.getElevatorNo().trim())) {
+                    Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
+                    long communityId = communityService.getOrCreateCommunityId(communityEntity);
+
                     //读取使用小区信息，并写入
                     PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
                     long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
