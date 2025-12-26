@@ -1,10 +1,13 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.MaintenanceTeamMapper;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
+import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,36 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
     public List<MaintenanceTeam> listByUnitId(Long unitId) {
         return this.list(new LambdaQueryWrapper<MaintenanceTeam>()
                 .eq(MaintenanceTeam::getMaintenanceUnitId, unitId));
+    }
+
+    @Override
+    public List<MaintenanceTeam> listByDt(MaintenanceTeam mt) {
+        LambdaQueryWrapper<MaintenanceTeam> wrapper = new LambdaQueryWrapper<>();
+
+        if (mt.getTeamName() != null) {
+            wrapper.eq(MaintenanceTeam::getTeamName, mt.getTeamName());
+        }
+        if (mt.getMaintenanceUnitId() != null) {
+            wrapper.eq(MaintenanceTeam::getMaintenanceUnitId, mt.getMaintenanceUnitId());
+        }
+
+        return this.list(wrapper);
+    }
+
+    @Override
+    public Page<MaintenanceTeam> page(MaintenanceTeam mt, int current, int size) {
+
+        Page<MaintenanceTeam> page = new Page<>(current, size);
+
+        LambdaQueryWrapper<MaintenanceTeam> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(mt.getMaintenanceUnitId() != null, MaintenanceTeam::getMaintenanceUnitId, mt.getMaintenanceUnitId());
+        queryWrapper.like(StringUtils.isNotBlank(mt.getTeamName()), MaintenanceTeam::getTeamName, mt.getTeamName());
+        queryWrapper.like(StringUtils.isNotBlank(mt.getLeaderName()), MaintenanceTeam::getLeaderName, mt.getLeaderName());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getLeaderPhone()), MaintenanceTeam::getLeaderPhone, mt.getLeaderPhone());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getWorkerName()), MaintenanceTeam::getWorkerName, mt.getWorkerName());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getWorkerPhone()), MaintenanceTeam::getWorkerPhone, mt.getWorkerPhone());
+
+        return this.page(page, queryWrapper);
     }
 
     @Override

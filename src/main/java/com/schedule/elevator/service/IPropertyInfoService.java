@@ -1,6 +1,8 @@
 package com.schedule.elevator.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.schedule.elevator.dto.PropertyInfoDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 
 public interface IPropertyInfoService extends IService<PropertyInfo> {
@@ -16,4 +18,6 @@ public interface IPropertyInfoService extends IService<PropertyInfo> {
     boolean saveOrUpdateByUnitCode(PropertyInfo entity);
 
     long getOrCreatePropertyId(PropertyInfo entity);
+
+    Page<PropertyInfo> queryByConditionsPage(PropertyInfoDTO dto);
 }

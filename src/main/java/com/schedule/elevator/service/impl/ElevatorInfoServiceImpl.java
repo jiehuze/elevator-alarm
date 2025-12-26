@@ -18,10 +18,16 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
     @Override
     public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
-        // 使用DTO参数进行条件查询
-        if (StringUtils.isNotBlank(elevatorInfoDTO.getElevatorNo())) {
-            queryWrapper.like(ElevatorInfo::getElevatorNo, elevatorInfoDTO.getElevatorNo());
-        }
+
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorName()), ElevatorInfo::getElevatorName, elevatorInfoDTO.getElevatorName());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorType()), ElevatorInfo::getElevatorType, elevatorInfoDTO.getElevatorType());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorNo()), ElevatorInfo::getElevatorNo, elevatorInfoDTO.getElevatorNo());
+        queryWrapper.eq(elevatorInfoDTO.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, elevatorInfoDTO.getMaintenanceUnitId());
+        queryWrapper.eq(StringUtils.isNotBlank(elevatorInfoDTO.getUsageStatus()), ElevatorInfo::getUsageStatus, elevatorInfoDTO.getUsageStatus());
+        queryWrapper.eq(elevatorInfoDTO.getUsingUnit() != null, ElevatorInfo::getUsingUnit, elevatorInfoDTO.getUsingUnit());
+        queryWrapper.eq(elevatorInfoDTO.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, elevatorInfoDTO.getUsingUnitId());
+        queryWrapper.eq(elevatorInfoDTO.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, elevatorInfoDTO.getMaintenanceTeamId());
+
         queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
         return this.page(page, queryWrapper);
     }
@@ -54,5 +60,17 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
 //        log.info("新增电梯成功，ID: {}, 救援码: {}", elevatorInfo.getId(), rescueCode);
         return true;
+    }
+
+    @Override
+    public Long count(ElevatorInfoDTO dto) {
+        LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(StringUtils.isNotBlank(dto.getElevatorNo()), ElevatorInfo::getElevatorNo, dto.getElevatorNo());
+        queryWrapper.eq(StringUtils.isNotBlank(dto.getElevatorName()), ElevatorInfo::getElevatorName, dto.getElevatorName());
+        queryWrapper.eq(StringUtils.isNotBlank(dto.getElevatorType()), ElevatorInfo::getElevatorType, dto.getElevatorType());
+        queryWrapper.eq(dto.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, dto.getMaintenanceUnitId());
+        queryWrapper.eq(dto.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, dto.getUsingUnitId());
+        return this.count(queryWrapper);
     }
 }

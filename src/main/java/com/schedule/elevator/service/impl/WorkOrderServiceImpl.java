@@ -18,8 +18,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public Page<WorkOrder> queryByConditionsPage(WorkOrderDTO dto) {
         // 校验分页参数
-        int current = (dto.getPageNum() == null || dto.getPageNum() < 1) ? 1 : dto.getPageNum();
-        int size = (dto.getPageSize() == null || dto.getPageSize() < 1 || dto.getPageSize() > 100) ? 10 : dto.getPageSize();
+        int current = (dto.getCurrent() == null || dto.getCurrent() < 1) ? 1 : dto.getCurrent();
+        int size = (dto.getSize() == null || dto.getSize() < 1 || dto.getSize() > 100) ? 10 : dto.getSize();
 
         Page<WorkOrder> page = new Page<>(current, size);
 
@@ -30,9 +30,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.like(StringUtils.isNotBlank(dto.getAlarmPersonName()), WorkOrder::getAlarmPersonName, dto.getAlarmPersonName());
         query.like(StringUtils.isNotBlank(dto.getAlarmPersonPhone()), WorkOrder::getAlarmPersonPhone, dto.getAlarmPersonPhone());
 
+        query.like(StringUtils.isNotBlank(dto.getProjectName()), WorkOrder::getProjectName, dto.getProjectName());
+        query.like(StringUtils.isNotBlank(dto.getElevatorAddress()), WorkOrder::getElevatorAddress, dto.getElevatorAddress());
         // 精确匹配字段
         query.eq(dto.getStatus() != null, WorkOrder::getStatus, dto.getStatus());
-        query.eq(dto.getOrderType() != null, WorkOrder::getOrderType, dto.getOrderType());
+        query.eq(StringUtils.isNotBlank(dto.getOrderType()), WorkOrder::getOrderType, dto.getOrderType());
+        query.eq(dto.getIsMajorIncident() != null, WorkOrder::getMajorIncident, dto.getIsMajorIncident());
 
         // 时间范围
         query.ge(dto.getAlarmTimeStart() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeStart());

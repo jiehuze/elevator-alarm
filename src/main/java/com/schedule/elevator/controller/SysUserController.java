@@ -1,15 +1,18 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.SysUserDTO;
 import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.entity.UserToken;
 import com.schedule.elevator.service.ISysUserService;
 import com.schedule.elevator.service.IUserTokenService;
-import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/sys-user")
@@ -41,9 +44,23 @@ public class SysUserController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", sysUser, null);
     }
 
+    @GetMapping("/list")
+    public BaseResponse listAll(@ModelAttribute SysUserDTO query) {
+        Page<SysUser> list = sysUserService.querySysUserPage(query);
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
+    }
+
+    @PostMapping("/update")
     public BaseResponse updateUser(@RequestBody SysUser user) {
-        sysUserService.updateById(user);
-        return new BaseResponse(HttpStatus.OK.value(), "更新成功", user, null);
+        Boolean update = sysUserService.updateUser(user);
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public BaseResponse deleteUser(@PathVariable Long id) {
+        Boolean delete = sysUserService.removeById(id);
+        return new BaseResponse(HttpStatus.OK.value(), "删除成功", delete, null);
     }
 
     /**
@@ -57,6 +74,7 @@ public class SysUserController {
         }
         //生成token
         UserToken userToken = userTokenService.createToken(auth.getId());
+        userToken.setRoles(auth.getRoles());
 
         return new BaseResponse(HttpStatus.OK.value(), "登录成功", userToken, null);
     }

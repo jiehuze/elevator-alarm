@@ -15,6 +15,10 @@ public class UserToken {
 
     private Long userId; // 存储用户 ID
 
+    private String username;
+
+    private String roles; // 存储用户角色
+
     private String token; // 存储 JWT 的 jti（唯一ID）
 
     private LocalDateTime expiresAt; // 存储 JWT 的过期时间

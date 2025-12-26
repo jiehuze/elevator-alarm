@@ -1,10 +1,13 @@
 package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
+import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.IMaintenanceTeamService;
 import com.schedule.elevator.service.IMaintenanceUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,12 @@ public class MaintenanceController {
 
     @Autowired
     private IMaintenanceUnitService maintenanceInfoService;
+
+    @Autowired
+    private IMaintenanceTeamService maintenanceTeamService;
+
+    @Autowired
+    private IElevatorInfoService elevatorInfoService;
 
     @PostMapping("/add")
     public BaseResponse add(@RequestBody MaintenanceUnit maintenance) {
@@ -49,9 +58,19 @@ public class MaintenanceController {
     @GetMapping("/list")
     public BaseResponse list(
             @RequestParam(defaultValue = "1") int current,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<MaintenanceUnit> page = new Page<>(current, size);
-        IPage<MaintenanceUnit> result = maintenanceInfoService.page(page);
+            @RequestParam(defaultValue = "10") int size,
+            @ModelAttribute MaintenanceUnit searchInfo) {
+        IPage<MaintenanceUnit> result = maintenanceInfoService.page(searchInfo, current, size);
+
+        if (result != null) {
+            for (MaintenanceUnit info : result.getRecords()) {
+                ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
+                elevatorInfoDTO.setMaintenanceUnitId(info.getId());
+
+                info.setCount(elevatorInfoService.count(elevatorInfoDTO));
+            }
+        }
+
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
@@ -62,6 +81,23 @@ public class MaintenanceController {
                 nearbyMaintenanceDTO.getLongitude(),
                 nearbyMaintenanceDTO.getDistanceKm());
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", nearby, null);
+    }
+
+    @GetMapping("/teams")
+    public BaseResponse getMaintenanceTeams(@RequestParam(defaultValue = "1") int current,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @ModelAttribute MaintenanceTeam searchTeam) {
+        System.out.println("---------------searchTeam:" + searchTeam);
+
+        IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
+    }
+
+    @PostMapping("/team/update")
+    public BaseResponse updateMaintenanceTeam(@RequestBody MaintenanceTeam team) {
+        System.out.println("---------------team:" + team);
+        maintenanceTeamService.updateById(team);
+        return new BaseResponse(HttpStatus.OK.value(), "维保团队更新成功", team, null);
     }
 
 //    @GetMapping("/export")

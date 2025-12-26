@@ -1,5 +1,6 @@
 package com.schedule.elevator.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,6 +20,12 @@ public class WorkOrderDTO implements Serializable {
 
     @ApiModelProperty("电梯注册码")
     private String registerCode;
+
+    @ApiModelProperty("项目名称")
+    private String projectName; // 项目名称
+
+    @ApiModelProperty("电梯地址")
+    private String elevatorAddress; // 电梯地址
 
     @ApiModelProperty("报警人姓名")
     private String alarmPersonName;
@@ -51,8 +58,8 @@ public class WorkOrderDTO implements Serializable {
     private LocalDateTime createTimeEnd;
 
     @ApiModelProperty("页码，默认1")
-    private Integer pageNum = 1;
+    private Integer current = 1;
 
     @ApiModelProperty("每页大小，默认10")
-    private Integer pageSize = 10;
+    private Integer size = 10;
 }

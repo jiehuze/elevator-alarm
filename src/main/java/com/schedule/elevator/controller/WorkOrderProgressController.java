@@ -39,7 +39,7 @@ public class WorkOrderProgressController {
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public BaseResponse listByOrderNo(
             @RequestParam String orderNo,
             @RequestParam(defaultValue = "1") int current,

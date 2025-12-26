@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/work-order")
@@ -28,6 +29,9 @@ public class WorkOrderController {
 
     @Autowired
     private IWorkOrderProgressService workOrderProgressService;
+
+    @Autowired
+    private IWorkOrderProgressService progressService;
 
     /**
      * 创建工单
@@ -133,11 +137,20 @@ public class WorkOrderController {
     }
 
     @GetMapping("/list")
-    public BaseResponse list(
-            @RequestParam(defaultValue = "1") int current,
-            @RequestParam(defaultValue = "10") int size,
-            @ModelAttribute WorkOrderDTO workOrderDTO) {
+    public BaseResponse list(@ModelAttribute WorkOrderDTO workOrderDTO) {
+        System.out.println("---------------" + workOrderDTO);
         Page<WorkOrder> workOrderPage = workOrderService.queryByConditionsPage(workOrderDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", workOrderPage, null);
     }
+
+    @GetMapping("/progress")
+    public BaseResponse listProgress(@RequestParam String orderNo) {
+        List<WorkOrderProgress> list = progressService.lambdaQuery()
+                .eq(WorkOrderProgress::getOrderNo, orderNo)
+                .orderByDesc(WorkOrderProgress::getCreateTime)
+                .list();
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
+    }
+
 }

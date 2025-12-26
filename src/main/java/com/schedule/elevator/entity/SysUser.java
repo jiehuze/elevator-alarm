@@ -18,8 +18,8 @@ public class SysUser {
     @TableField("password")
     private String password;
 
-    @TableField("role")
-    private String role;
+    @TableField("roles")
+    private String roles;
 
     @TableField("description")
     private String description;

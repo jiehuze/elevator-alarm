@@ -47,7 +47,7 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "添加成功", elevator, null);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
         elevatorInfoService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);

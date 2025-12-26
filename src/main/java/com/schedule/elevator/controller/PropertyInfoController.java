@@ -1,7 +1,11 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.ElevatorInfoDTO;
+import com.schedule.elevator.dto.PropertyInfoDTO;
 import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IPropertyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,9 @@ public class PropertyInfoController {
     @Autowired
     private IPropertyInfoService IPropertyInfoService;
 
+    @Autowired
+    private IElevatorInfoService elevatorInfoService;
+
     /**
      * 根据 ID 查询
      */
@@ -25,6 +32,28 @@ public class PropertyInfoController {
         PropertyInfo info = IPropertyInfoService.getById(id);
 
         return new BaseResponse(HttpStatus.OK.value(), "success", info, null);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public BaseResponse delete(@PathVariable Long id) {
+        boolean deleted = IPropertyInfoService.removeById(id);
+        return new BaseResponse(deleted ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                deleted ? "删除成功" : "删除失败", null, null);
+    }
+
+    @GetMapping("/list")
+    public BaseResponse listAll(@ModelAttribute PropertyInfoDTO dto) {
+        System.out.println("--------------" + dto);
+        Page<PropertyInfo> list = IPropertyInfoService.queryByConditionsPage(dto);
+        if (list != null) {
+            for (PropertyInfo info : list.getRecords()) {
+                ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
+                elevatorInfoDTO.setUsingUnitId(info.getId());
+                info.setCount(elevatorInfoService.count(elevatorInfoDTO));
+            }
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "success", list, null);
     }
 
     /**

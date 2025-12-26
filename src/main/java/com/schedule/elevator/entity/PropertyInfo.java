@@ -39,6 +39,9 @@ public class PropertyInfo {
     @TableField("project_name")
     private String projectName; //项目名称
 
+    @TableField(exist = false)
+    private Long count;  // 计数属性，不映射到数据库
+
     @TableField("created_at")
     private LocalDateTime createdAt;
 

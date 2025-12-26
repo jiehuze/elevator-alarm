@@ -1,6 +1,8 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
 import com.schedule.elevator.entity.MaintenanceTeam;
@@ -70,6 +72,21 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
         }
 
         return list;
+    }
+
+    @Override
+    public Page<MaintenanceUnit> page(MaintenanceUnit mt, int current, int size) {
+        Page<MaintenanceUnit> page = new Page<>(current, size);
+        LambdaQueryWrapper<MaintenanceUnit> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.like(StringUtils.isNotBlank(mt.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, mt.getMaintainerUnitName());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManager()), MaintenanceUnit::getMaintainerUnitManager, mt.getMaintainerUnitManager());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManagerPhone()), MaintenanceUnit::getMaintainerUnitManagerPhone, mt.getMaintainerUnitManagerPhone());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getDistrict()), MaintenanceUnit::getDistrict, mt.getDistrict());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitCode()), MaintenanceUnit::getMaintainerUnitCode, mt.getMaintainerUnitCode());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitStatus()), MaintenanceUnit::getMaintainerUnitStatus, mt.getMaintainerUnitStatus());
+
+        return this.page(page, queryWrapper);
     }
 
     @Override

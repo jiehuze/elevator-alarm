@@ -54,6 +54,9 @@ public class MaintenanceUnit implements Serializable {
     @TableField("longitude")
     private BigDecimal longitude; //  维护公司经度
 
+    @TableField(exist = false)
+    private Long count;  // 计数属性，不映射到数据库
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;

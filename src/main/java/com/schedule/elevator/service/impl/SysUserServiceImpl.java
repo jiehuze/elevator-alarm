@@ -2,8 +2,11 @@ package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.SysUserMapper;
+import com.schedule.elevator.dto.SysUserDTO;
+import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.service.ISysUserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +36,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
+    public Page<SysUser> querySysUserPage(SysUserDTO query) {
+        int current = (query.getCurrent() == null || query.getCurrent() < 1) ? 1 : query.getCurrent();
+        int size = (query.getSize() == null || query.getSize() < 1 || query.getSize() > 100) ? 10 : query.getSize();
+
+        Page<SysUser> page = new Page<>(current, size);
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(query.getUsername() != null, SysUser::getUsername, query.getUsername())
+                .like(query.getRoles() != null, SysUser::getRoles, query.getRoles())
+                .like(query.getDescription() != null, SysUser::getDescription, query.getDescription());
+
+        return this.page(page, queryWrapper);
+    }
+
+    @Override
     public Boolean updateUser(SysUser user) {
         LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(SysUser::getId, user.getId()); // 工单ID
@@ -42,8 +59,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (user.getPassword() != null) {
             updateWrapper.set(SysUser::getPassword, passwordEncoder.encode(user.getPassword()));
         }
-        if (user.getRole() != null) {
-            updateWrapper.set(SysUser::getRole, user.getRole());
+        if (user.getRoles() != null) {
+            updateWrapper.set(SysUser::getRoles, user.getRoles());
         }
         if (user.getDescription() != null) {
             updateWrapper.set(SysUser::getDescription, user.getDescription());

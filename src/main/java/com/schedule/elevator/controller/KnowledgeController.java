@@ -25,6 +25,12 @@ public class KnowledgeController {
         return new BaseResponse(HttpStatus.OK.value(), "success", knowledgePage, null);
     }
 
+    @GetMapping("/{id}")
+    public BaseResponse getById(@PathVariable Long id) {
+        Knowledge knowledge = knowledgeService.getById(id);
+        return new BaseResponse(HttpStatus.OK.value(), "success", knowledge, null);
+    }
+
     /**
      * 新增知识库文章
      */
