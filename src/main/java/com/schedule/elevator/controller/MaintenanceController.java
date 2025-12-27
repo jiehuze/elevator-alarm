@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.management.ManagementPermission;
 import java.util.List;
 
 /**
@@ -95,6 +96,12 @@ public class MaintenanceController {
                                             @RequestParam(defaultValue = "10") int size,
                                             @ModelAttribute MaintenanceTeam searchTeam) {
         IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
+        for (MaintenanceTeam team : maintenanceTeams.getRecords()) {
+            MaintenancePersonnel maintenancePersonnel = new MaintenancePersonnel();
+            maintenancePersonnel.setMaintenanceTeamId(team.getId());
+
+            team.setNumbers(maintenancePersonnelService.count(maintenancePersonnel));
+        }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
     }
 

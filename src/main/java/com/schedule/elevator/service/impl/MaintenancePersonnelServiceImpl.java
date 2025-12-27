@@ -29,6 +29,17 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     }
 
     @Override
+    public long count(MaintenancePersonnel entity) {
+        LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(entity.getId() != null, MaintenancePersonnel::getId, entity.getId())
+                .eq(entity.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, entity.getMaintenanceUnitId())
+                .eq(entity.getMaintenanceTeamId() != null, MaintenancePersonnel::getMaintenanceTeamId, entity.getMaintenanceTeamId())
+                .eq(StringUtils.hasText(entity.getPhone()), MaintenancePersonnel::getPhone, entity.getPhone());
+
+        return this.count(queryWrapper);
+    }
+
+    @Override
     public IPage<MaintenancePersonnel> pagePersonnels(MaintenancePersonnel entity, int current, int size) {
         Page<MaintenancePersonnel> page = new Page<>(current, size);
         LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();

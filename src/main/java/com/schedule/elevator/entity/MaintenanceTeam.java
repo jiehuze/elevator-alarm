@@ -32,4 +32,7 @@ public class MaintenanceTeam {
 
     @TableField("updated_at")
     private LocalDateTime updatedAt;
+
+    @TableField(exist = false)
+    private Long numbers;  // 计数属性，人数
 }

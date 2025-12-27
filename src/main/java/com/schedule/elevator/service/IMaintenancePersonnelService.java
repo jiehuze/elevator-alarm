@@ -16,4 +16,6 @@ public interface IMaintenancePersonnelService extends IService<MaintenancePerson
      * 根据手机号获取或创建维保人员
      */
     long getOrCreatePersonnelId(MaintenancePersonnel entity);
+
+    long count(MaintenancePersonnel entity);
 }

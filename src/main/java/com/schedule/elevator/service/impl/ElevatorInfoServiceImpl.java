@@ -46,7 +46,6 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
                     .eq(ElevatorInfo::getRescueCode, rescueCode.trim())) > 0;
 
             if (exists) {
-//                log.warn("救援码已存在，拒绝重复插入: {}", rescueCode);
                 throw new RuntimeException("电梯救援码" + rescueCode + "已存在");
             }
         }
@@ -54,11 +53,9 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         // 执行插入
         boolean saved = this.save(elevatorInfo);
         if (!saved) {
-//            log.error("电梯信息插入失败: {}", elevatorInfo);
             throw new RuntimeException("数据库插入失败");
         }
 
-//        log.info("新增电梯成功，ID: {}, 救援码: {}", elevatorInfo.getId(), rescueCode);
         return true;
     }
 
@@ -71,6 +68,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(StringUtils.isNotBlank(dto.getElevatorType()), ElevatorInfo::getElevatorType, dto.getElevatorType());
         queryWrapper.eq(dto.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, dto.getMaintenanceUnitId());
         queryWrapper.eq(dto.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, dto.getUsingUnitId());
+        queryWrapper.eq(dto.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, dto.getMaintenanceTeamId());
         return this.count(queryWrapper);
     }
 }
