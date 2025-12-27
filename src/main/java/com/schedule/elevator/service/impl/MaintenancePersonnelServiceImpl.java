@@ -1,6 +1,7 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +38,22 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
                 .eq(StringUtils.hasText(entity.getPhone()), MaintenancePersonnel::getPhone, entity.getPhone());
 
         return this.count(queryWrapper);
+    }
+
+    @Override
+    public boolean updateContentById(MaintenancePersonnel entity) {
+        LambdaUpdateWrapper<MaintenancePersonnel> updateWrapper = new LambdaUpdateWrapper<>();
+
+        updateWrapper.eq(entity.getId() != null, MaintenancePersonnel::getId, entity.getId());
+
+        updateWrapper.set(entity.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, entity.getMaintenanceUnitId());
+        updateWrapper.set(entity.getMaintenanceTeamId() != null, MaintenancePersonnel::getMaintenanceTeamId, entity.getMaintenanceTeamId());
+        updateWrapper.set(entity.getName() != null, MaintenancePersonnel::getName, entity.getName());
+        updateWrapper.set(entity.getStatus() != null, MaintenancePersonnel::getStatus, entity.getStatus());
+        updateWrapper.set(entity.getPhone() != null, MaintenancePersonnel::getPhone, entity.getPhone());
+        updateWrapper.set(StringUtils.hasText(entity.getCompany()), MaintenancePersonnel::getCompany, entity.getCompany());
+
+        return update(updateWrapper);
     }
 
     @Override

@@ -11,6 +11,8 @@ import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, ElevatorInfo>
         implements IElevatorInfoService {
@@ -30,6 +32,35 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
         queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
         return this.page(page, queryWrapper);
+    }
+
+    @Override
+    public List<ElevatorInfo> listElevators(String keyword) {
+        if (StringUtils.isBlank(keyword)) {
+            return this.list(); // 如果关键词为空，返回所有记录
+        }
+
+        LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
+        // 使用 or 连接多个 like 条件
+        queryWrapper.and(wrapper -> wrapper
+                .like(ElevatorInfo::getElevatorName, keyword)
+                .or()
+                .like(ElevatorInfo::getElevatorNo, keyword)
+                .or()
+                .like(ElevatorInfo::getElevatorType, keyword)
+                .or()
+                .like(ElevatorInfo::getRescueCode, keyword)
+                .or()
+                .like(ElevatorInfo::getDistrict, keyword)
+                .or()
+                .like(ElevatorInfo::getProjectName, keyword)
+                .or()
+                .like(ElevatorInfo::getLocation, keyword)
+                .or()
+                .like(ElevatorInfo::getUsingUnit, keyword)
+        );
+
+        return this.list(queryWrapper);
     }
 
     @Override
@@ -68,6 +99,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(StringUtils.isNotBlank(dto.getElevatorType()), ElevatorInfo::getElevatorType, dto.getElevatorType());
         queryWrapper.eq(dto.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, dto.getMaintenanceUnitId());
         queryWrapper.eq(dto.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, dto.getUsingUnitId());
+        queryWrapper.eq(dto.getCommunityId() != null, ElevatorInfo::getCommunityId, dto.getCommunityId());
         queryWrapper.eq(dto.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, dto.getMaintenanceTeamId());
         return this.count(queryWrapper);
     }

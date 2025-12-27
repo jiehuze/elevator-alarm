@@ -18,4 +18,6 @@ public interface IMaintenancePersonnelService extends IService<MaintenancePerson
     long getOrCreatePersonnelId(MaintenancePersonnel entity);
 
     long count(MaintenancePersonnel entity);
+
+    boolean updateContentById(MaintenancePersonnel entity);
 }

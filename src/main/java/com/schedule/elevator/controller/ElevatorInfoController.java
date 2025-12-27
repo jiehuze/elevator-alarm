@@ -76,6 +76,12 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
+    @GetMapping("/search")
+    public BaseResponse search(@RequestParam String keyword) {
+        List<ElevatorInfo> elevatorInfos = elevatorInfoService.listElevators(keyword);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", elevatorInfos, null);
+    }
+
 //    @GetMapping("/export")
 //    public void exportElevators(HttpServletResponse response) throws Exception {
 //        // 设置响应头
