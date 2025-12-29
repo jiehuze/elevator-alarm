@@ -11,6 +11,8 @@ import com.schedule.elevator.service.IMaintenancePersonnelService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Service
 public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePersonnelMapper, MaintenancePersonnel>
         implements IMaintenancePersonnelService {
@@ -69,5 +71,11 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
                 .orderByDesc(MaintenancePersonnel::getCreatedAt);
 
         return this.page(page, queryWrapper);
+    }
+
+    @Override
+    public List<MaintenancePersonnel> listByTeamId(Long teamId) {
+        return this.list(new LambdaQueryWrapper<MaintenancePersonnel>()
+                .eq(MaintenancePersonnel::getMaintenanceTeamId, teamId));
     }
 }

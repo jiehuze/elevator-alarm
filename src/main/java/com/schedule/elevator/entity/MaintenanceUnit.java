@@ -1,11 +1,14 @@
 package com.schedule.elevator.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 维保单位信息
@@ -40,22 +43,17 @@ public class MaintenanceUnit implements Serializable {
     @TableField("maintainer_unit_code")
     private String maintainerUnitCode; // 维保单位编码（营业执照）
 
-    @TableField("province")
-    private String province; // 省份
-    @TableField("city")
-    private String city; // 市
-    @TableField("district")
-    private String district; // 区
-    // 纬度：-90.00000000 ~ +90.00000000
-    @TableField("latitude")
-    private BigDecimal latitude; // 维护公司纬度
+    @TableField("level")
+    private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位
 
-    // 经度：-180.00000000 ~ +180.00000000
-    @TableField("longitude")
-    private BigDecimal longitude; //  维护公司经度
+    @TableField("address")
+    private String address; // 完整小区地址（原始文本）
 
     @TableField(exist = false)
     private Long count;  // 计数属性，不映射到数据库
+
+    @TableField(exist = false)
+    private List<MaintenanceTeam> teams;
 
     private LocalDateTime createTime;
 

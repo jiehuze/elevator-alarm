@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
-import com.schedule.elevator.entity.MaintenanceTeam;
+import com.schedule.elevator.dto.MaintenanceQueryDTO;
+import com.schedule.elevator.dto.NearbyMaintenanceDTO;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.elevator.dao.mapper.MaintenanceMapper;
 import com.schedule.elevator.service.IMaintenanceUnitService;
-import org.apache.ibatis.annotations.One;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
     private MaintenanceMapper maintenanceMapper;
 
     @Override
-    public List<NearbyMaintenanceUnitDTO> getNearby(BigDecimal centerLat, BigDecimal centerLng, BigDecimal radiusKm) {
+    public List<NearbyMaintenanceDTO> getNearby(BigDecimal centerLat, BigDecimal centerLng, BigDecimal radiusKm) {
         // 1. 校验输入
         if (centerLat == null || centerLng == null || radiusKm == null) {
             throw new IllegalArgumentException("中心点或半径不能为空");
@@ -58,14 +57,14 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
         BigDecimal lngMax = centerLng.add(lngDelta);
 
         // 5. 调用 Mapper
-        List<NearbyMaintenanceUnitDTO> list = maintenanceMapper.selectNearby(
+        List<NearbyMaintenanceDTO> list = maintenanceMapper.selectNearby(
                 centerLat, centerLng, radiusKm,
                 latMin, latMax,
                 lngMin, lngMax
         );
 
         // 6. 可选：统一距离精度
-        for (NearbyMaintenanceUnitDTO dto : list) {
+        for (NearbyMaintenanceDTO dto : list) {
             if (dto.getDistanceKm() != null) {
                 dto.setDistanceKm(dto.getDistanceKm().setScale(2, RoundingMode.HALF_UP));
             }
@@ -82,11 +81,19 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
         queryWrapper.like(StringUtils.isNotBlank(mt.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, mt.getMaintainerUnitName());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManager()), MaintenanceUnit::getMaintainerUnitManager, mt.getMaintainerUnitManager());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManagerPhone()), MaintenanceUnit::getMaintainerUnitManagerPhone, mt.getMaintainerUnitManagerPhone());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getDistrict()), MaintenanceUnit::getDistrict, mt.getDistrict());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitCode()), MaintenanceUnit::getMaintainerUnitCode, mt.getMaintainerUnitCode());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitStatus()), MaintenanceUnit::getMaintainerUnitStatus, mt.getMaintainerUnitStatus());
 
         return this.page(page, queryWrapper);
+    }
+
+    @Override
+    public List<MaintenanceUnit> listByQuery(MaintenanceQueryDTO queryDTO) {
+        LambdaQueryWrapper<MaintenanceUnit> eq = new LambdaQueryWrapper<MaintenanceUnit>()
+                .eq(StringUtils.isNotBlank(queryDTO.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, queryDTO.getMaintainerUnitName())
+                .ge(queryDTO.getLevel() != null, MaintenanceUnit::getLevel, queryDTO.getLevel());
+
+        return this.list(eq);
     }
 
     @Override

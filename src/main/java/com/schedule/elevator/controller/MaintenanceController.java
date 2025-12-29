@@ -3,7 +3,8 @@ package com.schedule.elevator.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
-import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.dto.MaintenanceQueryDTO;
+import com.schedule.elevator.dto.NearbyMaintenanceDTO;
 import com.schedule.elevator.dto.TeamPersonDTO;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.management.ManagementPermission;
 import java.util.List;
 
 /**
@@ -81,9 +81,49 @@ public class MaintenanceController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
-    @GetMapping("/nearby")
-    public BaseResponse getNearby(@ModelAttribute NearbyMaintenanceUnitDTO nearbyMaintenanceDTO) {
-        List<NearbyMaintenanceUnitDTO> nearby = maintenanceInfoService.getNearby(
+    @GetMapping("/unit/{id}")
+    public BaseResponse getMaintenanceUnitById(@PathVariable Long id) {
+        List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, id);
+
+        for (MaintenanceTeam team : teams) {
+
+            List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId());
+            team.setPersons(list);
+
+            team.setNumbers((long) list.size());
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", teams, null);
+    }
+
+    @GetMapping("/level")
+    public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute MaintenanceQueryDTO maintenanceQueryDTO) {
+
+        List<MaintenanceUnit> units = maintenanceInfoService.listByQuery(maintenanceQueryDTO);
+
+        for (MaintenanceUnit unit : units) {
+//            List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, unit.getId());
+            MaintenanceTeam maintenanceTeam = new MaintenanceTeam();
+            maintenanceTeam.setMaintenanceUnitId(unit.getId());
+            maintenanceTeam.setDistrict(maintenanceQueryDTO.getDistrict());
+            List<MaintenanceTeam> teams = maintenanceTeamService.listByDt(maintenanceTeam);
+
+            for (MaintenanceTeam team : teams) {
+
+                List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId());
+                team.setPersons(list);
+
+                team.setNumbers((long) list.size());
+            }
+            unit.setTeams(teams);
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", units, null);
+    }
+
+    @GetMapping("/team/nearby")
+    public BaseResponse getNearby(@ModelAttribute NearbyMaintenanceDTO nearbyMaintenanceDTO) {
+        List<NearbyMaintenanceDTO> nearby = maintenanceInfoService.getNearby(
                 nearbyMaintenanceDTO.getLatitude(),
                 nearbyMaintenanceDTO.getLongitude(),
                 nearbyMaintenanceDTO.getDistanceKm());

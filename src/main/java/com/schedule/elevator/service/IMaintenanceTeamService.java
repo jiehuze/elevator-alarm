@@ -7,7 +7,7 @@ import com.schedule.elevator.entity.MaintenanceTeam;
 import java.util.List;
 
 public interface IMaintenanceTeamService extends IService<MaintenanceTeam> {
-    MaintenanceTeam getByTeamAndUnitId(String teamName, Long unitId);
+    List<MaintenanceTeam> getByTeamAndUnitId(String teamName, Long unitId);
 
     List<MaintenanceTeam> listByUnitId(Long unitId);
 

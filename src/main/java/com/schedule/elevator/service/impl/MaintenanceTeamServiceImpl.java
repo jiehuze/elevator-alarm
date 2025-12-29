@@ -16,9 +16,9 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         implements IMaintenanceTeamService {
 
     @Override
-    public MaintenanceTeam getByTeamAndUnitId(String teamName, Long unitId) {
-        return this.getOne(new LambdaQueryWrapper<MaintenanceTeam>()
-                .eq(MaintenanceTeam::getTeamName, teamName)
+    public List<MaintenanceTeam> getByTeamAndUnitId(String teamName, Long unitId) {
+        return this.list(new LambdaQueryWrapper<MaintenanceTeam>()
+                .eq(StringUtils.isNotBlank(teamName), MaintenanceTeam::getTeamName, teamName)
                 .eq(MaintenanceTeam::getMaintenanceUnitId, unitId));
     }
 
@@ -38,6 +38,8 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         if (mt.getMaintenanceUnitId() != null) {
             wrapper.eq(MaintenanceTeam::getMaintenanceUnitId, mt.getMaintenanceUnitId());
         }
+        wrapper.like(StringUtils.isNotBlank(mt.getLeaderName()), MaintenanceTeam::getLeaderName, mt.getLeaderName());
+        wrapper.eq(StringUtils.isNotBlank(mt.getDistrict()), MaintenanceTeam::getDistrict, mt.getDistrict());
 
         return this.list(wrapper);
     }

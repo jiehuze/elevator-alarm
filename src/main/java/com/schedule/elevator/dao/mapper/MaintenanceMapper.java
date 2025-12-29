@@ -1,7 +1,7 @@
 package com.schedule.elevator.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.schedule.elevator.dto.NearbyMaintenanceUnitDTO;
+import com.schedule.elevator.dto.NearbyMaintenanceDTO;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -37,7 +37,7 @@ public interface MaintenanceMapper extends BaseMapper<MaintenanceUnit> {
             "      SIN(RADIANS(latitude))",
             "    ))",
             "  )) AS distance_km",
-            "FROM maintenance",
+            "FROM maintenance_team",
             "WHERE latitude IS NOT NULL",
             "  AND longitude IS NOT NULL",
             "  AND latitude BETWEEN #{latMin} AND #{latMax}",
@@ -46,7 +46,7 @@ public interface MaintenanceMapper extends BaseMapper<MaintenanceUnit> {
             "ORDER BY distance_km",
             "</script>"
     })
-    List<NearbyMaintenanceUnitDTO> selectNearby(
+    List<NearbyMaintenanceDTO> selectNearby(
             @Param("centerLat") BigDecimal centerLat,
             @Param("centerLng") BigDecimal centerLng,
             @Param("radiusKm") BigDecimal radiusKm,
