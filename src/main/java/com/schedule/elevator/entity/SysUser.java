@@ -18,6 +18,9 @@ public class SysUser {
     @TableField("password")
     private String password;
 
+    @TableField("employee_id")
+    private String employeeId;           // 报警员工id
+
     @TableField("roles")
     private String roles;
 

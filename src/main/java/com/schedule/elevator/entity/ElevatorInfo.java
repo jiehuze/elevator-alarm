@@ -93,6 +93,12 @@ public class ElevatorInfo {
     @TableField("maintenance_team_id")
     private Long maintenanceTeamId; // 维保班组ID
 
+    @TableField("maintenance_personnel_id")
+    private Long maintenancePersonnelId; // 维保人ID
+
+    @TableField("maintenance_personnel_name")
+    private Long maintenancePersonnelName; // 维保人
+
     /**
      * 电梯产权单位
      */

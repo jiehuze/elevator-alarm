@@ -35,7 +35,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 精确匹配字段
         query.eq(dto.getStatus() != null, WorkOrder::getStatus, dto.getStatus());
         query.eq(StringUtils.isNotBlank(dto.getOrderType()), WorkOrder::getOrderType, dto.getOrderType());
-        query.eq(dto.getIsMajorIncident() != null, WorkOrder::getMajorIncident, dto.getIsMajorIncident());
+        query.eq(dto.getMajorIncident() != null, WorkOrder::getMajorIncident, dto.getMajorIncident());
 
         // 时间范围
         query.ge(dto.getAlarmTimeStart() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeStart());
@@ -70,8 +70,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (workOrder.getRescueLevel() != null) {
             updateWrapper.set(WorkOrder::getRescueLevel, workOrder.getRescueLevel()); //救援等级
         }
-        if (workOrder.getEmployeeId() != null) {
-            updateWrapper.set(WorkOrder::getEmployeeId, workOrder.getEmployeeId()); // 员工ID
+        if (workOrder.getStatus() != null) {
+            updateWrapper.set(WorkOrder::getStatus, workOrder.getStatus()); //工单状态
+        }
+        if (workOrder.getMedicalRescueStarted() != null) {
+            updateWrapper.set(WorkOrder::getMedicalRescueStarted, workOrder.getMedicalRescueStarted());// 是否启动医疗救援
         }
         if (workOrder.getMaintenanceUnitId() != null) {
             updateWrapper.set(WorkOrder::getMaintenanceUnitId, workOrder.getMaintenanceUnitId()); // 维修单位ID
@@ -79,15 +82,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (workOrder.getMaintenanceTeamId() != null) {
             updateWrapper.set(WorkOrder::getMaintenanceTeamId, workOrder.getMaintenanceTeamId()); // 维修团队ID
         }
-        if (workOrder.getRescueHotline() != null) {
-            updateWrapper.set(WorkOrder::getRescueHotline, workOrder.getRescueHotline()); // 救援热线
+        if (workOrder.getMaintenancePersonnelId() != null) {
+            updateWrapper.set(WorkOrder::getMaintenancePersonnelId, workOrder.getMaintenancePersonnelId()); // 维修人员ID
         }
-        if (workOrder.getStatus() != null) {
-            updateWrapper.set(WorkOrder::getStatus, workOrder.getStatus()); //工单状态
-        }
-        if (workOrder.getMedicalRescueStarted() != null) {
-            updateWrapper.set(WorkOrder::getMedicalRescueStarted, workOrder.getMedicalRescueStarted());// 是否启动医疗救援
-        }
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getEmployeeId()), WorkOrder::getEmployeeId, workOrder.getEmployeeId()); // 员工ID
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceUnitName()), WorkOrder::getMaintenanceUnitName, workOrder.getMaintenanceUnitName());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceTeamName()), WorkOrder::getMaintenanceTeamName, workOrder.getMaintenanceTeamName());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelName()), WorkOrder::getMaintenancePersonnelName, workOrder.getMaintenancePersonnelName());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelPhone()), WorkOrder::getMaintenancePersonnelPhone, workOrder.getMaintenancePersonnelPhone());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceTeamLeaderPhone()), WorkOrder::getMaintenanceTeamLeaderPhone, workOrder.getMaintenanceTeamLeaderPhone());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getRescueHotline()), WorkOrder::getRescueHotline, workOrder.getRescueHotline()); // 救援热线
 
         return update(updateWrapper);
     }
@@ -116,34 +120,31 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Boolean updateByOrderNo(WorkOrder workOrder) {
         LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(WorkOrder::getOrderNo, workOrder.getOrderNo());
-        if (workOrder.getOrderNo() != null) {
-            updateWrapper.set(WorkOrder::getOrderNo, workOrder.getOrderNo());
-        }
-//        if (workOrder.getElevatorCode() != null) {
-//            updateWrapper.set(WorkOrder::getElevatorCode, workOrder.getElevatorCode());
-//        }
-//        if (workOrder.getRegisterCode() != null) {
-//            updateWrapper.set(WorkOrder::getRegisterCode, workOrder.getRegisterCode());
-//        }
-//        if (workOrder.getAlarmPersonName() != null) {
-//            updateWrapper.set(WorkOrder::getAlarmPersonName, workOrder.getAlarmPersonName());
-//        }
-//        if (workOrder.getAlarmPersonPhone() != null) {
-//            updateWrapper.set(WorkOrder::getAlarmPersonPhone, workOrder.getAlarmPersonPhone());
-//        }
-//        if (workOrder.getUsingUnit() != null) {
-//            updateWrapper.set(WorkOrder::getUsingUnit, workOrder.getUsingUnit());
-//        }
-//        if (workOrder.getIsMajorIncident() != null) {
-//            updateWrapper.set(WorkOrder::getIsMajorIncident, workOrder.getIsMajorIncident());
-//        }
-//        if (workOrder.getOrderType() != null) {
-//            updateWrapper.set(WorkOrder::getOrderType, workOrder.getOrderType());
-//        }
-//        if (workOrder.getAlarmTime() != null) {
-//            updateWrapper.set(WorkOrder::getAlarmTime, workOrder.getAlarmTime());
-//        }
 
-        return update(updateWrapper);
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getAlarmSource()), WorkOrder::getAlarmSource, workOrder.getAlarmSource());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getAlarmPersonName()), WorkOrder::getAlarmPersonName, workOrder.getAlarmPersonName());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getAlarmPersonPhone()), WorkOrder::getAlarmPersonPhone, workOrder.getAlarmPersonPhone());
+//        updateWrapper.set(workOrder.getAlarmTime() != null, WorkOrder::getAlarmTime, workOrder.getAlarmTime());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getElevatorAddress()), WorkOrder::getElevatorAddress, workOrder.getElevatorAddress());
+//        updateWrapper.set(workOrder.getOrderType() != null, WorkOrder::getOrderType, workOrder.getOrderType());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getIncidentDescription()), WorkOrder::getIncidentDescription, workOrder.getIncidentDescription());
+//        updateWrapper.set(workOrder.getRescueLevel() != null, WorkOrder::getRescueLevel, workOrder.getRescueLevel());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getRescueHotline()), WorkOrder::getRescueHotline, workOrder.getRescueHotline());
+//        updateWrapper.set(workOrder.getInjuredCount() != null, WorkOrder::getInjuredCount, workOrder.getInjuredCount());
+//        updateWrapper.set(workOrder.getTrappedCount() != null, WorkOrder::getTrappedCount, workOrder.getTrappedCount());
+//        updateWrapper.set(workOrder.getSuspectedDeathCount() != null, WorkOrder::getSuspectedDeathCount, workOrder.getSuspectedDeathCount());
+//        updateWrapper.set(workOrder.getStatus() != null, WorkOrder::getStatus, workOrder.getStatus());
+//        updateWrapper.set(workOrder.getMajorIncident() != null, WorkOrder::getMajorIncident, workOrder.getMajorIncident());
+//        updateWrapper.set(workOrder.getReported() != null, WorkOrder::getReported, workOrder.getReported());
+//        updateWrapper.set(workOrder.getMedicalRescueStarted() != null, WorkOrder::getMedicalRescueStarted, workOrder.getMedicalRescueStarted());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getEmployeeId()), WorkOrder::getEmployeeId, workOrder.getEmployeeId()); // 员工ID
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceUnitName()), WorkOrder::getMaintenanceUnitName, workOrder.getMaintenanceUnitName());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceTeamName()), WorkOrder::getMaintenanceTeamName, workOrder.getMaintenanceTeamName());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelName()), WorkOrder::getMaintenancePersonnelName, workOrder.getMaintenancePersonnelName());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelPhone()), WorkOrder::getMaintenancePersonnelPhone, workOrder.getMaintenancePersonnelPhone());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceTeamLeaderPhone()), WorkOrder::getMaintenanceTeamLeaderPhone, workOrder.getMaintenanceTeamLeaderPhone());
+//        updateWrapper.set(StringUtils.isNotBlank(workOrder.getRescueHotline()), WorkOrder::getRescueHotline, workOrder.getRescueHotline()); // 救援热线
+
+        return update(workOrder, updateWrapper);
     }
 }

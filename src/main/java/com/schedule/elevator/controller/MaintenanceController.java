@@ -13,10 +13,12 @@ import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IMaintenancePersonnelService;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import com.schedule.elevator.service.IMaintenanceUnitService;
+import com.schedule.elevator.service.impl.MaintenanceUnitServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,6 +39,8 @@ public class MaintenanceController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+    @Autowired
+    private MaintenanceUnitServiceImpl maintenanceUnitServiceImpl;
 
     @PostMapping("/add")
     public BaseResponse add(@RequestBody MaintenanceUnit maintenance) {
@@ -83,6 +87,7 @@ public class MaintenanceController {
 
     @GetMapping("/unit/{id}")
     public BaseResponse getMaintenanceUnitById(@PathVariable Long id) {
+        MaintenanceUnit unit = maintenanceInfoService.getById(id);
         List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, id);
 
         for (MaintenanceTeam team : teams) {
@@ -92,8 +97,9 @@ public class MaintenanceController {
 
             team.setNumbers((long) list.size());
         }
+        unit.setTeams(teams);
 
-        return new BaseResponse(HttpStatus.OK.value(), "查询成功", teams, null);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", unit, null);
     }
 
     @GetMapping("/level")
@@ -128,6 +134,30 @@ public class MaintenanceController {
                 nearbyMaintenanceDTO.getLongitude(),
                 nearbyMaintenanceDTO.getDistanceKm());
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", nearby, null);
+    }
+
+    @GetMapping("/info")
+    public BaseResponse getMaintenanceInfo(@ModelAttribute MaintenanceQueryDTO maintenanceQueryDTO) {
+        HashMap<String, Object> info = new HashMap<>();
+
+        // 人员信息
+        MaintenancePersonnel person = maintenancePersonnelService.getById(maintenanceQueryDTO.getMaintenancePersonnelId());
+
+        // 团队信息
+        MaintenanceTeam team = maintenanceTeamService.getById(person.getMaintenanceTeamId());
+        if (team != null) {
+            maintenanceQueryDTO.setMaintenanceTeamId(team.getId());
+        } else {
+            team = maintenanceTeamService.getById(maintenanceQueryDTO.getMaintenanceTeamId());
+        }
+        // 单位信息
+        MaintenanceUnit unit = maintenanceInfoService.getById(team.getMaintenanceUnitId());
+        // 返回
+        info.put("unit", unit);
+        info.put("team", team);
+        info.put("person", person);
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", info, null);
     }
 
     /****************************** 分组信息 *********************************/

@@ -2,6 +2,7 @@ package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.SysUserMapper;
@@ -80,8 +81,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
 
         SysUser one = this.getOne(new LambdaQueryWrapper<SysUser>()
-//                .select(SysUser::getUsername, SysUser::getPassword) // 只查必要字段
-                .eq(SysUser::getUsername, user.getUsername()));
+                .eq(StringUtils.isNotBlank(user.getEmployeeId()), SysUser::getEmployeeId, user.getEmployeeId())
+                .eq(StringUtils.isNotBlank(user.getUsername()), SysUser::getUsername, user.getUsername()));
         if (one == null) {
             return null;
         }

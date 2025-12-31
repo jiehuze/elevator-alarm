@@ -90,6 +90,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
     @Override
     public List<MaintenanceUnit> listByQuery(MaintenanceQueryDTO queryDTO) {
         LambdaQueryWrapper<MaintenanceUnit> eq = new LambdaQueryWrapper<MaintenanceUnit>()
+                .eq(queryDTO.getMaintenanceUnitId() != null, MaintenanceUnit::getId, queryDTO.getMaintenanceUnitId())
                 .eq(StringUtils.isNotBlank(queryDTO.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, queryDTO.getMaintainerUnitName())
                 .ge(queryDTO.getLevel() != null, MaintenanceUnit::getLevel, queryDTO.getLevel());
 

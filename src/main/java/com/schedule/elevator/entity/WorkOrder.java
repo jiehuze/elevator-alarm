@@ -41,6 +41,9 @@ public class WorkOrder implements Serializable {
     @TableField("project_name")
     private String projectName; // 项目名称
 
+    @TableField("district")
+    private String district;
+
     @TableField("elevator_address")
     private String elevatorAddress; // 电梯地址
 
@@ -51,7 +54,7 @@ public class WorkOrder implements Serializable {
     private String alarmPersonPhone; // 报警人电话
 
     @TableField("order_type")
-    private String orderType; // 工单类型 困人工单，故障工单，投诉，咨询
+    private Integer orderType; // 工单类型 1. 困人工单，2. 故障工单，3. 投诉，4. 咨询
 
     @TableField("incident_description")
     private String incidentDescription; // 事故描述
@@ -64,6 +67,24 @@ public class WorkOrder implements Serializable {
 
     @TableField("maintenance_team_id")
     private Long maintenanceTeamId; // 维保班组ID
+
+    @TableField("maintenance_personnel_id")
+    private Long maintenancePersonnelId; // 维保人员ID
+
+    @TableField("maintenance_unit_name")
+    private String maintenanceUnitName; // 维保单位名称
+
+    @TableField("maintenance_team_name")
+    private String maintenanceTeamName; // 维保班组名称
+
+    @TableField("maintenance_personnel_name")
+    private String maintenancePersonnelName; // 维保人员名称
+
+    @TableField("maintenance_personnel_phone")
+    private String maintenancePersonnelPhone; // 维保人员电话
+
+    @TableField("maintenance_team_leader_phone")
+    private String maintenanceTeamLeaderPhone; // 维保班组领导电话
 
     @TableField("rescue_hotline")
     private String rescueHotline; // 救援热线
@@ -87,7 +108,7 @@ public class WorkOrder implements Serializable {
     private Boolean majorIncident; // 是否为重大事项 0-否，1-是
 
     @TableField("is_medical_rescue_started")
-    private Boolean medicalRescueStarted = false; // 是否启动医疗救援
+    private Boolean medicalRescueStarted; // 是否启动医疗救援
 
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

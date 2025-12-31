@@ -1,11 +1,11 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
-import com.schedule.elevator.entity.WorkOrderTrace;
 import com.schedule.elevator.service.IWorkOrderProgressService;
 import com.schedule.elevator.service.IWorkOrderService;
 import com.schedule.elevator.service.IWorkOrderTraceService;
@@ -41,20 +41,22 @@ public class WorkOrderController {
      */
     @PostMapping("/create")
     public BaseResponse create(@RequestBody WorkOrder workOrder) {
-        workOrder.setStatus(Byte.valueOf("1"));
+//        workOrder.setStatus(Byte.valueOf("1"));
         workOrder.setOrderNo(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         try {
             WorkOrder wd = workOrderService.createWorkOrder(workOrder);
             //添加记录
-            WorkOrderTrace workOrderTrace = new WorkOrderTrace();
-            workOrderTrace.setOrderNo(wd.getOrderNo())
-                    .setEmployeeId(wd.getEmployeeId())
-                    .setDescription("创建了" + wd.getOrderType() + "工单");
-            workOrderTraceService.save(workOrderTrace);
+            WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(workOrder.getOrderNo())
+                    .setProgress("创建工单成功")
+                    .setResult("创建工单成功")
+                    .setStatus(workOrder.getStatus())
+                    .setRemark(workOrder.getIncidentDescription())
+                    .setEmployeeId(workOrder.getEmployeeId());
+            workOrderProgressService.save(workOrderProgress);
 
             return new BaseResponse(HttpStatus.OK.value(), "添加成功", wd, null);
         } catch (Exception e) {
-            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "添加失败", null, null);
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "添加失败", e.getMessage(), null);
         }
     }
 
@@ -69,12 +71,13 @@ public class WorkOrderController {
         if (!res) {
             return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "创建失败", null, null);
         } else {
-            //添加记录
-            WorkOrderTrace workOrderTrace = new WorkOrderTrace();
-            workOrderTrace.setOrderNo(workOrder.getOrderNo())
-                    .setEmployeeId(workOrder.getEmployeeId())
-                    .setDescription("选择了" + workOrder.getRescueLevel() + "派单成功");
-            workOrderTraceService.save(workOrderTrace);
+            //添加记
+            WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(workOrder.getOrderNo())
+                    .setProgress("派单")
+                    .setResult("派单成功")
+                    .setStatus(workOrder.getStatus())
+                    .setEmployeeId(workOrder.getEmployeeId());
+            workOrderProgressService.save(workOrderProgress);
         }
         return new BaseResponse(HttpStatus.OK.value(), "创建救援信息成功", res, null);
     }
@@ -126,8 +129,8 @@ public class WorkOrderController {
 
     @PutMapping("/update")
     public BaseResponse update(@RequestBody WorkOrder workOrder) {
-        workOrderService.updateById(workOrder);
-        return new BaseResponse(HttpStatus.OK.value(), "更新成功", workOrder, null);
+        boolean update = workOrderService.update(workOrder, new LambdaQueryWrapper<WorkOrder>().eq(WorkOrder::getId, workOrder.getId()));
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
     }
 
     @DeleteMapping("/{id}")
@@ -147,7 +150,7 @@ public class WorkOrderController {
     public BaseResponse listProgress(@RequestParam String orderNo) {
         List<WorkOrderProgress> list = progressService.lambdaQuery()
                 .eq(WorkOrderProgress::getOrderNo, orderNo)
-                .orderByDesc(WorkOrderProgress::getCreateTime)
+                .orderByAsc(WorkOrderProgress::getUpdateTime)
                 .list();
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);

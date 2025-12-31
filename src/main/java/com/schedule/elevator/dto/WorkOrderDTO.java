@@ -40,7 +40,7 @@ public class WorkOrderDTO implements Serializable {
     private Byte status;
 
     @ApiModelProperty("是否为重大事项")
-    private Boolean isMajorIncident;
+    private Boolean majorIncident;
 
     @ApiModelProperty("工单类型ID")
     private String orderType;

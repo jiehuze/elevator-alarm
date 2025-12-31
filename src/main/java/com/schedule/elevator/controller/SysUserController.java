@@ -75,6 +75,8 @@ public class SysUserController {
         //生成token
         UserToken userToken = userTokenService.createToken(auth.getId());
         userToken.setRoles(auth.getRoles());
+        userToken.setEmployeeId(auth.getEmployeeId());
+        userToken.setUsername(auth.getUsername());
 
         return new BaseResponse(HttpStatus.OK.value(), "登录成功", userToken, null);
     }
