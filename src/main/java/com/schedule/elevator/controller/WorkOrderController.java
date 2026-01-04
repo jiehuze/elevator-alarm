@@ -3,6 +3,7 @@ package com.schedule.elevator.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.HandleDTO;
 import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
@@ -41,7 +42,6 @@ public class WorkOrderController {
      */
     @PostMapping("/create")
     public BaseResponse create(@RequestBody WorkOrder workOrder) {
-//        workOrder.setStatus(Byte.valueOf("1"));
         workOrder.setOrderNo(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         try {
             WorkOrder wd = workOrderService.createWorkOrder(workOrder);
@@ -89,14 +89,33 @@ public class WorkOrderController {
      * @return
      */
     @PutMapping("/handle")
-    public BaseResponse HandleWorkOrder(@RequestBody WorkOrderProgress workOrderProgress) {
-        WorkOrder workOrder = new WorkOrder();
-        workOrder.setOrderNo(workOrderProgress.getOrderNo()).setStatus(workOrderProgress.getStatus());
+    public BaseResponse HandleWorkOrder(@RequestBody HandleDTO handleDTO) {
+        System.out.println("1---------" + handleDTO);
+//        System.out.println("2----------" + workOrder1);
+        try {
+            WorkOrder workOrder = new WorkOrder();
+            workOrder.setOrderNo(handleDTO.getOrderNo())
+                    .setOrderType(handleDTO.getOrderType())
+                    .setInjuredCount(handleDTO.getInjuredCount())
+                    .setTrappedCount(handleDTO.getTrappedCount())
+                    .setSuspectedDeathCount(handleDTO.getSuspectedDeathCount())
+                    .setStatus(handleDTO.getStatus());
 
-        boolean save = workOrderProgressService.save(workOrderProgress);
-        workOrderService.updateStatus(workOrder);
+            WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(handleDTO.getOrderNo())
+                    .setProgress(handleDTO.getProgress())
+                    .setResult(handleDTO.getResult())
+                    .setStatus(handleDTO.getStatus())
+                    .setEmployeeId(handleDTO.getEmployeeId())
+//                    .setFaultContent(handleDTO.getFaultContent())
+//                    .setFaultContentId(handleDTO.getFaultContentId())
+                    .setRemark(handleDTO.getRemark());
+            boolean save = workOrderProgressService.save(workOrderProgress);
+            Boolean update = workOrderService.updateByOrderNo(workOrder);
 
-        return new BaseResponse(HttpStatus.OK.value(), "更新成功", save, null);
+            return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
+        } catch (Exception e) {
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "更新失败", e.getMessage(), null);
+        }
     }
 
     /**

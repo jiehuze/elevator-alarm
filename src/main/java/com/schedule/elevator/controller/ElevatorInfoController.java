@@ -124,12 +124,14 @@ public class ElevatorInfoController {
                 if (elevatorInfo != null &&
                         StringUtils.isNotBlank(elevatorInfo.getElevatorNo()) &&
                         !"电梯编号".equals(elevatorInfo.getElevatorNo().trim())) {
-                    Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
-                    long communityId = communityService.getOrCreateCommunityId(communityEntity);
 
                     //读取使用小区信息，并写入
                     PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
                     long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
+
+                    Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
+                    communityEntity.setUsingUnitId(UsingUnitId);
+                    long communityId = communityService.getOrCreateCommunityId(communityEntity);
 
                     //读取维保信息，并写入
                     MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
@@ -140,6 +142,7 @@ public class ElevatorInfoController {
 
                     elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
                     elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
+                    elevatorInfo.setCommunityId(communityId);
                     elevatorInfo.setUsingUnitId(UsingUnitId);
 
                     elevatorInfoService.createElevatorInfo(elevatorInfo);
@@ -147,7 +150,6 @@ public class ElevatorInfoController {
             }
 
             return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);
-//            return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + entities.size() + " 条电梯信息", entities, null);
         } catch (Exception e) {
             System.out.println("Excel 导入失败:" + e);
             return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "导入失败: " + e.getMessage(), null, null);

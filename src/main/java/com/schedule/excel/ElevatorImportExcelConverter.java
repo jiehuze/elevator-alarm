@@ -55,7 +55,10 @@ public class ElevatorImportExcelConverter {
                 .setCity(dto.getCity())
                 .setRealEstateBrand(dto.getRealEstateBrand())
                 .setProvince(dto.getProvince())
-                .setAddress(dto.getAddress());
+                .setAddress(dto.getAddress())
+                .setUsingUnit(dto.getUsingUnit())
+                .setSafetyOfficerName(dto.getSafetyOfficerName())
+                .setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
 
         return community;
     }
@@ -92,8 +95,6 @@ public class ElevatorImportExcelConverter {
         entity.setUsingUnit(dto.getUsingUnit());
         entity.setUsingUnitManager(dto.getUsingUnitManager());
         entity.setUsingUnitManagerPhone(dto.getUsingUnitManagerPhone());
-        entity.setSafetyOfficerName(dto.getSafetyOfficerName());
-        entity.setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
 
         return entity;
     }

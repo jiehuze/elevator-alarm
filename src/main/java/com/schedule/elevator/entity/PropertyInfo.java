@@ -30,15 +30,6 @@ public class PropertyInfo {
     @TableField("using_unit_manager_phone")
     private String usingUnitManagerPhone; //使用单位负责人手机
 
-    @TableField("safety_officer_name")
-    private String safetyOfficerName; //物业安全负责人
-
-    @TableField("safety_officer_phone")
-    private String safetyOfficerPhone; //物业安全负责人手机
-
-    @TableField("project_name")
-    private String projectName; //项目名称
-
     @TableField(exist = false)
     private Long count;  // 计数属性，不映射到数据库
 

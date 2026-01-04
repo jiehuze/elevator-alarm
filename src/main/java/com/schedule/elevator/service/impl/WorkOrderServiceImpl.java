@@ -31,6 +31,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.like(StringUtils.isNotBlank(dto.getAlarmPersonPhone()), WorkOrder::getAlarmPersonPhone, dto.getAlarmPersonPhone());
 
         query.like(StringUtils.isNotBlank(dto.getProjectName()), WorkOrder::getProjectName, dto.getProjectName());
+        query.eq(StringUtils.isNotBlank(dto.getProjectType()), WorkOrder::getProjectType, dto.getProjectType());
         query.like(StringUtils.isNotBlank(dto.getElevatorAddress()), WorkOrder::getElevatorAddress, dto.getElevatorAddress());
         // 精确匹配字段
         query.eq(dto.getStatus() != null, WorkOrder::getStatus, dto.getStatus());
@@ -42,9 +43,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.le(dto.getAlarmTimeEnd() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeEnd());
         query.ge(dto.getCreateTimeStart() != null, WorkOrder::getCreateTime, dto.getCreateTimeStart());
         query.le(dto.getCreateTimeEnd() != null, WorkOrder::getCreateTime, dto.getCreateTimeEnd());
+        query.ne(dto.getUnfinished() != null, WorkOrder::getStatus, 99);
+        query.eq(StringUtils.isNotBlank(dto.getDistrict()), WorkOrder::getDistrict, dto.getDistrict());
+        query.eq(StringUtils.isNotBlank(dto.getEmployeeId()), WorkOrder::getEmployeeId, dto.getEmployeeId());
+        query.eq(StringUtils.isNotBlank(dto.getRescueCode()), WorkOrder::getRescueCode, dto.getRescueCode());
+        query.eq(dto.getMaintenanceUnitId() != null, WorkOrder::getMaintenanceUnitId, dto.getMaintenanceUnitId());
 
-        // 排序：按创建时间倒序
-        query.orderByDesc(WorkOrder::getCreateTime);
+        if (StringUtils.isNotBlank(dto.getRescueCodeOrder())) {
+            if (dto.getRescueCodeOrder().equals("asc")) {
+                query.orderByAsc(WorkOrder::getRescueCode);
+            } else {
+                query.orderByDesc(WorkOrder::getRescueCode);
+            }
+        }
+        if (StringUtils.isNotBlank(dto.getTimeOrder())) {
+            if (dto.getTimeOrder().equals("asc")) {
+                query.orderByAsc(WorkOrder::getCreateTime);
+            } else {
+                query.orderByDesc(WorkOrder::getCreateTime);
+            }
+        }
 
         return this.page(page, query);
     }

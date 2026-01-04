@@ -44,6 +44,18 @@ public class Community implements Serializable {
     @TableField("project_type")
     private String projectType; // 类型（如：办公楼、住宅区、医院、交通场所、宾馆饭店等）
 
+    @TableField("safety_officer_name")
+    private String safetyOfficerName; //物业安全负责人
+
+    @TableField("safety_officer_phone")
+    private String safetyOfficerPhone; //物业安全负责人手机
+
+    @TableField("using_unit")
+    private String usingUnit; //使用单位
+
+    @TableField("using_unit_id")
+    private Long usingUnitId; //使用单位ID
+
     @TableField(value = "created_at")
     private LocalDateTime createdAt; // 创建时间
 

@@ -38,11 +38,17 @@ public class WorkOrder implements Serializable {
     @TableField("rescue_code")
     private String rescueCode; // 救援识别码
 
+    @TableField("register_code")
+    private String registerCode; // 电梯注册码
+
     @TableField("project_name")
     private String projectName; // 项目名称
 
+    @TableField("project_type")
+    private String projectType; // 项目类型,场所
+
     @TableField("district")
-    private String district;
+    private String district; // 地区
 
     @TableField("elevator_address")
     private String elevatorAddress; // 电梯地址

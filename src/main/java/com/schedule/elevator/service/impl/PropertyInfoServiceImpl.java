@@ -37,8 +37,7 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
     public long getOrCreatePropertyId(PropertyInfo entity) {
         // 1. 先查询是否已存在
         PropertyInfo existing = this.getOne(new LambdaQueryWrapper<PropertyInfo>()
-                .eq(PropertyInfo::getUsingUnit, entity.getUsingUnit())
-                .eq(PropertyInfo::getSafetyOfficerPhone, entity.getSafetyOfficerPhone()));
+                .eq(PropertyInfo::getUsingUnit, entity.getUsingUnit()));
 
         if (existing != null) {
 //            log.debug("维保单位已存在，ID: {}", existing.getId());

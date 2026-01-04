@@ -16,13 +16,19 @@ public class WorkOrderDTO implements Serializable {
     private String orderNo;
 
     @ApiModelProperty("电梯救援码")
-    private String elevatorCode;
+    private String rescueCode;
 
     @ApiModelProperty("电梯注册码")
     private String registerCode;
 
+    @ApiModelProperty("员工ID")
+    private String employeeId;
+
     @ApiModelProperty("项目名称")
     private String projectName; // 项目名称
+
+    @ApiModelProperty("项目类型")
+    private String projectType;
 
     @ApiModelProperty("电梯地址")
     private String elevatorAddress; // 电梯地址
@@ -45,6 +51,9 @@ public class WorkOrderDTO implements Serializable {
     @ApiModelProperty("工单类型ID")
     private String orderType;
 
+    @ApiModelProperty("维保单位ID")
+    private Long maintenanceUnitId;
+
     @ApiModelProperty("报警开始时间")
     private LocalDateTime alarmTimeStart;
 
@@ -56,6 +65,18 @@ public class WorkOrderDTO implements Serializable {
 
     @ApiModelProperty("创建结束时间")
     private LocalDateTime createTimeEnd;
+
+    @ApiModelProperty("区域")
+    private String district;
+
+    @ApiModelProperty("未完成")
+    private Boolean unfinished;
+
+    @ApiModelProperty("时间排序")
+    private String timeOrder;
+
+    @ApiModelProperty("救援码排序")
+    private String rescueCodeOrder;
 
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;
