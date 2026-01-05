@@ -1,4 +1,4 @@
-package com.schedule.elevator.dto;
+package com.schedule.elevator.enums;
 
 import lombok.Getter;
 

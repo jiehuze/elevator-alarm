@@ -103,7 +103,7 @@ public class WorkOrder implements Serializable {
 
     //0:创建工单，1:派单，2:救援人员响应成功，3:回拨安抚，4救援人员到达现场，5:救援人员救援完成，6:救援回访，7：维修回访，8:维修完成，99:结案
     @TableField("status")
-    private Byte status;  // 工单状态
+    private Integer status;  // 工单状态
 
     @TableField("injured_count")
     private Integer injuredCount; // 受伤人数

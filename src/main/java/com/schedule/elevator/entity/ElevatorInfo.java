@@ -52,10 +52,10 @@ public class ElevatorInfo {
     private String elevatorType;
 
     /**
-     * 使用状态：in_use-在用, stopped-停用, cancelled-注销
+     * 使用状态：1-在用, 2-停用, 3-注销
      */
     @TableField("usage_status")
-    private String usageStatus;
+    private Integer usageStatus;
 
     /**
      * 下次检验时间

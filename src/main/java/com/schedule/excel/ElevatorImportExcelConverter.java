@@ -1,7 +1,9 @@
 package com.schedule.excel;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.entity.*;
+import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +23,7 @@ public class ElevatorImportExcelConverter {
         entity.setElevatorNo(dto.getElevatorNo());
         entity.setElevatorName(dto.getElevatorName());
         entity.setElevatorType(dto.getElevatorType());
-        entity.setUsageStatus(dto.getUsageStatus());
+        entity.setUsageStatus(ElevatorUsageStatusEnum.getByDescription(dto.getUsageStatus()).getCode());
         entity.setNextInspectionDate(parseDate(dto.getNextInspectionDate()));
         entity.setBrand(dto.getBrand());
         entity.setModel(dto.getModel());
@@ -113,7 +115,7 @@ public class ElevatorImportExcelConverter {
         dto.setElevatorNo(entity.getElevatorNo());
         dto.setElevatorName(entity.getElevatorName());
         dto.setElevatorType(entity.getElevatorType());
-        dto.setUsageStatus(entity.getUsageStatus());
+        dto.setUsageStatus(ElevatorUsageStatusEnum.getByCode(entity.getUsageStatus()).getDescription());
         dto.setNextInspectionDate(formatDate(entity.getNextInspectionDate()));
         dto.setBrand(entity.getBrand());
         dto.setModel(entity.getModel());

@@ -8,9 +8,10 @@ import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.service.*;
 import com.schedule.utils.DateUtils;
-import com.schedule.utils.WordFileReplace;
+import com.schedule.utils.FileReplace;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,8 +62,8 @@ public class WorkOrderController {
             WorkOrder wd = workOrderService.createWorkOrder(workOrder);
             //添加记录
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(workOrder.getOrderNo())
-                    .setProgress("创建工单成功")
-                    .setResult("创建工单成功")
+                    .setProgress(WorkOrderStatusEnum.getByCode(workOrder.getStatus()).getDescription())
+                    .setResult("成功")
                     .setStatus(workOrder.getStatus())
                     .setRemark(workOrder.getIncidentDescription())
                     .setEmployeeId(workOrder.getEmployeeId());
@@ -87,8 +88,8 @@ public class WorkOrderController {
         } else {
             //添加记
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(workOrder.getOrderNo())
-                    .setProgress("派单")
-                    .setResult("派单成功")
+                    .setProgress(WorkOrderStatusEnum.getByCode(workOrder.getStatus()).getDescription())
+                    .setResult("成功")
                     .setStatus(workOrder.getStatus())
                     .setEmployeeId(workOrder.getEmployeeId());
             workOrderProgressService.save(workOrderProgress);
@@ -205,7 +206,7 @@ public class WorkOrderController {
 
         PropertyInfo propertyInfo = propertyInfoService.getById(workOrder.getUsingUnitId());
         List<WorkOrderProgress> wps = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
-        HashMap<Byte, WorkOrderProgress> wpMap = new HashMap<>();
+        HashMap<Integer, WorkOrderProgress> wpMap = new HashMap<>();
         for (WorkOrderProgress wp : wps) {
             wpMap.put(wp.getStatus(), wp);
         }
@@ -234,14 +235,27 @@ public class WorkOrderController {
                 new SimpleEntry<>("{{rescue}}", workOrder.getMedicalRescueStarted() ? "是" : "否")
         );
 
-        String outputPath = "/tmp/report_" + System.currentTimeMillis() + ".docx";
+        for (WorkOrderProgress wp : wps) {
+            String value = DateUtils.format(wp.getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA) + "   " + "工号" + wp.getEmployeeId() + "   " + wp.getResult();
+            replacements.put("{{progress" + wp.getStatus() + "}}", wp.getProgress());
+        }
+
+
+        System.out.println("+++++ replacements: " + replacements);
+//        String outputPath = "/tmp/report_" + System.currentTimeMillis() + ".docx";
+        String outputPath = "/tmp/report_" + System.currentTimeMillis() + ".xlsx";
 
         try {
-            WordFileReplace.replaceTextInWordX(replacements, outputPath);
+//            FileReplace.replaceTextInWordX(replacements, outputPath);
+            boolean success = FileReplace.replaceTextInExcel(replacements, outputPath);
+            if (!success) {
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return;
+            }
 
             // 设置响应头
             response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            response.setHeader("Content-Disposition", "attachment; filename=处置报告.docx");
+            response.setHeader("Content-Disposition", "attachment; filename=处置报告.xlsx");
             response.setHeader("Content-Length", String.valueOf(new File(outputPath).length()));
 
             // 将文件写入响应流
@@ -256,12 +270,13 @@ public class WorkOrderController {
                 os.flush();
             } finally {
                 // 删除临时文件
-                File tempFile = new File(outputPath);
-                if (tempFile.exists()) {
-                    tempFile.delete();
-                }
+//                File tempFile = new File(outputPath);
+//                if (tempFile.exists()) {
+//                    tempFile.delete();
+//                }
             }
         } catch (Exception e) {
+            System.out.println("导出文件失败");
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             e.printStackTrace();
         }

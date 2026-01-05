@@ -3,18 +3,19 @@ package com.schedule.utils;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Range;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
-public class WordFileReplace {
+public class FileReplace {
     public static boolean replace(String oldText, String newText, String outputFilePath) {
         String inputFilePath = "doc/templete.doc";  // 原文档路径
 //        String outputFilePath = "/Users/jiehu/works/test/replacefile/testreplace.doc";  // 替换后的文档路径
@@ -50,6 +51,51 @@ public class WordFileReplace {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public static boolean replaceTextInExcel(Map<String, String> replacements, String outputFilePath) {
+        String inputFilePath = "doc/templete.xlsx"; // 模板在 resources/excel/ 下
+
+        try {
+            Resource resource = new ClassPathResource(inputFilePath);
+            try (InputStream fis = resource.getInputStream();
+                 Workbook workbook = new XSSFWorkbook(fis);
+                 FileOutputStream fos = new FileOutputStream(outputFilePath)) {
+
+                // 遍历所有工作表
+                for (Sheet sheet : workbook) {
+                    // 遍历所有行
+                    for (Row row : sheet) {
+                        // 遍历所有单元格
+                        for (Cell cell : row) {
+                            if (cell.getCellType() == CellType.STRING) {
+                                String text = cell.getStringCellValue();
+                                if (text != null && text.contains("{{")) {
+                                    // 执行替换
+                                    String newText = text;
+                                    for (Map.Entry<String, String> entry : replacements.entrySet()) {
+                                        // 精确匹配占位符（要求模板中无多余空格）
+                                        if (newText.contains(entry.getKey())) {
+                                            newText = newText.replace(entry.getKey(), entry.getValue());
+                                        }
+                                    }
+                                    if (!newText.equals(text)) {
+                                        cell.setCellValue(newText);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                workbook.write(fos);
+                System.out.println("✅ Excel 模板占位符替换成功！");
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -107,39 +153,59 @@ public class WordFileReplace {
      * @return 替换成功返回 true，失败返回 false
      */
     public static boolean replaceTextInWordX(Map<String, String> replacements, String outputFilePath) {
-        String inputFilePath = "doc/templete.docx"; // 资源目录中的模板文件
+        String inputFilePath = "doc/templete.docx";
 
         try {
-            // 读取 .docx 文件
             Resource resource = new ClassPathResource(inputFilePath);
             try (InputStream fis = resource.getInputStream();
                  XWPFDocument document = new XWPFDocument(fis);
                  FileOutputStream fos = new FileOutputStream(outputFilePath)) {
 
-                // 遍历所有段落并进行文本替换
-                for (XWPFParagraph paragraph : document.getParagraphs()) {
-                    for (XWPFRun run : paragraph.getRuns()) {
-                        String text = run.getText(0);
-                        if (text != null) {
-                            for (Map.Entry<String, String> entry : replacements.entrySet()) {
-                                if (text.contains(entry.getKey())) {
-                                    text = text.replace(entry.getKey(), entry.getValue());
-                                    run.setText(text, 0);
-                                }
-                            }
+                // 替换正文段落
+                replaceInParagraphs(document.getParagraphs(), replacements);
+
+                // 替换表格中的段落
+                for (XWPFTable table : document.getTables()) {
+                    for (XWPFTableRow row : table.getRows()) {
+                        for (XWPFTableCell cell : row.getTableCells()) {
+                            replaceInParagraphs(cell.getParagraphs(), replacements);
                         }
                     }
                 }
 
-                // 保存修改后的文档
                 document.write(fos);
-                System.out.println("✅ 文档中的文字已成功替换！");
+                System.out.println("✅ 文档中的文字（包括表格）已成功替换！");
                 return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // 抽取公共方法：替换一组段落中的占位符
+    private static void replaceInParagraphs(List<XWPFParagraph> paragraphs, Map<String, String> replacements) {
+        for (XWPFParagraph paragraph : paragraphs) {
+            for (XWPFRun run : paragraph.getRuns()) {
+                if (run != null) {
+                    String text = run.getText(0);
+                    if (text != null) {
+                        // 🔍 调试日志：打印所有包含 {{ 的文本
+                        if (text.contains("{{")) {
+                            System.out.println("🔍 Found placeholder in run: '" + text + "'");
+                        }
+
+                        // 执行替换
+                        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+                            if (text.contains(entry.getKey())) {
+                                text = text.replace(entry.getKey(), entry.getValue());
+                                run.setText(text, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
