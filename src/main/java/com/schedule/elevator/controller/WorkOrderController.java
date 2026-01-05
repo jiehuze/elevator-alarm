@@ -8,10 +8,7 @@ import com.schedule.elevator.dto.WorkOrderDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
-import com.schedule.elevator.service.IPropertyInfoService;
-import com.schedule.elevator.service.IWorkOrderProgressService;
-import com.schedule.elevator.service.IWorkOrderService;
-import com.schedule.elevator.service.IWorkOrderTraceService;
+import com.schedule.elevator.service.*;
 import com.schedule.utils.DateUtils;
 import com.schedule.utils.WordFileReplace;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +44,9 @@ public class WorkOrderController {
 
     @Autowired
     private IPropertyInfoService propertyInfoService;
+
+    @Autowired
+    private IFaultRecordService faultRecordService;
 
     /**
      * 创建工单
@@ -105,7 +105,6 @@ public class WorkOrderController {
     @PutMapping("/handle")
     public BaseResponse HandleWorkOrder(@RequestBody HandleDTO handleDTO) {
         System.out.println("1---------" + handleDTO);
-//        System.out.println("2----------" + workOrder1);
         try {
             WorkOrder workOrder = new WorkOrder();
             workOrder.setOrderNo(handleDTO.getOrderNo())
@@ -120,13 +119,14 @@ public class WorkOrderController {
                     .setResult(handleDTO.getResult())
                     .setStatus(handleDTO.getStatus())
                     .setEmployeeId(handleDTO.getEmployeeId())
-//                    .setFaultContent(handleDTO.getFaultContent())
-//                    .setFaultContentId(handleDTO.getFaultContentId())
                     .setRemark(handleDTO.getRemark());
-            boolean save = workOrderProgressService.save(workOrderProgress);
-            Boolean update = workOrderService.updateByOrderNo(workOrder);
+            workOrderProgressService.save(workOrderProgress);
+            workOrderService.updateByOrderNo(workOrder);
+            if (handleDTO.getFaults() != null && handleDTO.getFaults().size() > 0) {
+                faultRecordService.saveBatch(handleDTO.getFaults());
+            }
 
-            return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
+            return new BaseResponse(HttpStatus.OK.value(), "更新成功", true, null);
         } catch (Exception e) {
             return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "更新失败", e.getMessage(), null);
         }
@@ -187,6 +187,13 @@ public class WorkOrderController {
                 .list();
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
+    }
+
+    @GetMapping("/statistical")
+    public BaseResponse statistical(@ModelAttribute WorkOrderDTO workOrderDTO) {
+        List<Map<String, Object>> rootFaultCount = faultRecordService.countByRootCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+        List<Map<String, Object>> subFaultCount = faultRecordService.countBySubCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", subFaultCount, null);
     }
 
     @GetMapping("/export/{id}")

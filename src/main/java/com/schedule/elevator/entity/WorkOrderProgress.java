@@ -32,12 +32,6 @@ public class WorkOrderProgress implements Serializable {
     @TableField("remark")
     private String remark; // 处理备注
 
-    @TableField("fault_content")
-    private String faultContent; // 故障内容
-
-    @TableField("fault_content_id")
-    private Long faultContentId;     // 故障内容ID
-
     @TableField("employee_id")
     private String employeeId;
 
