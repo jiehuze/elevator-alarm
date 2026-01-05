@@ -40,6 +40,7 @@ public class ElevatorImportExcelConverter {
         entity.setCity(dto.getCity());
         entity.setDistrict(dto.getDistrict());
         entity.setProjectName(dto.getProjectName());
+        entity.setProjectType(dto.getProjectType());
         entity.setUsingUnit(dto.getUsingUnit());
 
         return entity;

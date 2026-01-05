@@ -13,12 +13,16 @@ import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
 import com.schedule.excel.ElevatorImportTemplateExcel;
 import com.schedule.utils.ExcelUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.schedule.utils.ExcelUtil.isExcelFile;
 
@@ -82,27 +86,27 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", elevatorInfos, null);
     }
 
-//    @GetMapping("/export")
-//    public void exportElevators(HttpServletResponse response) throws Exception {
-//        // 设置响应头
-//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//        response.setCharacterEncoding("utf-8");
-//        String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-//        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-//
-//
-//        List<ElevatorInfo> list = elevatorInfoService.list(); // 从数据库查所有
-//
-//        // 转换为 Excel DTO
-//        List<ElevatorInfoTemplateExcel> dtoList = list.stream()
-//                .map(ElevatorInfoExcelConverter::toDto)
-//                .collect(Collectors.toList());
-//
-//        System.out.println("list size:" + dtoList.toString());
-//
-//        // 写入 Excel
-//        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "电梯信息", dtoList, ElevatorInfoTemplateExcel.class, "doc/elevator.xlsx");
-//    }
+    @GetMapping("/export")
+    public void exportElevators(HttpServletResponse response) throws Exception {
+        // 设置响应头
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+
+        List<ElevatorInfo> list = elevatorInfoService.list(); // 从数据库查所有
+
+        // 转换为 Excel DTO
+        List<ElevatorImportTemplateExcel> dtoList = list.stream()
+                .map(ElevatorImportExcelConverter::toDTO)
+                .collect(Collectors.toList());
+
+        System.out.println("list size:" + dtoList.toString());
+
+        // 写入 Excel
+        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "电梯信息", dtoList, ElevatorImportTemplateExcel.class, "doc/elevator.xlsx");
+    }
 
     @PostMapping("/import")
     public BaseResponse importElevators(@RequestParam("file") MultipartFile file) {

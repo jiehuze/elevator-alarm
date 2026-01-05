@@ -189,6 +189,9 @@ public class ElevatorInfo {
     @TableField("project_name")
     private String projectName;
 
+    @TableField("project_type")
+    private String projectType; // 类型（如：办公楼、住宅区、医院、交通场所、宾馆饭店等）
+
     @TableField("community_id")
     private Long communityId;
 

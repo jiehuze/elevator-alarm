@@ -38,11 +38,10 @@ public class WorkOrderProgress implements Serializable {
     @TableField("fault_content_id")
     private Long faultContentId;     // 故障内容ID
 
-    // 虽然 DB 有默认值，但仍建议 MP 填充以保证一致性
-    private LocalDateTime createTime;
-
     @TableField("employee_id")
     private String employeeId;
+
+    private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
 }

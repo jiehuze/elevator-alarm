@@ -5,18 +5,29 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
 import com.schedule.elevator.dto.WorkOrderDTO;
+import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.service.IPropertyInfoService;
 import com.schedule.elevator.service.IWorkOrderProgressService;
 import com.schedule.elevator.service.IWorkOrderService;
 import com.schedule.elevator.service.IWorkOrderTraceService;
+import com.schedule.utils.DateUtils;
+import com.schedule.utils.WordFileReplace;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/work-order")
@@ -33,6 +44,9 @@ public class WorkOrderController {
 
     @Autowired
     private IWorkOrderProgressService progressService;
+
+    @Autowired
+    private IPropertyInfoService propertyInfoService;
 
     /**
      * 创建工单
@@ -175,4 +189,74 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
     }
 
+    @GetMapping("/export/{id}")
+    public void exportReport(@PathVariable Long id, HttpServletResponse response) {
+        WorkOrder workOrder = workOrderService.getById(id);
+        if (workOrder == null) {
+            return;
+        }
+
+        PropertyInfo propertyInfo = propertyInfoService.getById(workOrder.getUsingUnitId());
+        List<WorkOrderProgress> wps = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
+        HashMap<Byte, WorkOrderProgress> wpMap = new HashMap<>();
+        for (WorkOrderProgress wp : wps) {
+            wpMap.put(wp.getStatus(), wp);
+        }
+
+        Map<String, String> replacements = Map.ofEntries(
+                new SimpleEntry<>("{{orderName}}", workOrder.getOrderNo()), // todo 工单名称
+                new SimpleEntry<>("{{orderNo}}", workOrder.getOrderNo()),
+                new SimpleEntry<>("{{createTime}}", DateUtils.format(workOrder.getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA)),
+                new SimpleEntry<>("{{registerCode}}", workOrder.getRegisterCode()),
+                new SimpleEntry<>("{{rescueCode}}", workOrder.getRescueCode()),
+                new SimpleEntry<>("{{usingUnit}}", workOrder.getUsingUnit()),
+                new SimpleEntry<>("{{usingUnitPhone}}", propertyInfo.getUsingUnitManagerPhone()),
+                new SimpleEntry<>("{{maintenanceUnitName}}", workOrder.getMaintenanceUnitName()),
+                new SimpleEntry<>("{{maintenanceUnitPhone}}", workOrder.getMaintenancePersonnelPhone()),
+                new SimpleEntry<>("{{elevatorAddress}}", workOrder.getElevatorAddress()),
+                new SimpleEntry<>("{{alarmPersonName}}", workOrder.getAlarmPersonName()),
+                new SimpleEntry<>("{{alarmPersonPhone}}", workOrder.getAlarmPersonPhone()),
+                new SimpleEntry<>("{{incidentDescription}}", workOrder.getIncidentDescription()),
+                new SimpleEntry<>("{{trappedCount}}", workOrder.getTrappedCount().toString()),
+                new SimpleEntry<>("{{injuredCount}}", workOrder.getInjuredCount().toString()),
+                new SimpleEntry<>("{{suspectedDeathCount}}", workOrder.getSuspectedDeathCount().toString()),
+                new SimpleEntry<>("{{alarmTime}}", DateUtils.format(workOrder.getAlarmTime(), DateUtils.DATE_TIME_PATTERN_CHINA)),
+                new SimpleEntry<>("{{arrivalTime}}", DateUtils.format(wpMap.get(Byte.valueOf("4")).getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA)), //todo 到达现场时间
+                new SimpleEntry<>("{{completeTime}}", DateUtils.format(wpMap.get(Byte.valueOf("99")).getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA)), //todo 救援完成时间
+                new SimpleEntry<>("{{major}}", workOrder.getMajorIncident() ? "是" : "否"),
+                new SimpleEntry<>("{{rescue}}", workOrder.getMedicalRescueStarted() ? "是" : "否")
+        );
+
+        String outputPath = "/tmp/report_" + System.currentTimeMillis() + ".docx";
+
+        try {
+            WordFileReplace.replaceTextInWordX(replacements, outputPath);
+
+            // 设置响应头
+            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            response.setHeader("Content-Disposition", "attachment; filename=处置报告.docx");
+            response.setHeader("Content-Length", String.valueOf(new File(outputPath).length()));
+
+            // 将文件写入响应流
+            try (FileInputStream fis = new FileInputStream(outputPath);
+                 OutputStream os = response.getOutputStream()) {
+
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.flush();
+            } finally {
+                // 删除临时文件
+                File tempFile = new File(outputPath);
+                if (tempFile.exists()) {
+                    tempFile.delete();
+                }
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            e.printStackTrace();
+        }
+    }
 }

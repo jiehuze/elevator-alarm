@@ -37,6 +37,8 @@ public class DateUtils {
      */
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
+    public static final String DATE_TIME_PATTERN_CHINA = "yyyy年MM月dd日";
+
     /**
      * 日期格式化 日期格式为：yyyy-MM-dd
      *
@@ -63,6 +65,18 @@ public class DateUtils {
         }
         return null;
     }
+
+    /**
+     * 格式化LocalDateTime为指定格式，如果为null则返回空字符串
+     */
+    public static String format(LocalDateTime dateTime, String pattern) {
+        if (dateTime == null) {
+            return "";
+        }
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
+        return dateTime.format(df);
+    }
+
 
     /**
      * 日期解析
