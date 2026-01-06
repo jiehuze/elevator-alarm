@@ -131,4 +131,17 @@ public class DateUtils {
         }
     }
 
+    /**
+     * 计算两个时间点之间的时间差（秒）
+     *
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 时间差（秒），如果结束时间早于开始时间则返回负数
+     */
+    public static long calculateTimeDifferenceInSeconds(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null) {
+            return 0;
+        }
+        return java.time.Duration.between(start, end).getSeconds();
+    }
 }

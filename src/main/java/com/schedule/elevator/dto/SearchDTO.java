@@ -1,6 +1,5 @@
 package com.schedule.elevator.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @ApiModel("工单查询条件")
-public class WorkOrderDTO implements Serializable {
+public class SearchDTO implements Serializable {
 
     @ApiModelProperty("工单编号")
     private String orderNo;

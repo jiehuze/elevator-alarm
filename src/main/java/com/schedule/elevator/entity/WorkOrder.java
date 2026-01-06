@@ -123,6 +123,12 @@ public class WorkOrder implements Serializable {
     @TableField("is_medical_rescue_started")
     private Boolean medicalRescueStarted; // 是否启动医疗救援
 
+    @TableField(value = "time_to_arrive")
+    private Long timeToArrive; // 到达现场用时（秒）
+
+    @TableField(value = "rescue_duration")
+    private Long rescueDuration; // 救援用时（秒）
+
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

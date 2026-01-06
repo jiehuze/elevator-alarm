@@ -7,11 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ElevatorInfoMapper;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
+import com.schedule.elevator.enums.ElevatorTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, ElevatorInfo>
@@ -103,4 +108,37 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(dto.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, dto.getMaintenanceTeamId());
         return this.count(queryWrapper);
     }
+
+    @Override
+    public List<Map<String, Object>> countByElevatorType(SearchDTO searchDTO) {
+        // 获取数据库中的统计结果
+        List<Map<String, Object>> dbResults = baseMapper.countByElevatorType(searchDTO);
+
+        // 创建包含所有电梯类型的映射
+        Map<String, Integer> typeCountMap = new HashMap<>();
+
+        // 初始化所有电梯类型为0
+        for (ElevatorTypeEnum elevatorType : ElevatorTypeEnum.values()) {
+            typeCountMap.put(elevatorType.getDescription(), 0);
+        }
+
+        // 填充数据库中的实际统计结果
+        for (Map<String, Object> result : dbResults) {
+            String elevatorType = (String) result.get("elevatorType");
+            Long count = (Long) result.get("elevatorCount");
+            typeCountMap.put(elevatorType, count.intValue());
+        }
+
+        // 构建最终结果
+        List<Map<String, Object>> finalResults = new ArrayList<>();
+        for (ElevatorTypeEnum elevatorType : ElevatorTypeEnum.values()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("elevatorType", elevatorType.getDescription());
+            item.put("elevatorCount", typeCountMap.get(elevatorType.getDescription()));
+            finalResults.add(item);
+        }
+
+        return finalResults;
+    }
+
 }

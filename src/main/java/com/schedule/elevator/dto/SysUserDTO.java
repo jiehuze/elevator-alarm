@@ -8,6 +8,9 @@ import java.io.Serializable;
 
 @Data
 public class SysUserDTO extends SysUser implements Serializable {
+
+    private String newPassword;
+
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;
 

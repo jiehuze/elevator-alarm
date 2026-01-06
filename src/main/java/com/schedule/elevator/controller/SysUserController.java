@@ -44,6 +44,19 @@ public class SysUserController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", sysUser, null);
     }
 
+    @PostMapping("/password")
+    public BaseResponse updatePwd(@RequestBody SysUserDTO userDTO) {
+        SysUser auth = sysUserService.auth(userDTO);
+        if (auth == null) {
+            return new BaseResponse(HttpStatus.UNAUTHORIZED.value(), "账号或者密码错误", null, null);
+        }
+
+        auth.setPassword(userDTO.getNewPassword());
+        Boolean update = sysUserService.updateUser(auth);
+
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
+    }
+
     @GetMapping("/list")
     public BaseResponse listAll(@ModelAttribute SysUserDTO query) {
         Page<SysUser> list = sysUserService.querySysUserPage(query);

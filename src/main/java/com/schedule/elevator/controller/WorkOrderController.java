@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
-import com.schedule.elevator.dto.WorkOrderDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
@@ -114,6 +114,19 @@ public class WorkOrderController {
                     .setTrappedCount(handleDTO.getTrappedCount())
                     .setSuspectedDeathCount(handleDTO.getSuspectedDeathCount())
                     .setStatus(handleDTO.getStatus());
+            //到达现场时间，计算用时
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode())) {
+                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
+                WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
+
+                workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+            }
+            //救援完成时间，计算用时
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode())) {
+                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
+                WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
+                workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+            }
 
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(handleDTO.getOrderNo())
                     .setProgress(handleDTO.getProgress())
@@ -174,7 +187,7 @@ public class WorkOrderController {
     }
 
     @GetMapping("/list")
-    public BaseResponse list(@ModelAttribute WorkOrderDTO workOrderDTO) {
+    public BaseResponse list(@ModelAttribute SearchDTO workOrderDTO) {
         System.out.println("---------------" + workOrderDTO);
         Page<WorkOrder> workOrderPage = workOrderService.queryByConditionsPage(workOrderDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", workOrderPage, null);
@@ -191,7 +204,7 @@ public class WorkOrderController {
     }
 
     @GetMapping("/statistical")
-    public BaseResponse statistical(@ModelAttribute WorkOrderDTO workOrderDTO) {
+    public BaseResponse statistical(@ModelAttribute SearchDTO workOrderDTO) {
         List<Map<String, Object>> rootFaultCount = faultRecordService.countByRootCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
         List<Map<String, Object>> subFaultCount = faultRecordService.countBySubCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", subFaultCount, null);
@@ -205,11 +218,7 @@ public class WorkOrderController {
         }
 
         PropertyInfo propertyInfo = propertyInfoService.getById(workOrder.getUsingUnitId());
-        List<WorkOrderProgress> wps = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
-        HashMap<Integer, WorkOrderProgress> wpMap = new HashMap<>();
-        for (WorkOrderProgress wp : wps) {
-            wpMap.put(wp.getStatus(), wp);
-        }
+        HashMap<Integer, WorkOrderProgress> wpMap = workOrderProgressService.queryMapByOrderNo(workOrder.getOrderNo());
 
         Map<String, String> replacements = Map.ofEntries(
                 new SimpleEntry<>("{{orderName}}", workOrder.getOrderNo()), // todo 工单名称
@@ -235,7 +244,7 @@ public class WorkOrderController {
                 new SimpleEntry<>("{{rescue}}", workOrder.getMedicalRescueStarted() ? "是" : "否")
         );
 
-        for (WorkOrderProgress wp : wps) {
+        for (WorkOrderProgress wp : wpMap.values()) {
             String value = DateUtils.format(wp.getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA) + "   " + "工号" + wp.getEmployeeId() + "   " + wp.getResult();
             replacements.put("{{progress" + wp.getStatus() + "}}", wp.getProgress());
         }
