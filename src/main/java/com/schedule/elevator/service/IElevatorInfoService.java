@@ -29,4 +29,11 @@ public interface IElevatorInfoService extends IService<ElevatorInfo> {
      * 19892	18427	5	6	3	1	963	127	66	294
      */
     List<Map<String, Object>> countByElevatorType(SearchDTO searchDTO);
+
+    List<Map<String, Object>> countByDistrict(SearchDTO searchDTO);
+
+    /**
+     * 计算一段时间内新增电梯数
+     */
+    Map<String, Object> countNewElevators(SearchDTO searchDTO);
 }

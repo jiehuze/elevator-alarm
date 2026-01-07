@@ -8,6 +8,7 @@ import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.enums.RescueLevelEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.service.*;
 import com.schedule.utils.DateUtils;
@@ -88,10 +89,22 @@ public class WorkOrderController {
         } else {
             //添加记
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(workOrder.getOrderNo())
-                    .setProgress(WorkOrderStatusEnum.getByCode(workOrder.getStatus()).getDescription())
                     .setResult("成功")
                     .setStatus(workOrder.getStatus())
                     .setEmployeeId(workOrder.getEmployeeId());
+
+            if (workOrder.getRescueLevel() != null) {
+                if (workOrder.getRescueLevel().equals(RescueLevelEnum.LEVEL_1.getCode())
+                        || workOrder.getRescueLevel().equals(RescueLevelEnum.LEVEL_2.getCode())) {
+                    String progress = "选择" + RescueLevelEnum.getByCode(workOrder.getRescueLevel()).getDescription() + "派单";
+                    workOrderProgress.setProgress(progress);
+                } else if (workOrder.getRescueLevel().equals(RescueLevelEnum.LEVEL_3.getCode())) {
+                    String progress = "选择" + RescueLevelEnum.getByCode(workOrder.getRescueLevel()).getDescription() + "派单";
+                    workOrderProgress.setProgress(progress);
+                    workOrderProgress.setRemark("救援电话：" + workOrder.getRescueHotline());
+                }
+            }
+
             workOrderProgressService.save(workOrderProgress);
         }
         return new BaseResponse(HttpStatus.OK.value(), "创建救援信息成功", res, null);

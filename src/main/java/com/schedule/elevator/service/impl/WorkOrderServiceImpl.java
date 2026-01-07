@@ -9,6 +9,7 @@ import com.schedule.elevator.dao.mapper.WorkOrderMapper;
 import com.schedule.elevator.dto.HandleProgressDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.WorkOrder;
+import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IWorkOrderService;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.eq(StringUtils.isNotBlank(dto.getEmployeeId()), WorkOrder::getEmployeeId, dto.getEmployeeId());
         query.eq(StringUtils.isNotBlank(dto.getRescueCode()), WorkOrder::getRescueCode, dto.getRescueCode());
         query.eq(dto.getMaintenanceUnitId() != null, WorkOrder::getMaintenanceUnitId, dto.getMaintenanceUnitId());
+
+        if (dto.getHistoryWorkOrder() != null){
+            query.notIn(WorkOrder::getOrderType, WorkOrderTypeEnum.COMPLAINT.getCode(), WorkOrderTypeEnum.CONSULTATION.getCode()); // 不包含 3,4,投诉和咨询
+        }
 
         if (StringUtils.isNotBlank(dto.getRescueCodeOrder())) {
             if (dto.getRescueCodeOrder().equals("asc")) {

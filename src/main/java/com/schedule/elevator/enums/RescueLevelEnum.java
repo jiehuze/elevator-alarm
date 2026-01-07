@@ -1,26 +1,68 @@
 package com.schedule.elevator.enums;
 
-import lombok.Getter;
-
-@Getter
+/**
+ * 救援级别枚举
+ */
 public enum RescueLevelEnum {
-    GENERAL(1, "一般"),
-    URGENT(2, "紧急"),
-    CRITICAL(3, "特急");
+    
+    /**
+     * 一级救援
+     */
+    LEVEL_1(1, "一级救援"),
+    
+    /**
+     * 二级救援
+     */
+    LEVEL_2(2, "二级救援"),
+    
+    /**
+     * 三级救援
+     */
+    LEVEL_3(3, "三级救援");
 
-    private final int code;
-    private final String desc;
+    private final Integer code;
+    private final String description;
 
-    RescueLevelEnum(int code, String desc) {
+    RescueLevelEnum(Integer code, String description) {
         this.code = code;
-        this.desc = desc;
+        this.description = description;
     }
 
-    public static String getDescByCode(Integer code) {
-        if (code == null) return "未知";
-        for (RescueLevelEnum e : values()) {
-            if (e.code == code) return e.desc;
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * 根据状态码获取枚举
+     */
+    public static RescueLevelEnum getByCode(Integer code) {
+        if (code == null) {
+            return null;
         }
-        return "未知";
+        for (RescueLevelEnum level : values()) {
+            if (level.getCode().equals(code)) {
+                return level;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据状态描述获取枚举
+     */
+    public static RescueLevelEnum getByDescription(String description) {
+        if (description == null) {
+            return null;
+        }
+        for (RescueLevelEnum level : values()) {
+            if (level.getDescription().equals(description)) {
+                return level;
+            }
+        }
+        return null;
     }
 }

@@ -66,7 +66,7 @@ public class WorkOrder implements Serializable {
     private String incidentDescription; // 事故描述
 
     @TableField("rescue_level")
-    private Byte rescueLevel; // 救援级别
+    private Integer rescueLevel; // 救援级别
 
     @TableField("using_unit")
     private String usingUnit; // 使用单位名称

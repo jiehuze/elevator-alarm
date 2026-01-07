@@ -50,6 +50,9 @@ public class SearchDTO implements Serializable {
     @ApiModelProperty("工单类型ID")
     private String orderType;
 
+    @ApiModelProperty("历史工单")
+    private Boolean historyWorkOrder;
+
     @ApiModelProperty("维保单位ID")
     private Long maintenanceUnitId;
 

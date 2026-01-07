@@ -32,4 +32,22 @@ public class StatisticalController {
         List<Map<String, Object>> elTypeCount = elevatorInfoService.countByElevatorType(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", elTypeCount, null);
     }
+
+    /**
+     * 按区县统计电梯数量及占比
+     */
+    @GetMapping("/elevator-district-count")
+    public BaseResponse countByDistrict(@ModelAttribute SearchDTO searchDTO) {
+        List<Map<String, Object>> elTypeCount = elevatorInfoService.countByDistrict(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", elTypeCount, null);
+    }
+
+    /**
+     * 统计时间段内新增电梯数
+     */
+    @GetMapping("/new-elevators")
+    public BaseResponse countNewElevators(@ModelAttribute SearchDTO searchDTO) {
+        Map<String, Object> result = elevatorInfoService.countNewElevators(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", result, null);
+    }
 }

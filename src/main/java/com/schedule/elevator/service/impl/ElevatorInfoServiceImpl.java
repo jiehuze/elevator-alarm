@@ -13,6 +13,7 @@ import com.schedule.elevator.enums.ElevatorTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -141,4 +142,32 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         return finalResults;
     }
 
+    @Override
+    public List<Map<String, Object>> countByDistrict(SearchDTO searchDTO) {
+        return baseMapper.countByDistrict(searchDTO);
+    }
+
+    @Override
+    public Map<String, Object> countNewElevators(SearchDTO searchDTO) {
+        Map<String, Object> map = baseMapper.countNewElevators(searchDTO);
+
+        // 使用Object类型接收，然后转换为Long
+        Object totalObj = map.get("totalElevators");
+        Object newObj = map.get("newElevators");
+
+        Long totalElevators = totalObj != null ? ((Number) totalObj).longValue() : 0L;
+        Long newElevators = newObj != null ? ((Number) newObj).longValue() : 0L;
+        Long beforeElevators = totalElevators - newElevators;
+
+        // 计算增长率：新增数/期初数量*100，保留2位小数
+        double growthRate = 0.0;
+        if (totalElevators != null && totalElevators > 0) {
+            growthRate = Math.round((newElevators.doubleValue() / totalElevators) * 10000.0) / 100.0;
+        }
+
+        map.put("beforeElevators", beforeElevators);
+        map.put("growthRate", growthRate);
+
+        return map;
+    }
 }
