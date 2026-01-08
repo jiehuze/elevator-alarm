@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.schedule.elevator.entity.MaintenancePersonnel;
+import com.schedule.elevator.entity.MaintenanceTeam;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface IMaintenancePersonnelService extends IService<MaintenancePerson
     long count(MaintenancePersonnel entity);
 
     boolean updateContentById(MaintenancePersonnel entity);
+
+    long getOrCreateMaintenancePersonnelId(MaintenancePersonnel entity);
 }

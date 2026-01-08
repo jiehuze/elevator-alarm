@@ -1,5 +1,6 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,6 +41,9 @@ public class ElevatorInfoController {
     private IMaintenanceTeamService maintenanceTeamService;
 
     @Autowired
+    private IMaintenancePersonnelService maintenancePersonnelService;
+
+    @Autowired
     private IPropertyInfoService propertyInfoService;
 
     @Autowired
@@ -60,8 +64,18 @@ public class ElevatorInfoController {
 
     @PutMapping("/update")
     public BaseResponse update(@RequestBody ElevatorInfo elevator) {
-        elevatorInfoService.updateById(elevator);
+        elevatorInfoService.update(elevator,
+                new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevator.getId()));
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", elevator, null);
+    }
+
+    @PutMapping("/batchUpdate")
+    public BaseResponse batchUpdate(@RequestBody List<ElevatorInfo> elevatorList) {
+        for (ElevatorInfo elevator : elevatorList) {
+            elevatorInfoService.update(elevator,
+                    new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevator.getId()));
+        }
+        return new BaseResponse(HttpStatus.OK.value(), "更新成功", true, null);
     }
 
     @GetMapping("/{id}")
@@ -141,11 +155,18 @@ public class ElevatorInfoController {
                     MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
                     long maintenanceUnitId = maintenanceUnitService.getOrCreateMaintenanceUnitId(maintenanceEntity.getMaintenanceUnit());
 
+                    //读取维保团队信息，并写入
                     maintenanceEntity.getMaintenanceTeam().setMaintenanceUnitId(maintenanceUnitId);
                     long maintenanceTeamId = maintenanceTeamService.getOrCreateMaintenanceTeamId(maintenanceEntity.getMaintenanceTeam());
 
+                    //读取维保人员信息，并写入
+                    maintenanceEntity.getMaintenancePersonnel().setMaintenanceUnitId(maintenanceUnitId);
+                    maintenanceEntity.getMaintenancePersonnel().setMaintenanceTeamId(maintenanceTeamId);
+                    long maintenancePersonnelId = maintenancePersonnelService.getOrCreatePersonnelId(maintenanceEntity.getMaintenancePersonnel());
+
                     elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
                     elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
+                    elevatorInfo.setMaintenancePersonnelId(maintenancePersonnelId);
                     elevatorInfo.setCommunityId(communityId);
                     elevatorInfo.setUsingUnitId(UsingUnitId);
 

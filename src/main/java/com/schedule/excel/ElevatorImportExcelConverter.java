@@ -29,6 +29,7 @@ public class ElevatorImportExcelConverter {
         entity.setModel(dto.getModel());
         entity.setOperationStartDate(parseDate(dto.getOperationStartDate()));
         entity.setMaintenanceType(dto.getMaintenanceType());
+        entity.setMaintenancePersonnelName(dto.getWorkerName());
         entity.setPropertyOwner(dto.getPropertyOwner());
         entity.setFactorySerialNumber(dto.getFactorySerialNumber());
         entity.setInstallationCompany(dto.getInstallationCompany());
@@ -75,6 +76,7 @@ public class ElevatorImportExcelConverter {
         MaintenanceDTO entity = new MaintenanceDTO();
         entity.setMaintenanceUnit(new MaintenanceUnit());
         entity.setMaintenanceTeam(new MaintenanceTeam());
+        entity.setMaintenancePersonnel(new MaintenancePersonnel());
 
         entity.getMaintenanceUnit().setMaintainerUnitName(dto.getMaintenanceUnitName());
         entity.getMaintenanceUnit().setMaintainerUnitManager(dto.getMaintenanceUnitManager());
@@ -83,6 +85,14 @@ public class ElevatorImportExcelConverter {
         entity.getMaintenanceTeam().setTeamName(dto.getTeamName());
         entity.getMaintenanceTeam().setLeaderName(dto.getTeamLeaderName());
         entity.getMaintenanceTeam().setLeaderPhone(dto.getTeamLeaderPhone());
+        entity.getMaintenanceTeam().setProvince(dto.getProvince());
+        entity.getMaintenanceTeam().setCity(dto.getCity());
+        entity.getMaintenanceTeam().setDistrict(dto.getDistrict());
+
+        entity.getMaintenancePersonnel().setName(dto.getWorkerName());
+        entity.getMaintenancePersonnel().setPhone(dto.getWorkerPhone());
+        entity.getMaintenancePersonnel().setCompany(dto.getMaintenanceUnitName());
+        entity.getMaintenancePersonnel().setStatus(1);
 
         return entity;
     }

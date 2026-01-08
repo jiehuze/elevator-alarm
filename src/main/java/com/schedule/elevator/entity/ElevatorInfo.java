@@ -97,7 +97,7 @@ public class ElevatorInfo {
     private Long maintenancePersonnelId; // 维保人ID
 
     @TableField("maintenance_personnel_name")
-    private Long maintenancePersonnelName; // 维保人
+    private String maintenancePersonnelName; // 维保人
 
     /**
      * 电梯产权单位

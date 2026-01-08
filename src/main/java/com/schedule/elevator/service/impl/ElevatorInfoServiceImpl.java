@@ -35,6 +35,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(elevatorInfoDTO.getUsingUnit() != null, ElevatorInfo::getUsingUnit, elevatorInfoDTO.getUsingUnit());
         queryWrapper.eq(elevatorInfoDTO.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, elevatorInfoDTO.getUsingUnitId());
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, elevatorInfoDTO.getMaintenanceTeamId());
+        queryWrapper.eq(elevatorInfoDTO.getCommunityId() != null, ElevatorInfo::getCommunityId, elevatorInfoDTO.getCommunityId());
 
         queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
         return this.page(page, queryWrapper);

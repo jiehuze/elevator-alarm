@@ -48,7 +48,7 @@ public class SysUserController {
     public BaseResponse updatePwd(@RequestBody SysUserDTO userDTO) {
         SysUser auth = sysUserService.auth(userDTO);
         if (auth == null) {
-            return new BaseResponse(HttpStatus.UNAUTHORIZED.value(), "账号或者密码错误", null, null);
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "账号或者密码错误", null, null);
         }
 
         auth.setPassword(userDTO.getNewPassword());

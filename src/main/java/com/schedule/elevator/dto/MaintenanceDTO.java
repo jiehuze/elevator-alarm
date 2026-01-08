@@ -1,5 +1,6 @@
 package com.schedule.elevator.dto;
 
+import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import lombok.Data;
@@ -12,4 +13,5 @@ import java.io.Serializable;
 public class MaintenanceDTO implements Serializable {
     private MaintenanceUnit maintenanceUnit;
     private MaintenanceTeam maintenanceTeam;
+    private MaintenancePersonnel maintenancePersonnel;
 }

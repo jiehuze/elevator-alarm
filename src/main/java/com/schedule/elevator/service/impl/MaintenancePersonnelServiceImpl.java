@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.MaintenancePersonnelMapper;
 import com.schedule.elevator.entity.MaintenancePersonnel;
+import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.service.IMaintenancePersonnelService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -56,6 +57,24 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
         updateWrapper.set(StringUtils.hasText(entity.getCompany()), MaintenancePersonnel::getCompany, entity.getCompany());
 
         return update(updateWrapper);
+    }
+
+    @Override
+    public long getOrCreateMaintenancePersonnelId(MaintenancePersonnel entity) {
+        // 1. 先查询是否已存在
+        MaintenancePersonnel existing = this.getOne(new LambdaQueryWrapper<MaintenancePersonnel>()
+                .eq(MaintenancePersonnel::getPhone, entity.getPhone()));
+
+        if (existing != null) {
+            return existing.getId();
+        }
+
+        boolean saved = this.save(entity);
+        if (!saved) {
+            throw new RuntimeException("维保单位插入失败");
+        }
+
+        return entity.getId();
     }
 
     @Override
