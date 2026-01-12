@@ -2,9 +2,10 @@ package com.schedule.elevator.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.schedule.elevator.dto.HandleProgressDTO;
-import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
+
+import java.util.List;
 
 public interface IWorkOrderService extends IService<WorkOrder> {
     Page<WorkOrder> queryByConditionsPage(SearchDTO wrokOrderDTO);
@@ -18,4 +19,10 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     Boolean handleWorkOrder(HandleProgressDTO handleProgressDTO);
 
     Boolean updateByOrderNo(WorkOrder workOrder);
+
+    WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO);
+
+    List<TimeSlotStatsDTO> getFaultStatsByTimeSlot(SearchDTO searchDTO);
+
+    RescueLevelStatsDTO getRescueLevelStats(SearchDTO searchDTO);
 }

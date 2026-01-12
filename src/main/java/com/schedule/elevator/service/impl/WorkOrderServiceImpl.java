@@ -6,16 +6,25 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.WorkOrderMapper;
-import com.schedule.elevator.dto.HandleProgressDTO;
-import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IWorkOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder>
         implements IWorkOrderService {
+
+    @Autowired
+    protected WorkOrderMapper workOrderMapper;
+
     @Override
     public Page<WorkOrder> queryByConditionsPage(SearchDTO dto) {
         // 校验分页参数
@@ -50,7 +59,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.eq(StringUtils.isNotBlank(dto.getRescueCode()), WorkOrder::getRescueCode, dto.getRescueCode());
         query.eq(dto.getMaintenanceUnitId() != null, WorkOrder::getMaintenanceUnitId, dto.getMaintenanceUnitId());
 
-        if (dto.getHistoryWorkOrder() != null){
+        if (dto.getHistoryWorkOrder() != null) {
             query.notIn(WorkOrder::getOrderType, WorkOrderTypeEnum.COMPLAINT.getCode(), WorkOrderTypeEnum.CONSULTATION.getCode()); // 不包含 3,4,投诉和咨询
         }
 
@@ -146,5 +155,54 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(WorkOrder::getOrderNo, workOrder.getOrderNo());
         return update(workOrder, updateWrapper);
+    }
+
+    @Override
+    public WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO) {
+        return workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+    }
+
+    @Override
+    public List<TimeSlotStatsDTO> getFaultStatsByTimeSlot(SearchDTO searchDTO) {
+        // 1. 获取原始数据
+        List<TimeSlotStatsDTO> rawList = workOrderMapper.getFaultStatsByTimeSlot(searchDTO);
+
+        // 2. 构建完整时间段（0-2, 2-4, ..., 22-24）
+        Map<String, Integer> fullMap = new LinkedHashMap<>();
+        for (int i = 0; i < 24; i += 2) {
+            String slot = i + "-" + (i + 2);
+            fullMap.put(slot, 0); // 默认为 0
+        }
+
+        // 3. 覆盖有数据的时段
+        for (TimeSlotStatsDTO item : rawList) {
+            fullMap.put(item.getTimeSlot(), item.getCount());
+        }
+
+        // 4. 转为 List 返回（保持顺序）
+        return fullMap.entrySet().stream()
+                .map(entry -> {
+                    TimeSlotStatsDTO stat = new TimeSlotStatsDTO();
+                    stat.setTimeSlot(entry.getKey());
+                    stat.setCount(entry.getValue());
+                    return stat;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RescueLevelStatsDTO getRescueLevelStats(SearchDTO searchDTO) {
+        RescueLevelStatsDTO stats = workOrderMapper.getRescueLevelStats(searchDTO);
+
+        // 防止数据库返回 null（虽然 SUM/COUNT 通常不会）
+        if (stats == null) {
+            stats = new RescueLevelStatsDTO();
+        }
+        stats.setLevel1(stats.getLevel1() == null ? 0 : stats.getLevel1());
+        stats.setLevel2(stats.getLevel2() == null ? 0 : stats.getLevel2());
+        stats.setLevel3(stats.getLevel3() == null ? 0 : stats.getLevel3());
+        stats.setTotal(stats.getTotal() == null ? 0 : stats.getTotal());
+
+        return stats;
     }
 }

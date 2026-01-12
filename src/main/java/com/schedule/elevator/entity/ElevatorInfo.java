@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * 对应数据库表：elevator_info
  */
 @Data
-@TableName("elevator_info")
+@TableName("elevator")
 public class ElevatorInfo {
 
     /**
@@ -89,6 +89,9 @@ public class ElevatorInfo {
 
     @TableField("maintenance_unit_id")
     private Long maintenanceUnitId; // 维保单位ID
+
+    @TableField("maintenance_unit")
+    private String maintenanceUnit; // 维保单位
 
     @TableField("maintenance_team_id")
     private Long maintenanceTeamId; // 维保班组ID
