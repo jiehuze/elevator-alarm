@@ -1,6 +1,7 @@
 package com.schedule.elevator.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.schedule.elevator.dto.FaultResultDTO;
 import com.schedule.elevator.entity.FaultRecord;
 
 import java.time.LocalDateTime;
@@ -33,4 +34,11 @@ public interface IFaultRecordService extends IService<FaultRecord> {
      * 按根故障码统计在指定时间范围内的故障数量（相同工单号只计算一次）
      */
     List<Map<String, Object>> countBySubCodeInTimeRange(LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * 按根故障码统计在指定时间范围内的故障总数
+     */
+    Long countAllTimeRange(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<FaultResultDTO> statisticalFault(LocalDateTime startTime, LocalDateTime endTime);
 }

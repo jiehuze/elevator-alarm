@@ -17,8 +17,8 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
      */
     @Select("<script>" +
             "SELECT " +
-            "    root_code as rootCode, " +
-            "    COUNT(DISTINCT order_no) as faultCount " +
+            "    root_code as faultCode, " +
+            "    COUNT(order_no) as faultCount " +
             "FROM fault_records " +
             "WHERE created_at BETWEEN #{startTime} AND #{endTime} " +
             "GROUP BY root_code " +
@@ -32,8 +32,8 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
      */
     @Select("<script>" +
             "SELECT " +
-            "    sub_code as subCode, " +
-            "    COUNT(DISTINCT order_no) as faultCount " +
+            "    sub_code as faultCode, " +
+            "    COUNT(order_no) as faultCount " +
             "FROM fault_records " +
             "WHERE created_at BETWEEN #{startTime} AND #{endTime} " +
             "GROUP BY sub_code " +
@@ -41,6 +41,5 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
             "</script>")
     List<Map<String, Object>> countBySubCodeInTimeRange(@Param("startTime") LocalDateTime startTime,
                                                         @Param("endTime") LocalDateTime endTime);
-
 
 }

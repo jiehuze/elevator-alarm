@@ -1,8 +1,10 @@
 package com.schedule.elevator.controller;
 
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.FaultResultDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.IFaultRecordService;
 import com.schedule.elevator.service.IWorkOrderProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,9 @@ public class StatisticalController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    private IFaultRecordService faultRecordService;
 
     /**
      * 按电梯类型统计数量（支持时间范围筛选）
@@ -49,5 +55,21 @@ public class StatisticalController {
     public BaseResponse countNewElevators(@ModelAttribute SearchDTO searchDTO) {
         Map<String, Object> result = elevatorInfoService.countNewElevators(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", result, null);
+    }
+
+    @GetMapping("/statistical")
+    public BaseResponse statistical(@ModelAttribute SearchDTO workOrderDTO) {
+//        List<Map<String, Long>> rootFaultCount = faultRecordService.countByRootCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+//        List<Map<String, Long>> subFaultCount = faultRecordService.countBySubCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+//        Long totals = faultRecordService.countAllTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+//
+//
+//        HashMap<String, Object> faultCountMap = new HashMap<>();
+//        faultCountMap.put("rootFaultCount", rootFaultCount);
+//        faultCountMap.put("subFaultCount", subFaultCount);
+//        faultCountMap.put("totals", totals);
+        List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", faultResultDTOS, null);
     }
 }

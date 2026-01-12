@@ -216,13 +216,6 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
     }
 
-    @GetMapping("/statistical")
-    public BaseResponse statistical(@ModelAttribute SearchDTO workOrderDTO) {
-        List<Map<String, Object>> rootFaultCount = faultRecordService.countByRootCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
-        List<Map<String, Object>> subFaultCount = faultRecordService.countBySubCodeInTimeRange(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
-        return new BaseResponse(HttpStatus.OK.value(), "查询成功", subFaultCount, null);
-    }
-
     @GetMapping("/export/{id}")
     public void exportReport(@PathVariable Long id, HttpServletResponse response) {
         WorkOrder workOrder = workOrderService.getById(id);
