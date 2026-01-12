@@ -1,10 +1,7 @@
 package com.schedule.elevator.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.schedule.elevator.dto.RescueLevelStatsDTO;
-import com.schedule.elevator.dto.SearchDTO;
-import com.schedule.elevator.dto.TimeSlotStatsDTO;
-import com.schedule.elevator.dto.WorkOrderStatisticsDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -92,4 +89,29 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     RescueLevelStatsDTO getRescueLevelStats(@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 查询符合条件的各 project_type 的数量（只返回存在的类型）
+     */
+    @Select({
+            "<script>",
+            "SELECT project_type AS projectCode, COUNT(*) AS count ",
+            "FROM work_order ",
+            "WHERE project_type IS NOT NULL ",
+            "  AND project_type != '' ",
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.status != null'>",
+            "  AND status = #{searchDTO.status}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            // 可继续添加其他条件...
+            "GROUP BY project_type",
+            "</script>"
+    })
+    List<ProjectTypeCountDTO> getProjectTypeCounts(@Param("searchDTO") SearchDTO searchDTO);
+
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
+import com.schedule.elevator.enums.ProjectTypeEnum;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,8 +44,11 @@ public class ElevatorImportExcelConverter {
         entity.setCity(dto.getCity());
         entity.setDistrict(dto.getDistrict());
         entity.setProjectName(dto.getProjectName());
-        entity.setProjectType(dto.getProjectType());
         entity.setUsingUnit(dto.getUsingUnit());
+
+        if (StringUtils.isNotBlank(dto.getProjectType()) && ProjectTypeEnum.getByDescription(dto.getProjectType()) != null) {
+            entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getProjectType()).getCode());
+        }
 
         return entity;
     }
@@ -54,7 +58,6 @@ public class ElevatorImportExcelConverter {
         Community community = new Community();
 
         community.setProjectName(dto.getProjectName())
-                .setProjectType(dto.getProjectType())
                 .setDistrict(dto.getDistrict())
                 .setCity(dto.getCity())
                 .setRealEstateBrand(dto.getRealEstateBrand())
@@ -63,6 +66,10 @@ public class ElevatorImportExcelConverter {
                 .setUsingUnit(dto.getUsingUnit())
                 .setSafetyOfficerName(dto.getSafetyOfficerName())
                 .setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
+
+        if (StringUtils.isNotBlank(dto.getProjectType()) && ProjectTypeEnum.getByDescription(dto.getProjectType()) != null) {
+            community.setProjectType(ProjectTypeEnum.getByDescription(dto.getProjectType()).getCode());
+        }
 
         return community;
     }

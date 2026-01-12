@@ -8,14 +8,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.WorkOrderMapper;
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
+import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IWorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,6 +159,43 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    public HashMap<String, DuplicateOrderDTO> getOrdersByDuplicateRescueCode(SearchDTO searchDTO) {
+        LambdaQueryWrapper<WorkOrder> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(
+                WorkOrder::getRescueCode,
+                baseMapper.selectList(
+                                new LambdaQueryWrapper<WorkOrder>()
+                                        .select(WorkOrder::getRescueCode)
+                                        .ge(searchDTO.getCreateTimeStart() != null, WorkOrder::getCreateTime, searchDTO.getCreateTimeStart())  // 添加开始时间条件
+                                        .le(searchDTO.getCreateTimeEnd() != null, WorkOrder::getCreateTime, searchDTO.getCreateTimeEnd())      // 添加结束时间条件
+                                        .groupBy(WorkOrder::getRescueCode)
+                                        .having("COUNT(*) >= 2")
+                        ).stream()
+                        .map(WorkOrder::getRescueCode)
+                        .collect(Collectors.toList())
+        );
+
+        List<WorkOrder> list = list(wrapper);
+
+        HashMap<String, DuplicateOrderDTO> map = new HashMap<>();
+        for (WorkOrder workOrder : list) {
+            DuplicateOrderDTO dto = map.get(workOrder.getRescueCode());
+            if (dto == null) {
+                ArrayList<WorkOrder> workOrders = new ArrayList<>();
+                dto = new DuplicateOrderDTO().setRescueCode(workOrder.getRescueCode()).setRegisterCode(workOrder.getRegisterCode()).setCount(1l).setDistrict(workOrder.getDistrict());
+                dto.setList(workOrders);
+                map.put(workOrder.getRescueCode(), dto);
+            } else {
+                dto.setCount(dto.getCount() + 1);
+            }
+
+            dto.getList().add(workOrder);
+        }
+
+        return map;
+    }
+
+    @Override
     public WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO) {
         return workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
     }
@@ -204,5 +242,53 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         stats.setTotal(stats.getTotal() == null ? 0 : stats.getTotal());
 
         return stats;
+    }
+
+    @Override
+    public ProjectTypeStatItemDTO getProjectTypeStats(SearchDTO searchDTO) {
+        List<ProjectTypeEnum> allTypes = Arrays.asList(ProjectTypeEnum.values());
+
+        // 查询数据库中各 code 的数量
+        List<ProjectTypeCountDTO> dbResults = workOrderMapper.getProjectTypeCounts(searchDTO);
+
+        // 构建 countMap
+        Map<String, ProjectTypeCountDTO> countMap = new HashMap<>();
+        Long total = 0l;
+        for (ProjectTypeCountDTO item : dbResults) {
+            String projectCode = item.getProjectCode();
+            Long count = item.getCount() == null ? 0 : item.getCount();
+//            System.out.println(projectCode + ": " + count);
+            countMap.put(projectCode, item);
+            total += count;
+        }
+
+        // 补全所有类型
+        List<ProjectTypeCountDTO> result = new ArrayList<>();
+
+        for (ProjectTypeEnum type : allTypes) {
+            BigDecimal percentage = BigDecimal.ZERO;
+            ProjectTypeCountDTO projectTypeCountDTO = countMap.get(type.getCode());
+            if (projectTypeCountDTO != null) {
+                if (total > 0) {
+                    percentage = BigDecimal.valueOf(projectTypeCountDTO.getCount())
+                            .divide(BigDecimal.valueOf(total), 4, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100))
+                            .setScale(2, RoundingMode.HALF_UP);
+                }
+
+                projectTypeCountDTO.setProjectCode(type.getCode()).setProjectName(type.getDescription()).setPercentage(percentage);
+            } else {
+                projectTypeCountDTO = new ProjectTypeCountDTO();
+            }
+
+            projectTypeCountDTO.setProjectCode(type.getCode()).setProjectName(type.getDescription()).setPercentage(percentage);
+            result.add(projectTypeCountDTO);
+        }
+
+        ProjectTypeStatItemDTO projectTypeStatItemDTO = new ProjectTypeStatItemDTO();
+        projectTypeStatItemDTO.setProjectTypeCounts(result);
+        projectTypeStatItemDTO.setTotal(total);
+
+        return projectTypeStatItemDTO;
     }
 }

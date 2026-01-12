@@ -2,6 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
+import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IFaultRecordService;
 import com.schedule.elevator.service.IWorkOrderProgressService;
@@ -70,6 +71,13 @@ public class StatisticalController {
 
     /*******************************************电梯故障统计******************************************/
 
+    @GetMapping("/duplicate-orders")
+    public BaseResponse getOrdersByDuplicateRescueCode(@ModelAttribute SearchDTO searchDTO) {
+        HashMap<String, DuplicateOrderDTO> oMap = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
+
+        return new BaseResponse(HttpStatus.OK.value(), "success", oMap, null);
+    }
+
     /**
      * 月份	处置事件总数（起）	困人（起）	非困人（起）	其他（起）	解救被困人数（人）	困人救援到达现场平均（分钟）	非困人救援到达现场平均（分钟）	实施救援平均用时（分钟）
      * 12月份	127	57	56	4	112	8.39	9.05	2.0
@@ -99,5 +107,23 @@ public class StatisticalController {
     public BaseResponse countRescueLevel(@ModelAttribute SearchDTO searchDTO) {
         RescueLevelStatsDTO rescueLevelStats = workOrderService.getRescueLevelStats(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", rescueLevelStats, null);
+    }
+
+    /**
+     * 按项目类型统计数量,
+     * RESIDENTIAL_AREA("住宅小区", "RESIDENTIAL"),
+     * OFFICE_AREA("办公区域", "OFFICE"),
+     * MALL_SUPERMARKET("商场超市", "MALL"),
+     * HOTEL_RESTAURANT("宾馆饭店", "HOTEL"),
+     * HOSPITAL("医院", "HOSPITAL"),
+     * SCHOOL("学校", "SCHOOL"),
+     * TRANSPORTATION("交通场所", "TRANSPORTATION"),
+     * CULTURAL_ENTERTAINMENT("文体娱乐馆", "CULTURAL"),
+     * OTHER_PLACE("其他场所", "OTHER");
+     */
+    @GetMapping("/project-type-count")
+    public BaseResponse countProjectType(@ModelAttribute SearchDTO searchDTO) {
+        ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", projectTypeStats, null);
     }
 }
