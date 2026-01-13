@@ -37,8 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 配置无需认证的路径
     private static final List<String> WHITE_LIST = Arrays.asList(
-            "/elevator/sys-user/**",
-            "/elevator/**",
+            "/elevator/sys-user/login",
+//            "/elevator/**",
             "/actuator/health"
     );
 

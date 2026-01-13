@@ -37,7 +37,8 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, elevatorInfoDTO.getMaintenanceTeamId());
         queryWrapper.eq(elevatorInfoDTO.getCommunityId() != null, ElevatorInfo::getCommunityId, elevatorInfoDTO.getCommunityId());
 
-        queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
+//        queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
+        queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
         return this.page(page, queryWrapper);
     }
 
