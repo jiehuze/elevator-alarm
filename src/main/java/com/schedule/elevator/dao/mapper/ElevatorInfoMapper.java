@@ -16,7 +16,7 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "SELECT " +
             "    elevator_type AS elevatorType, " +
             "    COUNT(*) AS elevatorCount " +
-            "FROM elevator_info " +
+            "FROM elevator " +
             "WHERE elevator_type IS NOT NULL " +
             "  AND elevator_type != '' " +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
@@ -34,7 +34,7 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
             "  WHERE created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
             "</if>), 2) AS percentage " +
-            "FROM elevator_info " +
+            "FROM elevator " +
             "WHERE district IS NOT NULL " +
             "  AND district != '' " +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
@@ -48,7 +48,7 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "SELECT " +
             "    COUNT(*) AS totalElevators, " +
             "    SUM(CASE WHEN created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} THEN 1 ELSE 0 END) AS newElevators " +
-            "FROM elevator_info " +
+            "FROM elevator " +
             "WHERE created_at IS NOT NULL " +
             "  AND #{searchDTO.createTimeStart} IS NOT NULL " +
             "  AND #{searchDTO.createTimeEnd} IS NOT NULL" +

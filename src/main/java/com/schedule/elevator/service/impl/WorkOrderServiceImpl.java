@@ -205,27 +205,58 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 1. 获取原始数据
         List<TimeSlotStatsDTO> rawList = workOrderMapper.getFaultStatsByTimeSlot(searchDTO);
 
-        // 2. 构建完整时间段（0-2, 2-4, ..., 22-24）
-        Map<String, Integer> fullMap = new LinkedHashMap<>();
+        // 2. 计算总故障数（用于计算故障率）
+        int totalFaults = rawList.stream()
+                .mapToInt(TimeSlotStatsDTO::getCount)
+                .sum();
+
+        // 3. 构建完整时间段（0-2, 2-4, ..., 22-24）
+        Map<String, TimeSlotStatsDTO> fullMap = new LinkedHashMap<>();
         for (int i = 0; i < 24; i += 2) {
             String slot = i + "-" + (i + 2);
-            fullMap.put(slot, 0); // 默认为 0
+            TimeSlotStatsDTO stat = new TimeSlotStatsDTO();
+            stat.setTimeSlot(slot);
+            stat.setCount(0);
+            stat.setTrappedCount(0);
+            stat.setNonTrappedCount(0);
+            stat.setOtherCount(0);
+            stat.setFailureRate(0.0);
+            fullMap.put(slot, stat);
         }
 
-        // 3. 覆盖有数据的时段
+        // 4. 更新有数据的时段
         for (TimeSlotStatsDTO item : rawList) {
-            fullMap.put(item.getTimeSlot(), item.getCount());
+            TimeSlotStatsDTO existingStat = fullMap.get(item.getTimeSlot());
+            if (existingStat != null) {
+                existingStat.setCount(item.getCount());
+                existingStat.setTrappedCount(item.getTrappedCount());
+                existingStat.setNonTrappedCount(item.getNonTrappedCount());
+                existingStat.setOtherCount(item.getOtherCount());
+
+                // 计算故障率：当前时段故障数 * 100 / 总故障数
+                double rate = totalFaults > 0 ? (item.getCount() * 100.0 / totalFaults) : 0.0;
+                existingStat.setFailureRate(Math.round(rate * 100.0) / 100.0); // 保留两位小数
+            }
         }
 
-        // 4. 转为 List 返回（保持顺序）
-        return fullMap.entrySet().stream()
-                .map(entry -> {
-                    TimeSlotStatsDTO stat = new TimeSlotStatsDTO();
-                    stat.setTimeSlot(entry.getKey());
-                    stat.setCount(entry.getValue());
-                    return stat;
-                })
-                .collect(Collectors.toList());
+        // 5. 转为 List 返回（保持顺序）
+        return new ArrayList<>(fullMap.values());
+    }
+
+    @Override
+    public List<TimeConsumptionStatsDTO> getTimeConsumptionStats(SearchDTO searchDTO) {
+        List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderMapper.getArriveTimeConsumptionStats(searchDTO);
+        TimeConsumptionStatsDTO totalTimeConsumptionStats = workOrderMapper.getTotalArriveTimeConsumptionStats(searchDTO);
+        List<TimeConsumptionStatsDTO> rescueTimeConsumptionStats = workOrderMapper.getRescueTimeConsumptionStats(searchDTO);
+        Integer trappedRescueCount = workOrderMapper.getTrappedRescueCount(searchDTO);
+        totalTimeConsumptionStats.setTrappedRescueCount(trappedRescueCount);
+
+        for (int i = 0; i < timeConsumptionStats.size(); i++) {
+            timeConsumptionStats.get(i).setTrappedRescueCount(rescueTimeConsumptionStats.get(i).getTrappedRescueCount());
+        }
+        timeConsumptionStats.add(totalTimeConsumptionStats);
+
+        return timeConsumptionStats;
     }
 
     @Override

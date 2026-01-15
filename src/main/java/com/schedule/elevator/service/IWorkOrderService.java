@@ -27,6 +27,8 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     List<TimeSlotStatsDTO> getFaultStatsByTimeSlot(SearchDTO searchDTO);
 
+    List<TimeConsumptionStatsDTO> getTimeConsumptionStats(SearchDTO searchDTO);
+
     RescueLevelStatsDTO getRescueLevelStats(SearchDTO searchDTO);
 
     ProjectTypeStatItemDTO getProjectTypeStats(SearchDTO searchDTO);

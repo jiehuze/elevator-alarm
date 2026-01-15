@@ -2,11 +2,9 @@ package com.schedule.elevator.controller;
 
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
-import com.schedule.elevator.entity.WorkOrder;
-import com.schedule.elevator.service.IElevatorInfoService;
-import com.schedule.elevator.service.IFaultRecordService;
-import com.schedule.elevator.service.IWorkOrderProgressService;
-import com.schedule.elevator.service.IWorkOrderService;
+import com.schedule.elevator.service.*;
+import com.schedule.excel.TableData;
+import com.schedule.utils.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/statistical")
@@ -125,5 +121,67 @@ public class StatisticalController {
     public BaseResponse countProjectType(@ModelAttribute SearchDTO searchDTO) {
         ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", projectTypeStats, null);
+    }
+
+    @GetMapping("/time-consumption-stats")
+    public BaseResponse getTimeConsumptionStats(@ModelAttribute SearchDTO searchDTO) {
+        List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", timeConsumptionStats, null);
+    }
+
+    @Autowired
+    private IWordExportService wordExportService;
+
+    /*******************************************导出数据******************************************/
+    @GetMapping("/export-month-report")
+    public BaseResponse exportElevatorWord(@ModelAttribute SearchDTO searchDTO) {
+        try {
+//            List<Map<String, Object>> elTypeCount = elevatorInfoService.countByElevatorType(searchDTO);
+//            List<String> elTypeCountHeaders = new ArrayList<>();
+//            List<String> row = new ArrayList<>();
+//
+//            Integer total = 0;
+//            for (Map<String, Object> map : elTypeCount) {
+//                elTypeCountHeaders.add(map.get("elevatorType").toString());
+//                row.add(map.get("elevatorCount").toString());
+//                total += Integer.parseInt(map.get("elevatorCount").toString());
+//            }
+//            elTypeCountHeaders.add("总数");
+//            row.add(total.toString());
+//            List<List<String>> elTypeCountRows = new ArrayList<>();
+//            elTypeCountRows.add(row);
+
+
+            WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
+//            List<WorkOrderStatisticsDTO> dataList = Arrays.asList(result);
+//
+//            Class<WorkOrderStatisticsDTO> clazz = WorkOrderStatisticsDTO.class;
+//            List<String> headers = ExcelUtil.extractHeaders(clazz);
+//            List<List<String>> rows = ExcelUtil.extractDataList(dataList, clazz);
+//
+            List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
+//            List<String> timeSlotHeaders = ExcelUtil.extractHeaders(TimeSlotStatsDTO.class);
+//            List<List<String>> timeSlotRows = ExcelUtil.extractDataList(stats, TimeSlotStatsDTO.class);
+
+            List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
+
+
+            // 构建映射
+            Map<String, TableData> tableMap = new HashMap<>();
+            tableMap = TableData.buildTableData(tableMap, result, WorkOrderStatisticsDTO.class, "WorkOrderStatistics");
+            tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
+            tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
+
+//            tableMap.put("${WorkOrderStatistics}", new TableData(headers, rows));
+//            tableMap.put("${ElevatorTypeCount}", new TableData(elTypeCountHeaders, elTypeCountRows));
+//            tableMap.put("${TimeSlotStats}", new TableData(timeSlotHeaders, timeSlotRows));
+
+//            wordExportService.generateWordTableToFile("统计数据", headers, rows, "test.docx");
+            wordExportService.generateWordFromTemplateWithMultipleTables("doc/month.docx", tableMap, "test2.docx");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "success", null, null);
     }
 }

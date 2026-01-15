@@ -20,7 +20,8 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "SUM(trapped_count) as rescuedPeople, " +
             "ROUND(AVG(CASE WHEN order_type = 1 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForTrapped, " +
             "ROUND(AVG(CASE WHEN order_type = 2 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForNonTrapped, " +
-            "ROUND(AVG(CASE WHEN rescue_duration IS NOT NULL THEN rescue_duration/60.0 END), 2) as avgRescueDuration " +
+            "ROUND(AVG(CASE WHEN rescue_duration IS NOT NULL THEN rescue_duration/60.0 END), 2) as avgRescueDuration, " +
+            "ROUND(AVG(CASE WHEN repair_duration IS NOT NULL THEN repair_duration/60.0 END), 2) as avgRepairDuration " +
             "FROM work_order " +
             "<where>" +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>" +
@@ -46,13 +47,17 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<script>",
             "SELECT ",
             "  CONCAT(FLOOR(HOUR(create_time) / 2) * 2, '-', FLOOR(HOUR(create_time) / 2) * 2 + 2) AS time_slot, ",
-            "  COUNT(*) AS count ",
+            "  SUM(CASE WHEN order_type IN (1, 2, 5, 6) THEN 1 ELSE 0 END) AS count, ",  // 只统计困人和非困人故障
+            "  SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) AS trapped_count, ",  // 困人故障
+            "  SUM(CASE WHEN order_type = 2 THEN 1 ELSE 0 END) AS non_trapped_count, ",  // 非困人故障
+            "  SUM(CASE WHEN order_type IN (5, 6) THEN 1 ELSE 0 END) AS other_count ",  // 其他（自行脱困、误报）
             "FROM work_order ",
             "WHERE 1 = 1 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "</if>",
             "GROUP BY FLOOR(HOUR(create_time) / 2) ",
+            "HAVING SUM(CASE WHEN order_type IN (1, 2) THEN 1 ELSE 0 END) > 0 ",  // 确保只包含有故障的时段
             "ORDER BY FLOOR(HOUR(create_time) / 2)",
             "</script>"
     })
@@ -113,5 +118,134 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     List<ProjectTypeCountDTO> getProjectTypeCounts(@Param("searchDTO") SearchDTO searchDTO);
+
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "<![CDATA[",
+            "  CASE ",
+            "    WHEN time_to_arrive >= 0 AND time_to_arrive < 5 THEN '0-5分钟' ",
+            "    WHEN time_to_arrive >= 5 AND time_to_arrive < 10 THEN '5-10分钟' ",
+            "    WHEN time_to_arrive >= 10 AND time_to_arrive < 15 THEN '10-15分钟' ",
+            "    WHEN time_to_arrive >= 15 AND time_to_arrive < 20 THEN '15-20分钟' ",
+            "    WHEN time_to_arrive >= 20 AND time_to_arrive < 25 THEN '20-25分钟' ",
+            "    WHEN time_to_arrive >= 25 AND time_to_arrive < 30 THEN '25-30分钟' ",
+            "    WHEN time_to_arrive >= 30 THEN '30分钟以上' ",
+            "    ELSE '其他' ",
+            "  END AS time_range, ",
+            "  SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) AS trappedArrivalCount, ",
+            "  SUM(CASE WHEN order_type = 2 THEN 1 ELSE 0 END) AS nonTrappedArrivalCount, ",
+            "  CASE ",
+            "    WHEN time_to_arrive >= 0 AND time_to_arrive < 5 THEN 1 ",
+            "    WHEN time_to_arrive >= 5 AND time_to_arrive < 10 THEN 2 ",
+            "    WHEN time_to_arrive >= 10 AND time_to_arrive < 15 THEN 3 ",
+            "    WHEN time_to_arrive >= 15 AND time_to_arrive < 20 THEN 4 ",
+            "    WHEN time_to_arrive >= 20 AND time_to_arrive < 25 THEN 5 ",
+            "    WHEN time_to_arrive >= 25 AND time_to_arrive < 30 THEN 6 ",
+            "    WHEN time_to_arrive >= 30 THEN 7 ",
+            "    ELSE 8 ",
+            "  END AS sort_no ",
+            "]]>",
+            "FROM work_order ",
+            "WHERE ",
+            "<![CDATA[",
+            "  time_to_arrive IS NOT NULL ",
+            "  AND order_type IN (1, 2) ",
+            "]]>",
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and !searchDTO.district.isEmpty()'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "<![CDATA[",
+            "GROUP BY time_range, sort_no ",
+            "ORDER BY sort_no ASC",
+            "]]>",
+            "</script>"
+    })
+    List<TimeConsumptionStatsDTO> getArriveTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  '总计' AS time_range, ",
+            "  COUNT(CASE WHEN order_type = 1 THEN 1 END) AS trappedArrivalCount, ",
+            "  COUNT(CASE WHEN order_type = 2 THEN 1 END) AS nonTrappedArrivalCount ",
+            "FROM work_order ",
+            "WHERE time_to_arrive IS NOT NULL ",
+            "  AND order_type IN (1, 2) ",
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "</script>"
+    })
+    TimeConsumptionStatsDTO getTotalArriveTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "<![CDATA[",
+            "  CASE ",
+            "    WHEN rescue_duration >= 0 AND rescue_duration < 5 THEN '0-5分钟' ",
+            "    WHEN rescue_duration >= 5 AND rescue_duration < 10 THEN '5-10分钟' ",
+            "    WHEN rescue_duration >= 10 AND rescue_duration < 15 THEN '10-15分钟' ",
+            "    WHEN rescue_duration >= 15 AND rescue_duration < 20 THEN '15-20分钟' ",
+            "    WHEN rescue_duration >= 20 AND rescue_duration < 25 THEN '20-25分钟' ",
+            "    WHEN rescue_duration >= 25 AND rescue_duration < 30 THEN '25-30分钟' ",
+            "    WHEN rescue_duration >= 30 THEN '30分钟以上' ",
+            "    ELSE '其他' ",
+            "  END AS time_range, ",
+            "  SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) AS trappedRescueCount, ",
+            "  CASE ",
+            "    WHEN rescue_duration >= 0 AND rescue_duration < 5 THEN 1 ",
+            "    WHEN rescue_duration >= 5 AND rescue_duration < 10 THEN 2 ",
+            "    WHEN rescue_duration >= 10 AND rescue_duration < 15 THEN 3 ",
+            "    WHEN rescue_duration >= 15 AND rescue_duration < 20 THEN 4 ",
+            "    WHEN rescue_duration >= 20 AND rescue_duration < 25 THEN 5 ",
+            "    WHEN rescue_duration >= 25 AND rescue_duration < 30 THEN 6 ",
+            "    WHEN rescue_duration >= 30 THEN 7 ",
+            "    ELSE 8 ",
+            "  END AS sort_no ",
+            "]]>",
+            "FROM work_order ",
+            "WHERE ",
+            "<![CDATA[",
+            "  rescue_duration IS NOT NULL ",
+            "  AND order_type IN (1, 2) ",
+            "]]>",
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and !searchDTO.district.isEmpty()'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "<![CDATA[",
+            "GROUP BY time_range, sort_no ",
+            "ORDER BY sort_no ASC",
+            "]]>",
+            "</script>"
+    })
+    List<TimeConsumptionStatsDTO> getRescueTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) AS trappedRescueCount ",
+            "FROM work_order ",
+            "WHERE rescue_duration IS NOT NULL ",
+            "  AND order_type = 1 ",  // 困人工单
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "</script>"
+    })
+    Integer getTrappedRescueCount(@Param("searchDTO") SearchDTO searchDTO);
 
 }

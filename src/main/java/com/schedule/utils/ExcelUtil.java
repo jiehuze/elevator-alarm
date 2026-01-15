@@ -9,6 +9,7 @@
 package com.schedule.utils;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.converters.longconverter.LongStringConverter;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -212,9 +214,9 @@ public class ExcelUtil {
     /**
      * 从 Excel 文件导入数据（通用）
      *
-     * @param file        上传的 Excel 文件
-     * @param pojoClass   目标 DTO 类（如 ElevatorInfoTemplateExcel.class）
-     * @param <T>         泛型类型
+     * @param file      上传的 Excel 文件
+     * @param pojoClass 目标 DTO 类（如 ElevatorInfoTemplateExcel.class）
+     * @param <T>       泛型类型
      * @return 解析后的 List<T>
      * @throws IOException
      */
@@ -230,5 +232,48 @@ public class ExcelUtil {
                     .sheet()
                     .doReadSync();
         }
+    }
+
+    /**
+     * 提取类中所有字段的 Excel 表头（按字段声明顺序）
+     */
+    public static List<String> extractHeaders(Class<?> clazz) {
+        List<String> headers = new ArrayList<>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            ExcelProperty anno = field.getAnnotation(ExcelProperty.class);
+            if (anno != null) {
+                // 支持 value = {"行1", "行2"} 或单字符串
+                String headerText = String.join("\n", anno.value());
+                headers.add(headerText);
+            } else {
+                headers.add(field.getName());
+            }
+        }
+        return headers;
+    }
+
+    /**
+     * 提取对象列表中每个对象的字段值（按字段声明顺序）
+     */
+    public static List<List<String>> extractDataList(List<?> dataList, Class<?> clazz) {
+        List<List<String>> result = new ArrayList<>();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Object obj : dataList) {
+            List<String> row = new ArrayList<>();
+            for (Field field : fields) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(obj);
+                    row.add(value == null ? "" : value.toString());
+                } catch (IllegalAccessException e) {
+                    System.out.print("无法访问字段: " + clazz.getSimpleName() + ", " + field.getName() + ", 错误信息: " + e);
+                    row.add("");
+                }
+            }
+            result.add(row);
+        }
+        return result;
     }
 }
