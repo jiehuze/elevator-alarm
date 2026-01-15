@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 public class ProjectTypeCountDTO {
     private String projectCode;   // 对应 project_type 字段值
     private String projectName;      // 显示用，如 "住宅小区"
-    private Long count;
+    private Long faultCount; // 故障数量
+    private Long count;      // 总数量
+    private BigDecimal faultPercentage; // 0.00 ~ 100.00
     private BigDecimal percentage; // 0.00 ~ 100.00
 }

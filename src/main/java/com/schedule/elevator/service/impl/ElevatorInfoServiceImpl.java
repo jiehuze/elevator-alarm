@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ElevatorInfoMapper;
-import com.schedule.elevator.dto.ElevatorInfoDTO;
-import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.enums.ElevatorTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
@@ -22,6 +21,12 @@ import java.util.Map;
 @Service
 public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, ElevatorInfo>
         implements IElevatorInfoService {
+
+    private final ElevatorInfoMapper elevatorInfoMapper;
+
+    public ElevatorInfoServiceImpl(ElevatorInfoMapper elevatorInfoMapper) {
+        this.elevatorInfoMapper = elevatorInfoMapper;
+    }
 
     @Override
     public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
@@ -113,7 +118,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
     }
 
     @Override
-    public List<Map<String, Object>> countByElevatorType(SearchDTO searchDTO) {
+    public List<ElevatorTypeStatsDTO> statsByElevatorType(SearchDTO searchDTO) {
         // 获取数据库中的统计结果
         List<Map<String, Object>> dbResults = baseMapper.countByElevatorType(searchDTO);
 
@@ -133,12 +138,12 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         }
 
         // 构建最终结果
-        List<Map<String, Object>> finalResults = new ArrayList<>();
+        List<ElevatorTypeStatsDTO> finalResults = new ArrayList<>();
         for (ElevatorTypeEnum elevatorType : ElevatorTypeEnum.values()) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("elevatorType", elevatorType.getDescription());
-            item.put("elevatorCount", typeCountMap.get(elevatorType.getDescription()));
-            finalResults.add(item);
+            ElevatorTypeStatsDTO dto = new ElevatorTypeStatsDTO()
+                    .setElevatorType(elevatorType.getDescription())
+                    .setElevatorCount(typeCountMap.get(elevatorType.getDescription()) == null ? 0 : typeCountMap.get(elevatorType.getDescription()));
+            finalResults.add(dto);
         }
 
         return finalResults;
@@ -171,5 +176,10 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         map.put("growthRate", growthRate);
 
         return map;
+    }
+
+    @Override
+    public List<ProjectTypeCountDTO> getProjectTypeStats(SearchDTO searchDTO) {
+        return elevatorInfoMapper.countElevatorsByProjectType(searchDTO);
     }
 }

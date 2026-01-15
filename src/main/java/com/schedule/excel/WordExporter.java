@@ -1,8 +1,7 @@
 package com.schedule.excel;
 
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
@@ -135,6 +134,11 @@ public class WordExporter {
     private static XWPFTable insertTable(XWPFDocument doc, XWPFParagraph paragraph, java.util.List<String> headers, java.util.List<java.util.List<String>> dataRows) {
         // 创建表格并插入到文档中
         XWPFTable table = doc.insertNewTbl(paragraph.getCTP().newCursor());
+
+        // 设置表格居中对齐
+        CTTbl ttbl = table.getCTTbl();
+        ttbl.addNewTblPr().addNewJc().setVal(STJcTable.CENTER);
+
         // 设置表格内容
         int rowCount = dataRows.size() + 1;
         int colCount = headers.size();
@@ -158,12 +162,12 @@ public class WordExporter {
         for (int r = 0; r < dataRows.size(); r++) {
             List<String> rowData = dataRows.get(r);
             XWPFTableRow row;
-            System.out.println("r: " + r);
-            System.out.println("row: " + table.getNumberOfRows());
+//            System.out.println("r: " + r);
+//            System.out.println("row: " + table.getNumberOfRows());
             if (r < table.getNumberOfRows() - 1) {
                 row = table.getRow(r + 1);
             } else {
-                System.out.println("创建新行");
+//                System.out.println("创建新行");
                 row = table.createRow(); // 创建新行
 //              table.addRow(row); // 添加到表格
             }
@@ -211,7 +215,7 @@ public class WordExporter {
         if (!p.getRuns().isEmpty()) {
             XWPFRun run = p.getRuns().get(0);
             run.setFontFamily("微软雅黑");
-            run.setFontSize(isHeader ? 11 : 10);
+            run.setFontSize(isHeader ? 8 : 7);
             if (isHeader) {
                 run.setBold(true);
             }
@@ -227,7 +231,7 @@ public class WordExporter {
         XWPFRun run = p.createRun();
         run.setText(text == null ? "" : text);
         run.setFontFamily("微软雅黑");
-        run.setFontSize(isHeader ? 11 : 10);
+        run.setFontSize(isHeader ? 8 : 7);
         if (isHeader) {
             run.setBold(true);
             // 可选：设置灰色背景

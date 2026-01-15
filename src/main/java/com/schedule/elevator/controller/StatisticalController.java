@@ -4,7 +4,6 @@ import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.TableData;
-import com.schedule.utils.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/statistical")
@@ -36,8 +37,9 @@ public class StatisticalController {
      */
     @GetMapping("/elevator-type-count")
     public BaseResponse countElevatorType(@ModelAttribute SearchDTO searchDTO) {
-        List<Map<String, Object>> elTypeCount = elevatorInfoService.countByElevatorType(searchDTO);
-        return new BaseResponse(HttpStatus.OK.value(), "success", elTypeCount, null);
+        List<ElevatorTypeStatsDTO> dtoList = elevatorInfoService.statsByElevatorType(searchDTO);
+
+        return new BaseResponse(HttpStatus.OK.value(), "success", dtoList, null);
     }
 
     /**
@@ -69,9 +71,10 @@ public class StatisticalController {
 
     @GetMapping("/duplicate-orders")
     public BaseResponse getOrdersByDuplicateRescueCode(@ModelAttribute SearchDTO searchDTO) {
-        HashMap<String, DuplicateOrderDTO> oMap = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
+//        HashMap<String, DuplicateOrderDTO> oMap = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
+        List<SecondaryFaultStatsDTO> list = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
 
-        return new BaseResponse(HttpStatus.OK.value(), "success", oMap, null);
+        return new BaseResponse(HttpStatus.OK.value(), "success", list, null);
     }
 
     /**
@@ -136,45 +139,33 @@ public class StatisticalController {
     @GetMapping("/export-month-report")
     public BaseResponse exportElevatorWord(@ModelAttribute SearchDTO searchDTO) {
         try {
-//            List<Map<String, Object>> elTypeCount = elevatorInfoService.countByElevatorType(searchDTO);
-//            List<String> elTypeCountHeaders = new ArrayList<>();
-//            List<String> row = new ArrayList<>();
-//
-//            Integer total = 0;
-//            for (Map<String, Object> map : elTypeCount) {
-//                elTypeCountHeaders.add(map.get("elevatorType").toString());
-//                row.add(map.get("elevatorCount").toString());
-//                total += Integer.parseInt(map.get("elevatorCount").toString());
-//            }
-//            elTypeCountHeaders.add("总数");
-//            row.add(total.toString());
-//            List<List<String>> elTypeCountRows = new ArrayList<>();
-//            elTypeCountRows.add(row);
-
+            List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);
+            TableData elevatorTypeStatsTableData = ElevatorTypeStatsDTO.buildTableData(elevatorTypeStatsList);
 
             WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
-//            List<WorkOrderStatisticsDTO> dataList = Arrays.asList(result);
-//
-//            Class<WorkOrderStatisticsDTO> clazz = WorkOrderStatisticsDTO.class;
-//            List<String> headers = ExcelUtil.extractHeaders(clazz);
-//            List<List<String>> rows = ExcelUtil.extractDataList(dataList, clazz);
+
+            List<SecondaryFaultStatsDTO> ordersByDuplicateRescueCode = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
+
 //
             List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
-//            List<String> timeSlotHeaders = ExcelUtil.extractHeaders(TimeSlotStatsDTO.class);
-//            List<List<String>> timeSlotRows = ExcelUtil.extractDataList(stats, TimeSlotStatsDTO.class);
 
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
 
+            List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
+
+            ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
+            TableData projectTypeTableData = ProjectTypeStatItemDTO.buildTableData(projectTypeStats);
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
             tableMap = TableData.buildTableData(tableMap, result, WorkOrderStatisticsDTO.class, "WorkOrderStatistics");
             tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
             tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
+            tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
+            tableMap = TableData.buildTableData(tableMap, ordersByDuplicateRescueCode, SecondaryFaultStatsDTO.class, "SecondaryFault");
+            tableMap.put("ProjectTypeStats", projectTypeTableData);
+            tableMap.put("ElevatorTypeStats", elevatorTypeStatsTableData);
 
-//            tableMap.put("${WorkOrderStatistics}", new TableData(headers, rows));
-//            tableMap.put("${ElevatorTypeCount}", new TableData(elTypeCountHeaders, elTypeCountRows));
-//            tableMap.put("${TimeSlotStats}", new TableData(timeSlotHeaders, timeSlotRows));
 
 //            wordExportService.generateWordTableToFile("统计数据", headers, rows, "test.docx");
             wordExportService.generateWordFromTemplateWithMultipleTables("doc/month.docx", tableMap, "test2.docx");

@@ -10,6 +10,7 @@ import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
+import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IWorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Autowired
     protected WorkOrderMapper workOrderMapper;
+
+    @Autowired
+    protected IElevatorInfoService elevatorInfoService;
 
     @Override
     public Page<WorkOrder> queryByConditionsPage(SearchDTO dto) {
@@ -159,7 +163,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public HashMap<String, DuplicateOrderDTO> getOrdersByDuplicateRescueCode(SearchDTO searchDTO) {
+    public List<SecondaryFaultStatsDTO> getOrdersByDuplicateRescueCode(SearchDTO searchDTO) {
+        List<SecondaryFaultStatsDTO> secondaryFaultStats = workOrderMapper.getSecondaryFaultStats(searchDTO);
+        int count = 0;
+        String district = null;
+//        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        for (SecondaryFaultStatsDTO secondaryFaultStat : secondaryFaultStats) {
+            if (district == null || !district.equals(secondaryFaultStat.getDistrict())) {
+                count = 1;
+            } else {
+                count += 1;
+            }
+            secondaryFaultStat.setCount(count);
+            district = secondaryFaultStat.getDistrict();
+        }
+
+        return secondaryFaultStats;
+    }
+
+    @Override
+    public HashMap<String, DuplicateOrderDTO> getOrderMapByDuplicateRescueCode(SearchDTO searchDTO) {
         LambdaQueryWrapper<WorkOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(
                 WorkOrder::getRescueCode,
@@ -174,6 +197,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         .map(WorkOrder::getRescueCode)
                         .collect(Collectors.toList())
         );
+        wrapper.orderByAsc(WorkOrder::getDistrict);
 
         List<WorkOrder> list = list(wrapper);
 
@@ -280,16 +304,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<ProjectTypeEnum> allTypes = Arrays.asList(ProjectTypeEnum.values());
 
         // 查询数据库中各 code 的数量
-        List<ProjectTypeCountDTO> dbResults = workOrderMapper.getProjectTypeCounts(searchDTO);
+        List<ProjectTypeCountDTO> faultResults = workOrderMapper.getProjectTypeCounts(searchDTO);
+        List<ProjectTypeCountDTO> results = elevatorInfoService.getProjectTypeStats(searchDTO);
 
         // 构建 countMap
-        Map<String, ProjectTypeCountDTO> countMap = new HashMap<>();
-        Long total = 0l;
-        for (ProjectTypeCountDTO item : dbResults) {
-            String projectCode = item.getProjectCode();
+        Map<String, ProjectTypeCountDTO> projectTypeMap = new HashMap<>();
+        Long faultTotal = 0l;
+        long total = 0l;
+        for (ProjectTypeCountDTO item : faultResults) {
+            Long faultCount = item.getFaultCount() == null ? 0 : item.getFaultCount();
+            projectTypeMap.put(item.getProjectCode(), item);
+            faultTotal += faultCount;
+        }
+        for (ProjectTypeCountDTO item : results) {
             Long count = item.getCount() == null ? 0 : item.getCount();
-//            System.out.println(projectCode + ": " + count);
-            countMap.put(projectCode, item);
+            ProjectTypeCountDTO countDTO = projectTypeMap.get(item.getProjectCode());
+            if (countDTO != null) {
+                projectTypeMap.get(item.getProjectCode()).setCount(count);
+            } else {
+                item.setFaultCount(0l);
+                projectTypeMap.put(item.getProjectCode(), item);
+            }
             total += count;
         }
 
@@ -298,28 +333,46 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         for (ProjectTypeEnum type : allTypes) {
             BigDecimal percentage = BigDecimal.ZERO;
-            ProjectTypeCountDTO projectTypeCountDTO = countMap.get(type.getCode());
+            ProjectTypeCountDTO projectTypeCountDTO = projectTypeMap.get(type.getCode());
             if (projectTypeCountDTO != null) {
+                if (faultTotal > 0) {
+                    percentage = BigDecimal.valueOf(projectTypeCountDTO.getFaultCount())
+                            .divide(BigDecimal.valueOf(faultTotal), 4, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100))
+                            .setScale(2, RoundingMode.HALF_UP);
+                }
+                projectTypeCountDTO.setProjectCode(type.getCode()).setProjectName(type.getDescription()).setFaultPercentage(percentage);
+
+                percentage = BigDecimal.ZERO;
                 if (total > 0) {
                     percentage = BigDecimal.valueOf(projectTypeCountDTO.getCount())
                             .divide(BigDecimal.valueOf(total), 4, RoundingMode.HALF_UP)
                             .multiply(BigDecimal.valueOf(100))
                             .setScale(2, RoundingMode.HALF_UP);
                 }
-
-                projectTypeCountDTO.setProjectCode(type.getCode()).setProjectName(type.getDescription()).setPercentage(percentage);
+                projectTypeCountDTO.setPercentage(percentage);
             } else {
                 projectTypeCountDTO = new ProjectTypeCountDTO();
+                projectTypeCountDTO.setProjectCode(type.getCode())
+                        .setProjectName(type.getDescription())
+                        .setCount(0l)
+                        .setFaultCount(0l)
+                        .setPercentage(percentage)
+                        .setFaultPercentage(percentage);
             }
-
-            projectTypeCountDTO.setProjectCode(type.getCode()).setProjectName(type.getDescription()).setPercentage(percentage);
             result.add(projectTypeCountDTO);
         }
 
         ProjectTypeStatItemDTO projectTypeStatItemDTO = new ProjectTypeStatItemDTO();
         projectTypeStatItemDTO.setProjectTypeCounts(result);
+        projectTypeStatItemDTO.setFaultTotal(faultTotal);
         projectTypeStatItemDTO.setTotal(total);
 
         return projectTypeStatItemDTO;
+    }
+
+    @Override
+    public List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(SearchDTO searchDTO) {
+        return workOrderMapper.getOvertimeWorkOrders(searchDTO);
     }
 }

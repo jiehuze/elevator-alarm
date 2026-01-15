@@ -100,7 +100,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
      */
     @Select({
             "<script>",
-            "SELECT project_type AS projectCode, COUNT(*) AS count ",
+            "SELECT project_type AS projectCode, COUNT(*) AS faultCount ",
             "FROM work_order ",
             "WHERE project_type IS NOT NULL ",
             "  AND project_type != '' ",
@@ -113,7 +113,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "  AND district = #{searchDTO.district}",
             "</if>",
-            // 可继续添加其他条件...
             "GROUP BY project_type",
             "</script>"
     })
@@ -248,4 +247,73 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     })
     Integer getTrappedRescueCount(@Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 获取到达时间超过30分钟的工单
+     *
+     * @param searchDTO
+     * @return
+     */
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  alarm_time AS time, ",
+            "  register_code AS registerCode, ",
+            "  maintenance_unit_name AS maintenanceUnitName, ",
+            "  using_unit AS usingUnit, ",
+            "  district AS district, ",
+            "  project_name AS projectName, ",
+            "  time_to_arrive AS timeToArrive, ",
+            "  GREATEST(time_to_arrive - 1800, 0) AS overtime ",  // 30分钟 = 1800秒
+            "FROM work_order ",
+            "WHERE time_to_arrive IS NOT NULL ",
+            "  AND alarm_time IS NOT NULL ",
+            "  AND time_to_arrive > 1800 ",  // 30分钟 = 1800秒
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND alarm_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "ORDER BY alarm_time DESC",
+            "</script>"
+    })
+    List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  w.district AS district, ",
+            "  w.rescue_code AS rescueCode, ",
+            "  w.register_code AS registerCode, ",
+            "  DATE(w.alarm_time) AS date, ",
+            "  w.alarm_time AS alarmTime, ",
+            "  CASE w.order_type ",
+            "    WHEN 1 THEN '困人事件' ",
+            "    WHEN 2 THEN '故障事件' ",
+            "    WHEN 3 THEN '投诉' ",
+            "    WHEN 4 THEN '咨询' ",
+            "    ELSE '未知' ",
+            "  END AS eventType, ",
+            "  w.elevator_address AS elevatorAddress, ",
+            "  w.maintenance_unit_name AS maintenanceUnit, ",
+            "  w.using_unit AS usingUnit ",
+            "FROM work_order w ",
+            "WHERE w.rescue_code IN ( ",
+            "  SELECT rescue_code ",
+            "  FROM work_order ",
+            "  WHERE  rescue_code is not null AND rescue_code != ''",
+            "    AND order_type NOT IN (5, 6) ",  // 排除自行脱困和误报工单
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY rescue_code ",
+            "  HAVING COUNT(*) >= 2 ",
+            ") ",
+            "ORDER BY w.rescue_code",
+            "</script>"
+    })
+    List<SecondaryFaultStatsDTO> getSecondaryFaultStats(@Param("searchDTO") SearchDTO searchDTO);
 }

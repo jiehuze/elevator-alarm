@@ -21,7 +21,9 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     Boolean updateByOrderNo(WorkOrder workOrder);
 
-    HashMap<String, DuplicateOrderDTO> getOrdersByDuplicateRescueCode(SearchDTO searchDTO);
+    HashMap<String, DuplicateOrderDTO> getOrderMapByDuplicateRescueCode(SearchDTO searchDTO);
+
+    List<SecondaryFaultStatsDTO> getOrdersByDuplicateRescueCode(SearchDTO searchDTO);
 
     WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO);
 
@@ -32,4 +34,12 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     RescueLevelStatsDTO getRescueLevelStats(SearchDTO searchDTO);
 
     ProjectTypeStatItemDTO getProjectTypeStats(SearchDTO searchDTO);
+
+    /**
+     * 获取超时工单（到达时间超过30分钟）
+     *
+     * @param searchDTO 查询条件
+     * @return 超时工单列表
+     */
+    List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(SearchDTO searchDTO);
 }

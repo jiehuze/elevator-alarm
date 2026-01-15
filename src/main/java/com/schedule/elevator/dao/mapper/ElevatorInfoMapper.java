@@ -1,6 +1,7 @@
 package com.schedule.elevator.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.schedule.elevator.dto.ProjectTypeCountDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,7 +31,7 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "SELECT " +
             "    district AS district, " +
             "    COUNT(*) AS elevatorCount, " +
-            "    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM elevator_info " +
+            "    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM elevator " +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
             "  WHERE created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
             "</if>), 2) AS percentage " +
@@ -54,5 +55,24 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "  AND #{searchDTO.createTimeEnd} IS NOT NULL" +
             "</script>")
     Map<String, Object> countNewElevators(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  project_type AS projectCode, ",
+            "  COUNT(*) AS count ",
+            "FROM elevator ",
+            "WHERE project_type IS NOT NULL ",
+            "  AND project_type != '' ",
+            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
+            "</if>",
+            "GROUP BY project_type ",
+            "</script>"
+    })
+    List<ProjectTypeCountDTO> countElevatorsByProjectType(@Param("searchDTO") SearchDTO searchDTO);
 
 }

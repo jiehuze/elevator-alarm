@@ -129,6 +129,12 @@ public class WorkOrder implements Serializable {
     @TableField(value = "rescue_duration")
     private Long rescueDuration; // 救援用时（秒）
 
+    @TableField(value = "is_mechanical_failure")
+    private Boolean mechanicalFailure; // 是否为机械故障，0 - 否，1 - 是
+
+    @TableField(value = "failure_reason")
+    private String failureReason; // 故障原因
+
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
