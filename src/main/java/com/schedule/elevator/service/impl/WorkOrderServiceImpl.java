@@ -375,4 +375,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(SearchDTO searchDTO) {
         return workOrderMapper.getOvertimeWorkOrders(searchDTO);
     }
+
+    @Override
+    public List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO) {
+        return workOrderMapper.getDistrictStatistics(searchDTO);
+    }
 }

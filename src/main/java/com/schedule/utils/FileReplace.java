@@ -153,7 +153,7 @@ public class FileReplace {
      * @return 替换成功返回 true，失败返回 false
      */
     public static boolean replaceTextInWordX(Map<String, String> replacements, String outputFilePath) {
-        String inputFilePath = "doc/templete.docx";
+        String inputFilePath = "doc/month.docx";
 
         try {
             Resource resource = new ClassPathResource(inputFilePath);
@@ -189,9 +189,10 @@ public class FileReplace {
             for (XWPFRun run : paragraph.getRuns()) {
                 if (run != null) {
                     String text = run.getText(0);
+                    System.out.println("🔍 Found text in run: '" + text + "'");
                     if (text != null) {
                         // 🔍 调试日志：打印所有包含 {{ 的文本
-                        if (text.contains("{{")) {
+                        if (text.contains("$(")) {
                             System.out.println("🔍 Found placeholder in run: '" + text + "'");
                         }
 

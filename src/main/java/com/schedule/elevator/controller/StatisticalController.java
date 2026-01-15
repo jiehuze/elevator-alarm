@@ -2,8 +2,11 @@ package com.schedule.elevator.controller;
 
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
+import com.schedule.elevator.entity.SysDistrict;
 import com.schedule.elevator.service.*;
+import com.schedule.excel.DocxPlaceholderReplaceUtil;
 import com.schedule.excel.TableData;
+import com.schedule.utils.FileReplace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,9 @@ public class StatisticalController {
 
     @Autowired
     private IFaultRecordService faultRecordService;
+
+    @Autowired
+    private ISysDistrictService sysDistrictService;
 
     /*******************************************电梯统计******************************************/
     /**
@@ -132,47 +139,20 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", timeConsumptionStats, null);
     }
 
+    @GetMapping("/district-stats")
+    public BaseResponse getDistrictStats(@ModelAttribute SearchDTO searchDTO) {
+        List<DistrictStatisticsDTO> stats = workOrderService.getDistrictStatistics(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", stats, null);
+    }
+
+
     @Autowired
     private IWordExportService wordExportService;
 
     /*******************************************导出数据******************************************/
     @GetMapping("/export-month-report")
     public BaseResponse exportElevatorWord(@ModelAttribute SearchDTO searchDTO) {
-        try {
-            List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);
-            TableData elevatorTypeStatsTableData = ElevatorTypeStatsDTO.buildTableData(elevatorTypeStatsList);
-
-            WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
-
-            List<SecondaryFaultStatsDTO> ordersByDuplicateRescueCode = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
-
-//
-            List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
-
-            List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
-
-            List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
-
-            ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
-            TableData projectTypeTableData = ProjectTypeStatItemDTO.buildTableData(projectTypeStats);
-
-            // 构建映射
-            Map<String, TableData> tableMap = new HashMap<>();
-            tableMap = TableData.buildTableData(tableMap, result, WorkOrderStatisticsDTO.class, "WorkOrderStatistics");
-            tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
-            tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
-            tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
-            tableMap = TableData.buildTableData(tableMap, ordersByDuplicateRescueCode, SecondaryFaultStatsDTO.class, "SecondaryFault");
-            tableMap.put("ProjectTypeStats", projectTypeTableData);
-            tableMap.put("ElevatorTypeStats", elevatorTypeStatsTableData);
-
-
-//            wordExportService.generateWordTableToFile("统计数据", headers, rows, "test.docx");
-            wordExportService.generateWordFromTemplateWithMultipleTables("doc/month.docx", tableMap, "test2.docx");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        wordExportService.generateMonthlyReport(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", null, null);
     }
 }

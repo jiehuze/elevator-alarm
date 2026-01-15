@@ -79,13 +79,26 @@ public class WordExporter {
      * @param tableMap     占位符 -> 表格数据的映射，如 {"${elevator_table}", tableData}
      * @param outputPath   输出文件路径
      */
-    public static void generateWordFromTemplateWithMultipleTables(
-            String templatePath,
+    public static void generateWordFromTemplateWithMultipleTables(String templatePath,
+                                                                  Map<String, TableData> tableMap,
+                                                                  String outputPath) throws IOException {
+        // 加载模板
+        InputStream in = new ClassPathResource(templatePath).getInputStream();
+        generateWordFromTemplateStreamWithMultipleTables(in, tableMap, outputPath);
+    }
+
+    /**
+     * 基于模板，将多个占位符替换为对应的表格
+     *
+     * @param in         模板输入流（支持 classpath: 或 文件系统路径）
+     * @param tableMap   占位符 -> 表格数据的映射，如 {"${elevator_table}", tableData}
+     * @param outputPath 输出文件路径
+     */
+    public static void generateWordFromTemplateStreamWithMultipleTables(
+            InputStream in,
             Map<String, TableData> tableMap,
             String outputPath) throws IOException {
 
-        // 加载模板
-        InputStream in = new ClassPathResource(templatePath).getInputStream();
         XWPFDocument doc = new XWPFDocument(in);
         in.close();
 

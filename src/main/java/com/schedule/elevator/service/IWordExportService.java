@@ -1,5 +1,6 @@
 package com.schedule.elevator.service;
 
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.excel.TableData;
 
 import java.io.IOException;
@@ -17,4 +18,6 @@ public interface IWordExportService {
             String templatePath,
             Map<String, TableData> tableMap,
             String outputPath) throws IOException;
+
+    void generateMonthlyReport(SearchDTO searchDTO);
 }

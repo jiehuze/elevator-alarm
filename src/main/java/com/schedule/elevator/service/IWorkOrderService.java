@@ -42,4 +42,6 @@ public interface IWorkOrderService extends IService<WorkOrder> {
      * @return 超时工单列表
      */
     List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(SearchDTO searchDTO);
+
+    List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO);
 }
