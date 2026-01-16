@@ -67,7 +67,7 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", result, null);
     }
 
-    @GetMapping("/statistical")
+    @GetMapping("/fault-list-statistical")
     public BaseResponse statistical(@ModelAttribute SearchDTO workOrderDTO) {
         List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
 
@@ -137,6 +137,12 @@ public class StatisticalController {
     public BaseResponse getTimeConsumptionStats(@ModelAttribute SearchDTO searchDTO) {
         List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", timeConsumptionStats, null);
+    }
+
+    @GetMapping("/overtime-list")
+    public BaseResponse getOvertimeWorkOrders(@ModelAttribute SearchDTO searchDTO) {
+        List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", overtimeWorkOrders, null);
     }
 
     @GetMapping("/district-stats")

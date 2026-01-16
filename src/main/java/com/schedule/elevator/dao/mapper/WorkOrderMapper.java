@@ -16,7 +16,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "COUNT(*) as totalEvents, " +
             "SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) as trappedEvents, " +
             "SUM(CASE WHEN order_type = 2 THEN 1 ELSE 0 END) as nonTrappedEvents, " +
-            "SUM(CASE WHEN order_type IN (3, 4, 5, 6) THEN 1 ELSE 0 END) as otherEvents, " +
+            "SUM(CASE WHEN order_type IN (5, 6) THEN 1 ELSE 0 END) as otherEvents, " +
             "SUM(trapped_count) as rescuedPeople, " +
             "ROUND(AVG(CASE WHEN order_type = 1 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForTrapped, " +
             "ROUND(AVG(CASE WHEN order_type = 2 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForNonTrapped, " +
@@ -24,6 +24,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "ROUND(AVG(CASE WHEN repair_duration IS NOT NULL THEN repair_duration/60.0 END), 2) as avgRepairDuration " +
             "FROM work_order " +
             "<where>" +
+            "AND order_type IN (1, 2, 5, 6) " +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>" +
             "AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
             "</if>" +
@@ -55,6 +56,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "WHERE 1 = 1 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "  AND district = #{searchDTO.district}",
             "</if>",
             "GROUP BY FLOOR(HOUR(create_time) / 2) ",
             "HAVING SUM(CASE WHEN order_type IN (1, 2) THEN 1 ELSE 0 END) > 0 ",  // 确保只包含有故障的时段
@@ -468,10 +472,10 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    SUM(CASE WHEN order_type = 1 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS trapped_non_mechanical_faults, ",
             "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = true THEN 1 ELSE 0 END) AS non_trapped_mechanical_faults, ",
             "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS non_trapped_non_mechanical_faults, ",
-            "    SUM(CASE WHEN order_type IN (3, 4, 5, 6) THEN 1 ELSE 0 END) AS other_faults, ",
+            "    SUM(CASE WHEN order_type IN (5, 6) THEN 1 ELSE 0 END) AS other_faults, ",
             "    SUM(COALESCE(injured_count, 0) + COALESCE(suspected_death_count, 0)) AS casualty_count ",
             "  FROM work_order ",
-            "  WHERE order_type IN (1, 2, 3, 4, 5, 6) ",
+            "  WHERE order_type IN (1, 2, 5, 6) ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",
@@ -514,10 +518,10 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    SUM(CASE WHEN order_type = 1 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS trapped_non_mechanical_faults, ",
             "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = true THEN 1 ELSE 0 END) AS non_trapped_mechanical_faults, ",
             "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS non_trapped_non_mechanical_faults, ",
-            "    SUM(CASE WHEN order_type IN (3, 4, 5, 6) THEN 1 ELSE 0 END) AS other_faults, ",
+            "    SUM(CASE WHEN order_type IN (5, 6) THEN 1 ELSE 0 END) AS other_faults, ",
             "    SUM(COALESCE(injured_count, 0) + COALESCE(suspected_death_count, 0)) AS casualty_count ",
             "  FROM work_order ",
-            "  WHERE order_type IN (1, 2, 3, 4, 5, 6) ",
+            "  WHERE order_type IN (1, 2, 5, 6) ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",
