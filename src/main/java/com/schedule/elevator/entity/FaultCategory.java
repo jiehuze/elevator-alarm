@@ -30,9 +30,9 @@ public class FaultCategory implements Serializable {
     private String faultAnalysis;
 
     /**
-     * 上一层ID
+     * 上一层code
      */
-    private Long parentId;
+    private String parentCode;
 
     /**
      * 创建时间

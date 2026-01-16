@@ -93,7 +93,7 @@ public class WordExportServiceImpl implements IWordExportService {
             replaceStrMap.put("StartTime", searchDTO.getCreateTimeStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             replaceStrMap.put("EndTime", searchDTO.getCreateTimeEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-            List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(searchDTO.getCreateTimeStart(), searchDTO.getCreateTimeEnd());
+            List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(searchDTO);
             Long total = 0l;
             for (FaultResultDTO faultResultDTO : faultResultDTOS) {
                 total += faultResultDTO.getTotals();

@@ -69,7 +69,7 @@ public class StatisticalController {
 
     @GetMapping("/fault-list-statistical")
     public BaseResponse statistical(@ModelAttribute SearchDTO workOrderDTO) {
-        List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(workOrderDTO.getCreateTimeStart(), workOrderDTO.getCreateTimeEnd());
+        List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(workOrderDTO);
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", faultResultDTOS, null);
     }

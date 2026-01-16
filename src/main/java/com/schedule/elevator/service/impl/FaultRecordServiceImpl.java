@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.IFaultRecordMapper;
 import com.schedule.elevator.dto.FaultResultDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.FaultCategory;
 import com.schedule.elevator.entity.FaultRecord;
 import com.schedule.elevator.service.IFaultCategoryService;
@@ -47,33 +48,35 @@ public class FaultRecordServiceImpl extends ServiceImpl<IFaultRecordMapper, Faul
     }
 
     @Override
-    public List<Map<String, Object>> countByRootCodeInTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
-        return baseMapper.countByRootCodeInTimeRange(startTime, endTime);
+    public List<Map<String, Object>> countByRootCodeInTimeRange(SearchDTO searchDTO) {
+        return baseMapper.countByRootCodeInTimeRange(searchDTO);
     }
 
     @Override
-    public List<Map<String, Object>> countBySubCodeInTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
-        return baseMapper.countBySubCodeInTimeRange(startTime, endTime);
+    public List<Map<String, Object>> countBySubCodeInTimeRange(SearchDTO searchDTO) {
+        return baseMapper.countBySubCodeInTimeRange(searchDTO);
     }
 
     @Override
-    public Long countAllTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
+    public Long countAllTimeRange(SearchDTO searchDTO) {
         LambdaQueryWrapper<FaultRecord> wrapper = new LambdaQueryWrapper<>();
-        wrapper.between(FaultRecord::getCreatedAt, startTime, endTime);
+        if (searchDTO.getCreateTimeStart() != null && searchDTO.getCreateTimeEnd() != null) {
+            wrapper.between(FaultRecord::getCreatedAt, searchDTO.getCreateTimeStart(), searchDTO.getCreateTimeEnd());
+        }
         return this.count(wrapper);
     }
 
     @Override
-    public List<FaultResultDTO> statisticalFault(LocalDateTime startTime, LocalDateTime endTime) {
-        BigDecimal allTotals = new BigDecimal(this.countAllTimeRange(startTime, endTime));
+    public List<FaultResultDTO> statisticalFault(SearchDTO searchDTO) {
+        BigDecimal allTotals = new BigDecimal(baseMapper.countFaultRecords(searchDTO));
 
-        if (allTotals.compareTo(BigDecimal.ZERO) == 0) {
-            return null;
-        }
+//        if (allTotals.compareTo(BigDecimal.ZERO) == 0) {
+//            return null;
+//        }
 
         HashMap<String, FaultResultDTO> faultResultDTOHashMap = new HashMap<>();
-        List<Map<String, Object>> rootMaps = baseMapper.countByRootCodeInTimeRange(startTime, endTime);
-        List<Map<String, Object>> subMaps = baseMapper.countBySubCodeInTimeRange(startTime, endTime);
+        List<Map<String, Object>> rootMaps = baseMapper.countByRootCodeInTimeRange(searchDTO);
+        List<Map<String, Object>> subMaps = baseMapper.countBySubCodeInTimeRange(searchDTO);
         // 创建新的列表存储合并结果
         List<Map<String, Object>> combinedList = new ArrayList<>();
         combinedList.addAll(rootMaps);
