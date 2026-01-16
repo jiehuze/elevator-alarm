@@ -16,7 +16,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "COUNT(*) as totalEvents, " +
             "SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) as trappedEvents, " +
             "SUM(CASE WHEN order_type = 2 THEN 1 ELSE 0 END) as nonTrappedEvents, " +
-            "SUM(CASE WHEN order_type IN (3, 4) THEN 1 ELSE 0 END) as otherEvents, " +
+            "SUM(CASE WHEN order_type IN (3, 4, 5, 6) THEN 1 ELSE 0 END) as otherEvents, " +
             "SUM(trapped_count) as rescuedPeople, " +
             "ROUND(AVG(CASE WHEN order_type = 1 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForTrapped, " +
             "ROUND(AVG(CASE WHEN order_type = 2 AND time_to_arrive IS NOT NULL THEN time_to_arrive/60.0 END), 2) as avgArrivalTimeForNonTrapped, " +
@@ -481,5 +481,58 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "ORDER BY d.sort, d.district_name",
             "</script>"
     })
+    List<DistrictStatisticsDTO> getDistrictStatistics2(@Param("searchDTO") SearchDTO searchDTO);
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  d.district_name AS district, ",
+            "  COALESCE(e.elevator_count, 0) AS elevatorCount, ",
+            "  COALESCE(w.total_faults, 0) AS totalFaults, ",
+            "  COALESCE(w.trapped_mechanical_faults, 0) AS trappedMechanicalFaults, ",
+            "  COALESCE(w.trapped_non_mechanical_faults, 0) AS trappedNonMechanicalFaults, ",
+            "  COALESCE(w.non_trapped_mechanical_faults, 0) AS nonTrappedMechanicalFaults, ",
+            "  COALESCE(w.non_trapped_non_mechanical_faults, 0) AS nonTrappedNonMechanicalFaults, ",
+            "  COALESCE(w.other_faults, 0) AS otherFaults, ",
+            "  COALESCE(w.casualty_count, 0) AS casualtyCount ",
+            "FROM sys_district d ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "    district, ",
+            "    COUNT(*) AS elevator_count ",
+            "  FROM elevator ",
+            "  WHERE 1=1 ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY district",
+            ") e ON d.district_name = e.district ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "    district, ",
+            "    COUNT(*) AS total_faults, ",
+            "    SUM(CASE WHEN order_type = 1 AND is_mechanical_failure = true THEN 1 ELSE 0 END) AS trapped_mechanical_faults, ",
+            "    SUM(CASE WHEN order_type = 1 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS trapped_non_mechanical_faults, ",
+            "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = true THEN 1 ELSE 0 END) AS non_trapped_mechanical_faults, ",
+            "    SUM(CASE WHEN order_type = 2 AND is_mechanical_failure = false THEN 1 ELSE 0 END) AS non_trapped_non_mechanical_faults, ",
+            "    SUM(CASE WHEN order_type IN (3, 4, 5, 6) THEN 1 ELSE 0 END) AS other_faults, ",
+            "    SUM(COALESCE(injured_count, 0) + COALESCE(suspected_death_count, 0)) AS casualty_count ",
+            "  FROM work_order ",
+            "  WHERE order_type IN (1, 2, 3, 4, 5, 6) ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY district",
+            ") w ON d.district_name = w.district ",
+            "WHERE d.is_enabled = 1 ",  // 只查询启用的区域
+            "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "    AND d.district_name = #{searchDTO.district}",
+            "  </if>",
+            "ORDER BY d.sort, d.district_name",
+            "</script>"
+    })
     List<DistrictStatisticsDTO> getDistrictStatistics(@Param("searchDTO") SearchDTO searchDTO);
+
 }
