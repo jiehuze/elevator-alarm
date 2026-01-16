@@ -26,6 +26,9 @@ public class WorkOrderProgress implements Serializable {
     @TableField("result")
     private String result;  // 处理结果
 
+    @TableField("is_success")
+    private Integer isSuccess;
+
     @TableField("status")
     private Integer status; // 转态和进度
 

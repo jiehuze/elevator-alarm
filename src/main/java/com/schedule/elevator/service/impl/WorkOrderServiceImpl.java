@@ -63,6 +63,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.eq(StringUtils.isNotBlank(dto.getEmployeeId()), WorkOrder::getEmployeeId, dto.getEmployeeId());
         query.eq(StringUtils.isNotBlank(dto.getRescueCode()), WorkOrder::getRescueCode, dto.getRescueCode());
         query.eq(dto.getMaintenanceUnitId() != null, WorkOrder::getMaintenanceUnitId, dto.getMaintenanceUnitId());
+        query.like(StringUtils.isNotBlank(dto.getUsingUnit()), WorkOrder::getUsingUnit, dto.getUsingUnit());
 
         if (dto.getHistoryWorkOrder() != null) {
             query.notIn(WorkOrder::getOrderType, WorkOrderTypeEnum.COMPLAINT.getCode(), WorkOrderTypeEnum.CONSULTATION.getCode()); // 不包含 3,4,投诉和咨询
@@ -262,7 +263,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         ? BigDecimal.valueOf(item.getCount() * 100.0 / totalFaults)
                         : BigDecimal.ZERO;
                 String rate = rateDecimal.setScale(2, RoundingMode.HALF_UP).toString();
-                existingStat.setFailureRate( rate + "%"); // 保留两位小数
+                existingStat.setFailureRate(rate + "%"); // 保留两位小数
             }
         }
 

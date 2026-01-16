@@ -11,6 +11,8 @@ import java.util.Map;
 
 public interface IElevatorInfoService extends IService<ElevatorInfo> {
 
+    ElevatorInfo searchElevatorInfo(SearchDTO searchDTO);
+
     IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO);
 
     List<ElevatorInfo> listElevators(String keyword);

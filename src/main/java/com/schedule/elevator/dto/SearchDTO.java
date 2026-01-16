@@ -3,11 +3,13 @@ package com.schedule.elevator.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
+@Accessors(chain = true)
 @ApiModel("工单查询条件")
 public class SearchDTO implements Serializable {
 

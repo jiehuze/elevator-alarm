@@ -50,6 +50,9 @@ public class WorkOrder implements Serializable {
     @TableField("district")
     private String district; // 地区
 
+    @TableField("elevator_name")
+    private String elevatorName; // 电梯名称
+
     @TableField("elevator_address")
     private String elevatorAddress; // 电梯地址
 
@@ -128,6 +131,9 @@ public class WorkOrder implements Serializable {
 
     @TableField(value = "rescue_duration")
     private Long rescueDuration; // 救援用时（秒）
+
+    @TableField(value = "repair_duration")
+    private Long repairDuration; // 维修用时（秒）
 
     @TableField(value = "is_mechanical_failure")
     private Boolean mechanicalFailure; // 是否为机械故障，0 - 否，1 - 是

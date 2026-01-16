@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
 import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.entity.WorkOrderProgress;
@@ -36,7 +37,7 @@ public class WorkOrderController {
     private IWorkOrderService workOrderService;
 
     @Autowired
-    private IWorkOrderTraceService workOrderTraceService;
+    private IElevatorInfoService elevatorInfoService;
 
     @Autowired
     private IWorkOrderProgressService workOrderProgressService;
@@ -128,17 +129,23 @@ public class WorkOrderController {
                     .setSuspectedDeathCount(handleDTO.getSuspectedDeathCount())
                     .setStatus(handleDTO.getStatus());
             //到达现场时间，计算用时
-            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode())) {
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) && handleDTO.getIsSuccess() == 1) {
                 HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
 
                 workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
             }
             //救援完成时间，计算用时
-            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode())) {
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
                 HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
                 workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+            }
+            //维修完成时间，计算用时
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
+                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
+                WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
+                workOrder.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
             }
 
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(handleDTO.getOrderNo())
@@ -184,7 +191,11 @@ public class WorkOrderController {
     @GetMapping("/{id}")
     public BaseResponse getById(@PathVariable Long id) {
         WorkOrder workOrder = workOrderService.getById(id);
-        return new BaseResponse(HttpStatus.OK.value(), "查询成功", workOrder, null);
+        ElevatorInfo elevatorInfo = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRescueCode(workOrder.getRescueCode()));
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("workOrder", workOrder);
+        map.put("elevator", elevatorInfo);
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", map, null);
     }
 
     @PutMapping("/update")

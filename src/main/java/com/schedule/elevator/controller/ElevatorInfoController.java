@@ -171,6 +171,7 @@ public class ElevatorInfoController {
                     elevatorInfo.setUsingUnitId(UsingUnitId);
 
                     elevatorInfoService.createElevatorInfo(elevatorInfo);
+//                    elevatorInfoService.saveOrUpdate(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode()));
                 }
             }
 

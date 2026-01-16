@@ -1,6 +1,7 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,6 +27,14 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
     public ElevatorInfoServiceImpl(ElevatorInfoMapper elevatorInfoMapper) {
         this.elevatorInfoMapper = elevatorInfoMapper;
+    }
+
+    @Override
+    public ElevatorInfo searchElevatorInfo(SearchDTO searchDTO) {
+        LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StringUtils.isNotBlank(searchDTO.getRescueCode()), ElevatorInfo::getRescueCode, searchDTO.getRescueCode());
+        queryWrapper.eq(StringUtils.isNotBlank(searchDTO.getRegisterCode()), ElevatorInfo::getRegisterCode, searchDTO.getRegisterCode());
+        return this.getOne(queryWrapper);
     }
 
     @Override
@@ -78,29 +87,21 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
     @Override
     public boolean createElevatorInfo(ElevatorInfo elevatorInfo) throws Exception {
-        if (elevatorInfo == null) {
-            throw new IllegalArgumentException("电梯信息不能为空");
-        }
-
-        String rescueCode = elevatorInfo.getRescueCode();
-
         // 只有当 rescueCode 非空时才做唯一性校验
-        if (StringUtils.isNotBlank(rescueCode)) {
+        if (StringUtils.isNotBlank(elevatorInfo.getRescueCode())) {
             boolean exists = this.count(new LambdaQueryWrapper<ElevatorInfo>()
-                    .eq(ElevatorInfo::getRescueCode, rescueCode.trim())) > 0;
+                    .eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode().trim())) > 0;
 
             if (exists) {
-                throw new RuntimeException("电梯救援码" + rescueCode + "已存在");
+                LambdaUpdateWrapper<ElevatorInfo> updateWrapper = new LambdaUpdateWrapper<>();
+                updateWrapper.eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode().trim());
+                return this.update(elevatorInfo, updateWrapper);
+            } else {
+                return this.save(elevatorInfo);
             }
         }
 
-        // 执行插入
-        boolean saved = this.save(elevatorInfo);
-        if (!saved) {
-            throw new RuntimeException("数据库插入失败");
-        }
-
-        return true;
+        return false;
     }
 
     @Override
