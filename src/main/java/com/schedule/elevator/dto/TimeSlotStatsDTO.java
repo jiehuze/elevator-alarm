@@ -33,5 +33,5 @@ public class TimeSlotStatsDTO implements Serializable {
     private Integer otherCount;      // 其他故障数量
 
     @ExcelProperty("故障率")
-    private Double failureRate;      // 故障率
+    private String failureRate;      // 故障率
 }

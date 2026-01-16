@@ -244,7 +244,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             stat.setTrappedCount(0);
             stat.setNonTrappedCount(0);
             stat.setOtherCount(0);
-            stat.setFailureRate(0.0);
+            stat.setFailureRate("0.0%");
             fullMap.put(slot, stat);
         }
 
@@ -258,8 +258,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 existingStat.setOtherCount(item.getOtherCount());
 
                 // 计算故障率：当前时段故障数 * 100 / 总故障数
-                double rate = totalFaults > 0 ? (item.getCount() * 100.0 / totalFaults) : 0.0;
-                existingStat.setFailureRate(Math.round(rate * 100.0) / 100.0); // 保留两位小数
+                BigDecimal rateDecimal = totalFaults > 0
+                        ? BigDecimal.valueOf(item.getCount() * 100.0 / totalFaults)
+                        : BigDecimal.ZERO;
+                String rate = rateDecimal.setScale(2, RoundingMode.HALF_UP).toString();
+                existingStat.setFailureRate( rate + "%"); // 保留两位小数
             }
         }
 

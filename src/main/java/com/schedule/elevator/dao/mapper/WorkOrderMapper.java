@@ -164,7 +164,67 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "]]>",
             "</script>"
     })
+    List<TimeConsumptionStatsDTO> getArriveTimeConsumptionStats1(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  time_ranges.time_range, ",
+            "  COALESCE(stats.trappedArrivalCount, 0) AS trappedArrivalCount, ",
+            "  COALESCE(stats.nonTrappedArrivalCount, 0) AS nonTrappedArrivalCount ",
+            "FROM (",
+            "  SELECT '0-5分钟' AS time_range, 1 AS sort_no ",
+            "  UNION ALL SELECT '5-10分钟', 2 ",
+            "  UNION ALL SELECT '10-15分钟', 3 ",
+            "  UNION ALL SELECT '15-20分钟', 4 ",
+            "  UNION ALL SELECT '20-25分钟', 5 ",
+            "  UNION ALL SELECT '25-30分钟', 6 ",
+            "  UNION ALL SELECT '30分钟以上', 7 ",
+            ") time_ranges ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "<![CDATA[",
+            "    CASE ",
+            "      WHEN time_to_arrive >= 0 AND time_to_arrive < 300 THEN '0-5分钟' ",
+            "      WHEN time_to_arrive >= 300 AND time_to_arrive < 600 THEN '5-10分钟' ",
+            "      WHEN time_to_arrive >= 600 AND time_to_arrive < 900 THEN '10-15分钟' ",
+            "      WHEN time_to_arrive >= 900 AND time_to_arrive < 1200 THEN '15-20分钟' ",
+            "      WHEN time_to_arrive >= 1200 AND time_to_arrive < 1500 THEN '20-25分钟' ",
+            "      WHEN time_to_arrive >= 1500 AND time_to_arrive < 1800 THEN '25-30分钟' ",
+            "      WHEN time_to_arrive >= 1800 THEN '30分钟以上' ",
+            "      ELSE '总数' ",
+            "    END AS time_range, ",
+            "    SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) AS trappedArrivalCount, ",
+            "    SUM(CASE WHEN order_type = 2 THEN 1 ELSE 0 END) AS nonTrappedArrivalCount ",
+            "]]>",
+            "  FROM work_order ",
+            "  WHERE time_to_arrive IS NOT NULL ",
+            "    AND order_type IN (1, 2) ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and !searchDTO.district.isEmpty()'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY ",
+            "<![CDATA[",
+            "    CASE ",
+            "      WHEN time_to_arrive >= 0 AND time_to_arrive < 300 THEN '0-5分钟' ",
+            "      WHEN time_to_arrive >= 300 AND time_to_arrive < 600 THEN '5-10分钟' ",
+            "      WHEN time_to_arrive >= 600 AND time_to_arrive < 900 THEN '10-15分钟' ",
+            "      WHEN time_to_arrive >= 900 AND time_to_arrive < 1200 THEN '15-20分钟' ",
+            "      WHEN time_to_arrive >= 1200 AND time_to_arrive < 1500 THEN '20-25分钟' ",
+            "      WHEN time_to_arrive >= 1500 AND time_to_arrive < 1800 THEN '25-30分钟' ",
+            "      WHEN time_to_arrive >= 1800 THEN '30分钟以上' ",
+            "      ELSE '总数' ",
+            "    END ",
+            "]]>",
+            ") stats ON time_ranges.time_range = stats.time_range ",
+            "ORDER BY time_ranges.sort_no ASC",
+            "</script>"
+    })
     List<TimeConsumptionStatsDTO> getArriveTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+
 
     @Select({
             "<script>",
@@ -184,6 +244,63 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     TimeConsumptionStatsDTO getTotalArriveTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  time_ranges.time_range, ",
+            "  COALESCE(stats.trappedRescueCount, 0) AS trappedRescueCount ",
+            "FROM (",
+            "  SELECT '0-5分钟' AS time_range, 1 AS sort_no ",
+            "  UNION ALL SELECT '5-10分钟', 2 ",
+            "  UNION ALL SELECT '10-15分钟', 3 ",
+            "  UNION ALL SELECT '15-20分钟', 4 ",
+            "  UNION ALL SELECT '20-25分钟', 5 ",
+            "  UNION ALL SELECT '25-30分钟', 6 ",
+            "  UNION ALL SELECT '30分钟以上', 7 ",
+            ") time_ranges ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "<![CDATA[",
+            "    CASE ",
+            "      WHEN rescue_duration >= 0 AND rescue_duration < 300 THEN '0-5分钟' ",
+            "      WHEN rescue_duration >= 300 AND rescue_duration < 600 THEN '5-10分钟' ",
+            "      WHEN rescue_duration >= 600 AND rescue_duration < 900 THEN '10-15分钟' ",
+            "      WHEN rescue_duration >= 900 AND rescue_duration < 1200 THEN '15-20分钟' ",
+            "      WHEN rescue_duration >= 1200 AND rescue_duration < 1500 THEN '20-25分钟' ",
+            "      WHEN rescue_duration >= 1500 AND rescue_duration < 1800 THEN '25-30分钟' ",
+            "      WHEN rescue_duration >= 1800 THEN '30分钟以上' ",
+            "      ELSE '总数' ",
+            "    END AS time_range, ",
+            "    SUM(CASE WHEN order_type = 1 THEN 1 ELSE 0 END) AS trappedRescueCount ",
+            "]]>",
+            "  FROM work_order ",
+            "  WHERE rescue_duration IS NOT NULL ",
+            "    AND order_type = 1 ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and !searchDTO.district.isEmpty()'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY ",
+            "<![CDATA[",
+            "    CASE ",
+            "      WHEN rescue_duration >= 0 AND rescue_duration < 300 THEN '0-5分钟' ",
+            "      WHEN rescue_duration >= 300 AND rescue_duration < 600 THEN '5-10分钟' ",
+            "      WHEN rescue_duration >= 600 AND rescue_duration < 900 THEN '10-15分钟' ",
+            "      WHEN rescue_duration >= 900 AND rescue_duration < 1200 THEN '15-20分钟' ",
+            "      WHEN rescue_duration >= 1200 AND rescue_duration < 1500 THEN '20-25分钟' ",
+            "      WHEN rescue_duration >= 1500 AND rescue_duration < 1800 THEN '25-30分钟' ",
+            "      WHEN rescue_duration >= 1800 THEN '30分钟以上' ",
+            "      ELSE '总数' ",
+            "    END ",
+            "]]>",
+            ") stats ON time_ranges.time_range = stats.time_range ",
+            "ORDER BY time_ranges.sort_no ASC",
+            "</script>"
+    })
+    List<TimeConsumptionStatsDTO> getRescueTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
 
     @Select({
             "<script>",
@@ -229,7 +346,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "]]>",
             "</script>"
     })
-    List<TimeConsumptionStatsDTO> getRescueTimeConsumptionStats(@Param("searchDTO") SearchDTO searchDTO);
+    List<TimeConsumptionStatsDTO> getRescueTimeConsumptionStats2(@Param("searchDTO") SearchDTO searchDTO);
 
     @Select({
             "<script>",
