@@ -9,8 +9,8 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class OvertimeWorkOrderDTO {
-    @ExcelProperty("时间")
-    private Date time;  // 完整时间：2026-01-10 10:20:20
+    @ExcelProperty("日期时间")
+    private String time;  // 完整时间：2026-01-10 10:20:20
 
     @ExcelProperty("电梯注册代码")
     private String registerCode;
@@ -28,8 +28,8 @@ public class OvertimeWorkOrderDTO {
     private String projectName;
 
     @ExcelProperty("抵达救援现场用时")
-    private Integer timeToArrive;  // 单位：秒
+    private String timeToArrive;  // 单位：秒
 
     @ExcelProperty("超时")
-    private Integer overtime;  // 超出30分钟的部分，单位：秒
+    private String overtime;  // 超出30分钟的部分，单位：秒
 }

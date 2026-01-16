@@ -275,6 +275,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer trappedRescueCount = workOrderMapper.getTrappedRescueCount(searchDTO);
         totalTimeConsumptionStats.setTrappedRescueCount(trappedRescueCount);
 
+        System.out.println("--------救援：" + rescueTimeConsumptionStats.size() + "   " + rescueTimeConsumptionStats);
+        System.out.println("--------困人：" + timeConsumptionStats.size() + "   " + timeConsumptionStats);
         for (int i = 0; i < timeConsumptionStats.size(); i++) {
             timeConsumptionStats.get(i).setTrappedRescueCount(rescueTimeConsumptionStats.get(i).getTrappedRescueCount());
         }

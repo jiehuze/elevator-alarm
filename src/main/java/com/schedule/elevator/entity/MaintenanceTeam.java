@@ -23,6 +23,9 @@ public class MaintenanceTeam {
     @TableField("team_name")
     private String teamName; // 班组名称
 
+    @TableField("level")
+    private Integer level; // 维保班组级别 1=一级，2=二级
+
     @TableField("province")
     private String province; // 省份
 

@@ -25,6 +25,9 @@ public class MaintenanceUnit implements Serializable {
     @TableField("maintainer_unit_name")
     private String maintainerUnitName; // 维护单位名称
 
+    @TableField("maintainer_unit_phone")
+    private String maintainerUnitPhone; // 维保单位电话
+
     @TableField("maintainer_unit_manager")
     private String maintainerUnitManager; // 维保单位负责人
 

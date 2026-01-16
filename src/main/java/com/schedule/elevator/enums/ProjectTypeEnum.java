@@ -5,15 +5,15 @@
      */
     public enum ProjectTypeEnum {
 
-        RESIDENTIAL_AREA("住宅小区", "RESIDENTIAL"),
-        OFFICE_AREA("办公区域", "OFFICE"),
-        MALL_SUPERMARKET("商场超市", "MALL"),
+        RESIDENTIAL_AREA("住宅区", "RESIDENTIAL"),
+        OFFICE_AREA("办公楼", "OFFICE"),
+        MALL_SUPERMARKET("商业区", "MALL"),
         HOTEL_RESTAURANT("宾馆饭店", "HOTEL"),
         HOSPITAL("医院", "HOSPITAL"),
         SCHOOL("学校", "SCHOOL"),
         TRANSPORTATION("交通场所", "TRANSPORTATION"),
         CULTURAL_ENTERTAINMENT("文体娱乐馆", "CULTURAL"),
-        OTHER_PLACE("其他场所", "OTHER");
+        OTHER_PLACE("其他", "OTHER");
 
         private final String description;
         private final String code;

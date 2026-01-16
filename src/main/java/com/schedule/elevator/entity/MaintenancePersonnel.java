@@ -30,6 +30,9 @@ public class MaintenancePersonnel {
     @TableField("maintenance_team_id")
     private Long maintenanceTeamId; // 维保组ID（可关联 future maintenance_teams 表）
 
+    @TableField("sub_maintenance_team_id")
+    private Long subMaintenanceTeamId; // 二级维保组ID
+
     @TableField("status")
     private Integer status; // 在岗状态：1=在岗，0=离岗
 
