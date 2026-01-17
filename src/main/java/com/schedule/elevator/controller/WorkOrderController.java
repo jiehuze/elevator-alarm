@@ -1,6 +1,7 @@
 package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
@@ -190,11 +191,14 @@ public class WorkOrderController {
 
     @GetMapping("/{id}")
     public BaseResponse getById(@PathVariable Long id) {
-        WorkOrder workOrder = workOrderService.getById(id);
-        ElevatorInfo elevatorInfo = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRescueCode(workOrder.getRescueCode()));
         HashMap<String, Object> map = new HashMap<>();
+        WorkOrder workOrder = workOrderService.getById(id);
+        System.out.println("workOrder:" + workOrder.getRescueCode());
+        if (StringUtils.isNotBlank(workOrder.getRescueCode())) {
+            ElevatorInfo elevatorInfo = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRescueCode(workOrder.getRescueCode()));
+            map.put("elevator", elevatorInfo);
+        }
         map.put("workOrder", workOrder);
-        map.put("elevator", elevatorInfo);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", map, null);
     }
 

@@ -7,8 +7,12 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class ParamDTO {
-    @Value("${elevator.alarm.upload.path}")
-    private String uploadPath;
-    @Value("${elevator.alarm.download.path}")
-    private String downloadPath;
+    @Value("${elevator.root.path}")
+    private String rootPath;
+    @Value("${elevator.screenshot.path}")
+    private String screenshotPath;
+    @Value("${elevator.report.path}")
+    private String reportPath;
+    @Value("${elevator.export.path}")
+    private String exportPath;
 }

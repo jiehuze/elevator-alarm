@@ -82,7 +82,7 @@ public class WorkOrderScreenshotController {
         }
 
         //创建路径
-        Path dirPath = Paths.get(paramDTO.getUploadPath(), workOrderScreenshot.getOrderNo()); // 自动处理分隔符
+        Path dirPath = Paths.get(paramDTO.getRootPath() + paramDTO.getScreenshotPath(), workOrderScreenshot.getOrderNo()); // 自动处理分隔符
         try {
             Files.createDirectories(dirPath);
         } catch (IOException e) {
@@ -128,7 +128,7 @@ public class WorkOrderScreenshotController {
         }
 
         workOrderScreenshot.setFileNames(fileNames.toString())
-                .setFilePath(Paths.get(paramDTO.getDownloadPath(), workOrderScreenshot.getOrderNo()).toString()) // 供 Nginx 访问
+                .setFilePath(Paths.get(paramDTO.getScreenshotPath(), workOrderScreenshot.getOrderNo()).toString()) // 供 Nginx 访问
                 .setUploaderName(workOrderScreenshot.getUploaderName())
                 .setUploadTime(LocalDateTime.now())
                 .setContentType("jpg");

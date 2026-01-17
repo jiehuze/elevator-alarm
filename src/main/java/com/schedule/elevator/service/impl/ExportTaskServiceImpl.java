@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ExportTaskMapper;
 import com.schedule.elevator.dto.ExportTaskDTO;
+import com.schedule.elevator.dto.ParamDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
 import com.schedule.elevator.service.IExportTaskService;
@@ -30,6 +31,8 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     private final ExportTaskMapper exportTaskMapper;
     @Autowired
     private IWordExportService wordExportService;
+    @Autowired
+    private ParamDTO paramDTO;
 
     @Override
     public ExportTask createExportTask(ExportTask task) {
@@ -128,11 +131,14 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         ExportTask exportTask = createExportTask(task);
         try {
             updateToProcessing(exportTask.getId());
-
             SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
-            String filePath = "month-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String fileName = "month-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String urlPath = paramDTO.getReportPath() + fileName;
+            String filePath = paramDTO.getRootPath() + urlPath;
+            FileUtil.ensureDirectoryExists(filePath);
             wordExportService.generateMonthlyReport(searchDTO, filePath);
-            updateToSuccess(exportTask.getId(), filePath, exportTask.getFileUrl(), FileUtil.getFileSizeInKB(filePath), 0);
+
+            updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
             System.out.println("数据导出完成！");
         } catch (Exception e) {
             e.printStackTrace();
