@@ -27,19 +27,25 @@ public class ExportTask implements Serializable {
     private String taskName;      // 导出任务名称（如：2025年Q1工单汇总）
 
     @TableField("export_type")
-    private String exportType;    // 导出类型（如：work_order, fault_stat, personnel_list 等）
+    private Integer exportType;    // // 导出类型(1. 月报，2， 年报或半年报，3. 工单导出，4. 电梯信息，5， 维保单位，6， 小区信息)
 
-    @TableField("file_path")
-    private String filePath;      // 文件存储路径或URL
+    @TableField("is_report")
+    private Boolean isReport;     // 是否为报告：0-否（普通数据导出），1-是（分析/汇总报告）
+
+    @TableField("file_name")
+    private String fileName;      // 文件的名字命名
 
     @TableField("file_url")
-    private String fileUrl;       // 公开访问URL（如OSS/MinIO外链）
+    private String fileUrl;       // 可选：公开访问URL（如OSS/MinIO外链）
 
     @TableField("status")
     private Integer status;       // 状态：0-排队中，1-处理中，2-成功，3-失败
 
     @TableField("error_message")
     private String errorMessage;  // 失败时的错误信息
+
+    @TableField("remark")
+    private String remark;        // 备注信息（如：仅包含重大事故工单、用于审计等）
 
     @TableField("trigger_user_id")
     private String triggerUserId; // 触发用户ID（工号或系统账号）
@@ -57,21 +63,23 @@ public class ExportTask implements Serializable {
     private LocalDateTime completedAt; // 完成时间
 
     @TableField("file_size_kb")
-    private Integer fileSizeKb;   // 文件大小（KB）
+    private Long fileSizeKb;   // 文件大小（KB）
 
     @TableField("record_count")
     private Integer recordCount;  // 导出记录数（便于预览）
 
     // 构造函数
-    public ExportTask() {}
+    public ExportTask() {
+    }
 
-    public ExportTask(String taskName, String exportType, String triggerUserId, String triggerUserName) {
+    public ExportTask(String taskName, Integer exportType, String triggerUserId, String triggerUserName, String remark) {
         this.taskName = taskName;
         this.exportType = exportType;
         this.triggerUserId = triggerUserId;
         this.triggerUserName = triggerUserName;
-        this.status = 0; // 默认排队中
+        this.status = STATUS_QUEUED; // 默认排队中
         this.createdAt = LocalDateTime.now();
+        this.remark = remark;
     }
 
     // 状态常量

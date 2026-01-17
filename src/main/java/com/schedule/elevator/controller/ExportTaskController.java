@@ -3,7 +3,7 @@ package com.schedule.elevator.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
-import com.schedule.elevator.dto.ExportTaskQueryDTO;
+import com.schedule.elevator.dto.ExportTaskDTO;
 import com.schedule.elevator.entity.ExportTask;
 import com.schedule.elevator.service.IExportTaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +26,18 @@ public class ExportTaskController {
     @Autowired
     private IExportTaskService exportTaskService;
 
+    /************************************异步操作操作****************************************/
+    @PostMapping("/exec-report")
+    @Operation(summary = "导出任务")
+    public BaseResponse exportTask(@RequestBody ExportTaskDTO task) {
+        task.setIsReport(true);
+        if (task.getExportType() == 1) {
+            exportTaskService.exportMonthlyReportAsync(task);
+        }
+        return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
+    }
+
+    /************************************基础操作****************************************/
     @PostMapping("/create")
     @Operation(summary = "创建导出任务")
     public BaseResponse createExportTask(@RequestBody ExportTask task) {
@@ -43,7 +55,7 @@ public class ExportTaskController {
     @GetMapping("/list")
     @Operation(summary = "查询导出任务列表")
     public BaseResponse getExportTasks(
-            @ModelAttribute ExportTaskQueryDTO queryDTO,
+            @ModelAttribute ExportTaskDTO queryDTO,
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -53,7 +65,7 @@ public class ExportTaskController {
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "获取用户导出任务列表")
-    public BaseResponse getUserExportTasks(@ModelAttribute ExportTaskQueryDTO queryDTO) {
+    public BaseResponse getUserExportTasks(@ModelAttribute ExportTaskDTO queryDTO) {
 
         List<ExportTask> tasks = exportTaskService.getUserExportTasks(queryDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", tasks, null);

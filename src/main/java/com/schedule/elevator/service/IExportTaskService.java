@@ -3,7 +3,7 @@ package com.schedule.elevator.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.schedule.elevator.entity.ExportTask;
-import com.schedule.elevator.dto.ExportTaskQueryDTO;
+import com.schedule.elevator.dto.ExportTaskDTO;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ public interface IExportTaskService extends IService<ExportTask> {
     /**
      * 创建导出任务
      */
-    ExportTask createExportTask(String taskName, String exportType, String triggerUserId, String triggerUserName);
+    ExportTask createExportTask(ExportTask exportTask);
 
     /**
      * 分页查询导出任务
      */
-    Page<ExportTask> queryExportTasks(ExportTaskQueryDTO queryDTO, int current, int size);
+    Page<ExportTask> queryExportTasks(ExportTaskDTO queryDTO, int current, int size);
 
     /**
      * 更新任务为处理中状态
@@ -27,7 +27,7 @@ public interface IExportTaskService extends IService<ExportTask> {
     /**
      * 更新任务为成功状态
      */
-    boolean updateToSuccess(Long taskId, String filePath, String fileUrl, Integer fileSizeKb, Integer recordCount);
+    boolean updateToSuccess(Long taskId, String filePath, String fileUrl, Long fileSizeKb, Integer recordCount);
 
     /**
      * 更新任务为失败状态
@@ -37,10 +37,20 @@ public interface IExportTaskService extends IService<ExportTask> {
     /**
      * 获取用户的导出任务列表
      */
-    List<ExportTask> getUserExportTasks(ExportTaskQueryDTO queryDTO);
+    List<ExportTask> getUserExportTasks(ExportTaskDTO queryDTO);
 
     /**
      * 清理过期的导出任务记录
      */
     Long cleanupExpiredTasks(int daysAgo);
+
+    /**
+     * 导出数据
+     */
+    void exportMonthlyReportAsync(ExportTaskDTO task);
+
+    /**
+     * 导出数据
+     */
+    void exportYearReportAsync(ExportTaskDTO task);
 }

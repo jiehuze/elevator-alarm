@@ -74,10 +74,10 @@ public class WordExportServiceImpl implements IWordExportService {
      * @param searchDTO
      */
     @Override
-    public void generateMonthlyReport(SearchDTO searchDTO) {
+    public void generateMonthlyReport(SearchDTO searchDTO, String outputPath) {
         try {
             String templatePath = "doc/month.docx";
-            String outputPath = "month.docx";
+//            String outputPath = "month.docx";
 
             HashMap<String, String> replaceStrMap = new HashMap<>();
             String districtS = "";

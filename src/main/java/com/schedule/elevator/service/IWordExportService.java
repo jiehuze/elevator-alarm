@@ -19,5 +19,5 @@ public interface IWordExportService {
             Map<String, TableData> tableMap,
             String outputPath) throws IOException;
 
-    void generateMonthlyReport(SearchDTO searchDTO);
+    void generateMonthlyReport(SearchDTO searchDTO, String outputPath);
 }

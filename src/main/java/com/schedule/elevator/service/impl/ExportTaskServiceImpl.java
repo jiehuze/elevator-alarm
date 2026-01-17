@@ -6,15 +6,20 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ExportTaskMapper;
-import com.schedule.elevator.dto.ExportTaskQueryDTO;
+import com.schedule.elevator.dto.ExportTaskDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
 import com.schedule.elevator.service.IExportTaskService;
+import com.schedule.elevator.service.IWordExportService;
+import com.schedule.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.math3.analysis.function.Exp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -23,26 +28,27 @@ import java.util.List;
 public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportTask> implements IExportTaskService {
 
     private final ExportTaskMapper exportTaskMapper;
+    @Autowired
+    private IWordExportService wordExportService;
 
     @Override
-    public ExportTask createExportTask(String taskName, String exportType, String triggerUserId, String triggerUserName) {
-        ExportTask task = new ExportTask(taskName, exportType, triggerUserId, triggerUserName);
+    public ExportTask createExportTask(ExportTask task) {
         save(task);
-        log.info("创建导出任务: id={}, type={}, user={}", task.getId(), exportType, triggerUserId);
+        log.info("创建导出任务: id={}, type={}, user={}", task.getId(), task.getExportType(), task.getTriggerUserId());
         return task;
     }
 
     @Override
-    public Page<ExportTask> queryExportTasks(ExportTaskQueryDTO queryDTO, int current, int size) {
+    public Page<ExportTask> queryExportTasks(ExportTaskDTO queryDTO, int current, int size) {
         Page<ExportTask> page = new Page<>(current, size);
 
         LambdaQueryWrapper<ExportTask> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTaskName()), ExportTask::getTaskName, queryDTO.getTaskName());
-        queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getExportType()), ExportTask::getExportType, queryDTO.getExportType());
+        queryWrapper.eq(queryDTO.getExportType() != null, ExportTask::getExportType, queryDTO.getExportType());
         queryWrapper.eq(queryDTO.getStatus() != null, ExportTask::getStatus, queryDTO.getStatus());
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTriggerUserId()), ExportTask::getTriggerUserId, queryDTO.getTriggerUserId());
-        if (queryDTO.getStartDate() != null && queryDTO.getEndDate() != null) {
-            queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartDate(), queryDTO.getEndDate());
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+            queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
 
         queryWrapper.orderByAsc(ExportTask::getCreatedAt);
@@ -62,11 +68,11 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
-    public boolean updateToSuccess(Long taskId, String filePath, String fileUrl, Integer fileSizeKb, Integer recordCount) {
+    public boolean updateToSuccess(Long taskId, String fileName, String fileUrl, Long fileSizeKb, Integer recordCount) {
         ExportTask task = new ExportTask();
         task.setId(taskId);
         task.setStatus(ExportTask.STATUS_SUCCESS);
-        task.setFilePath(filePath);
+        task.setFileName(fileName);
         task.setFileUrl(fileUrl);
         task.setFileSizeKb(fileSizeKb);
         task.setRecordCount(recordCount);
@@ -89,14 +95,14 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
-    public List<ExportTask> getUserExportTasks(ExportTaskQueryDTO queryDTO) {
+    public List<ExportTask> getUserExportTasks(ExportTaskDTO queryDTO) {
         LambdaQueryWrapper<ExportTask> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTaskName()), ExportTask::getTaskName, queryDTO.getTaskName());
-        queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getExportType()), ExportTask::getExportType, queryDTO.getExportType());
+        queryWrapper.eq(queryDTO.getExportType() != null, ExportTask::getExportType, queryDTO.getExportType());
         queryWrapper.eq(queryDTO.getStatus() != null, ExportTask::getStatus, queryDTO.getStatus());
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTriggerUserId()), ExportTask::getTriggerUserId, queryDTO.getTriggerUserId());
-        if (queryDTO.getStartDate() != null && queryDTO.getEndDate() != null) {
-            queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartDate(), queryDTO.getEndDate());
+        if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
+            queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
 
         queryWrapper.orderByDesc(ExportTask::getCreatedAt);
@@ -115,30 +121,28 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         return deletedCount;
     }
 
-    private QueryWrapper<ExportTask> buildQueryWrapper(ExportTaskQueryDTO queryDTO) {
-        QueryWrapper<ExportTask> wrapper = new QueryWrapper<>();
+    @Override
+    @Async
+    public void exportMonthlyReportAsync(ExportTaskDTO task) {
+        System.out.println("开始导出数据");
+        ExportTask exportTask = createExportTask(task);
+        try {
+            updateToProcessing(exportTask.getId());
 
-        if (queryDTO.getExportType() != null && !queryDTO.getExportType().isEmpty()) {
-            wrapper.eq("export_type", queryDTO.getExportType());
+            SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
+            String filePath = "month-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            wordExportService.generateMonthlyReport(searchDTO, filePath);
+            updateToSuccess(exportTask.getId(), filePath, exportTask.getFileUrl(), FileUtil.getFileSizeInKB(filePath), 0);
+            System.out.println("数据导出完成！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            updateToFailed(exportTask.getId(), e.getMessage());
+            System.out.println("数据导出被中断");
         }
+    }
 
-        if (queryDTO.getStatus() != null) {
-            wrapper.eq("status", queryDTO.getStatus());
-        }
-
-        if (queryDTO.getTriggerUserId() != null && !queryDTO.getTriggerUserId().isEmpty()) {
-            wrapper.eq("trigger_user_id", queryDTO.getTriggerUserId());
-        }
-
-        if (queryDTO.getStartDate() != null) {
-            wrapper.ge("created_at", queryDTO.getStartDate());
-        }
-
-        if (queryDTO.getEndDate() != null) {
-            wrapper.le("created_at", queryDTO.getEndDate());
-        }
-
-        wrapper.orderByDesc("created_at");
-        return wrapper;
+    @Override
+    public void exportYearReportAsync(ExportTaskDTO task) {
+        return;
     }
 }

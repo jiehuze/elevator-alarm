@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -158,7 +159,9 @@ public class StatisticalController {
     /*******************************************导出数据******************************************/
     @GetMapping("/export-month-report")
     public BaseResponse exportElevatorWord(@ModelAttribute SearchDTO searchDTO) {
-        wordExportService.generateMonthlyReport(searchDTO);
+        // 获取当前时间并格式化为字符串（包含到分钟）
+        String currentTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        wordExportService.generateMonthlyReport(searchDTO, "/tmp/month-" + currentTimeStr + ".docx");
         return new BaseResponse(HttpStatus.OK.value(), "success", null, null);
     }
 }
