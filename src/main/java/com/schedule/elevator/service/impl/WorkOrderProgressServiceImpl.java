@@ -17,6 +17,7 @@ public class WorkOrderProgressServiceImpl extends ServiceImpl<WorkOrderProgressM
     public List<WorkOrderProgress> queryByOrderNo(String orderNo) {
         LambdaQueryWrapper<WorkOrderProgress> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WorkOrderProgress::getOrderNo, orderNo);
+        queryWrapper.orderByAsc(WorkOrderProgress::getStatus);
         return list(queryWrapper);
     }
 

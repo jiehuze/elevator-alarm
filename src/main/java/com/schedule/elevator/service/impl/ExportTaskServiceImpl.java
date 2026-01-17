@@ -10,18 +10,29 @@ import com.schedule.elevator.dto.ExportTaskDTO;
 import com.schedule.elevator.dto.ParamDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
-import com.schedule.elevator.service.IExportTaskService;
-import com.schedule.elevator.service.IWordExportService;
+import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.entity.WorkOrder;
+import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.enums.WorkOrderStatusEnum;
+import com.schedule.elevator.enums.WorkOrderTypeEnum;
+import com.schedule.elevator.service.*;
+import com.schedule.excel.DocxPlaceholderReplaceUtil;
+import com.schedule.utils.DateUtils;
 import com.schedule.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -29,8 +40,19 @@ import java.util.List;
 public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportTask> implements IExportTaskService {
 
     private final ExportTaskMapper exportTaskMapper;
+
+    @Autowired
+    private IWorkOrderService workOrderService;
+
     @Autowired
     private IWordExportService wordExportService;
+
+    @Autowired
+    private IPropertyInfoService propertyInfoService;
+
+    @Autowired
+    private IWorkOrderProgressService workOrderProgressService;
+
     @Autowired
     private ParamDTO paramDTO;
 
@@ -50,6 +72,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         queryWrapper.eq(queryDTO.getExportType() != null, ExportTask::getExportType, queryDTO.getExportType());
         queryWrapper.eq(queryDTO.getStatus() != null, ExportTask::getStatus, queryDTO.getStatus());
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTriggerUserId()), ExportTask::getTriggerUserId, queryDTO.getTriggerUserId());
+        queryWrapper.eq(queryDTO.getIsReport() != null, ExportTask::getIsReport, queryDTO.getIsReport());
         if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
             queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
@@ -104,6 +127,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         queryWrapper.eq(queryDTO.getExportType() != null, ExportTask::getExportType, queryDTO.getExportType());
         queryWrapper.eq(queryDTO.getStatus() != null, ExportTask::getStatus, queryDTO.getStatus());
         queryWrapper.eq(StringUtils.isNotBlank(queryDTO.getTriggerUserId()), ExportTask::getTriggerUserId, queryDTO.getTriggerUserId());
+        queryWrapper.eq(queryDTO.getIsReport() != null, ExportTask::getIsReport, queryDTO.getIsReport());
         if (queryDTO.getStartTime() != null && queryDTO.getEndTime() != null) {
             queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
@@ -143,12 +167,81 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         } catch (Exception e) {
             e.printStackTrace();
             updateToFailed(exportTask.getId(), e.getMessage());
-            System.out.println("数据导出被中断");
+            System.out.println("数据导出失败");
         }
     }
 
     @Override
+    @Async
     public void exportYearReportAsync(ExportTaskDTO task) {
         return;
+    }
+
+    @Override
+    @Async
+    public void exportWorkOrderReport(ExportTaskDTO task) {
+        ExportTask exportTask = createExportTask(task);
+        updateToProcessing(exportTask.getId());
+
+        WorkOrder workOrder = workOrderService.getWorkOrderByOrderNo(task.getOrderNo());
+
+        PropertyInfo propertyInfo = propertyInfoService.getById(workOrder.getUsingUnitId());
+        List<WorkOrderProgress> workOrderProgresses = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
+
+        String description = WorkOrderTypeEnum.getByCode(workOrder.getOrderType()).getDescription();
+        String format = DateUtils.format(workOrder.getCreateTime(), DateUtils.DATE_PATTERN);
+
+        Map<String, String> replaceMap = new HashMap<>(); // 创建可变HashMap
+        replaceMap.put("orderName", format + workOrder.getProjectName() + description); // 工单名称
+        replaceMap.put("orderNo", workOrder.getOrderNo());
+        replaceMap.put("createTime", DateUtils.format(workOrder.getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA));
+        replaceMap.put("registerCode", workOrder.getRegisterCode());
+        replaceMap.put("rescueCode", workOrder.getRescueCode());
+        replaceMap.put("usingUnit", workOrder.getUsingUnit());
+        replaceMap.put("usingUnitPhone", propertyInfo.getUsingUnitManagerPhone());
+        replaceMap.put("maintenanceUnitName", workOrder.getMaintenanceUnitName());
+        replaceMap.put("maintenanceUnitPhone", workOrder.getMaintenancePersonnelPhone());
+        replaceMap.put("elevatorAddress", workOrder.getElevatorAddress());
+        replaceMap.put("alarmPersonName", workOrder.getAlarmPersonName());
+        replaceMap.put("alarmPersonPhone", workOrder.getAlarmPersonPhone());
+        replaceMap.put("incidentDescription", workOrder.getIncidentDescription());
+        replaceMap.put("trappedCount", workOrder.getTrappedCount().toString());
+        replaceMap.put("injuredCount", workOrder.getInjuredCount().toString());
+        replaceMap.put("suspectedDeathCount", workOrder.getSuspectedDeathCount().toString());
+        replaceMap.put("alarmTime", DateUtils.format(workOrder.getAlarmTime(), DateUtils.DATE_TIME_PATTERN_CHINA));
+        replaceMap.put("major", workOrder.getMajorIncident() ? "是" : "否");
+        replaceMap.put("rescue", workOrder.getMedicalRescueStarted() ? "是" : "否");
+
+        int index = 0;
+        for (WorkOrderProgress wp : workOrderProgresses) {
+            if (wp.getStatus() == WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) {
+                replaceMap.put("arrivalTime", DateUtils.format(wp.getUpdateTime(), DateUtils.DATE_TIME_PATTERN_CHINA)); //到达现场时间
+            }
+            if (wp.getStatus() == WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) {
+                replaceMap.put("completeTime", DateUtils.format(wp.getUpdateTime(), DateUtils.DATE_TIME_PATTERN_CHINA)); //救援完成时间
+            }
+            String value = DateUtils.format(wp.getCreateTime(), DateUtils.DATE_TIME_PATTERN_CHINA) + "   " + "工号" + wp.getEmployeeId() + wp.getProgress() + "   " + wp.getResult();
+            replaceMap.put("progress" + index, value);
+            index++;
+        }
+        for (int i = index; i < WorkOrderStatusEnum.values().length; i++) {
+            replaceMap.put("progress" + i, "");
+        }
+
+        try {
+            String fileName = "workorder-" + task.getOrderNo() + ".docx";
+            String urlPath = paramDTO.getReportPath() + fileName;
+            String filePath = paramDTO.getRootPath() + urlPath;
+            FileUtil.ensureDirectoryExists(filePath);
+
+            InputStream inputStream = new ClassPathResource("doc/workorder.docx").getInputStream();
+            DocxPlaceholderReplaceUtil.replacePlaceholder(inputStream, replaceMap, filePath);
+            updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            System.out.println("数据导出完成！");
+        } catch (Exception e) {
+            updateToFailed(exportTask.getId(), e.getMessage());
+            System.out.println("数据导出失败");
+            throw new RuntimeException(e);
+        }
     }
 }

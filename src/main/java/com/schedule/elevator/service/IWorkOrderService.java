@@ -13,6 +13,8 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     WorkOrder createWorkOrder(WorkOrder workOrder);
 
+    WorkOrder getWorkOrderByOrderNo(String orderNo);
+
     Boolean createRescueInfo(WorkOrder workOrder);
 
     Boolean updateStatus(WorkOrder workOrder);

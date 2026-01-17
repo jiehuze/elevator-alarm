@@ -10,8 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum WorkOrderTypeEnum {
 
-    TRAPPED_PEOPLE(1, "困人工单"),
-    FAULT(2, "故障工单"),
+    TRAPPED_PEOPLE(1, "困人"),
+    FAULT(2, "故障"),
     COMPLAINT(3, "投诉"),
     CONSULTATION(4, "咨询"),
     SELF_ESCAPE(5, "自行脱困"),

@@ -24,7 +24,7 @@ public class WorkOrder implements Serializable {
     private Long id;
 
     @TableField("order_no")
-    private String orderNo;
+    private String orderNo; // 工单编号
 
     @TableField("alarm_source")
     private String alarmSource;          // 报警来源

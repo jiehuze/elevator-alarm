@@ -53,4 +53,10 @@ public interface IExportTaskService extends IService<ExportTask> {
      * 导出数据
      */
     void exportYearReportAsync(ExportTaskDTO task);
+
+    /**
+     * 导出数据
+     */
+    void exportWorkOrderReport(ExportTaskDTO task);
+
 }

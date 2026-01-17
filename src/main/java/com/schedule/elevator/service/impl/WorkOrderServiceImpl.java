@@ -104,6 +104,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    public WorkOrder getWorkOrderByOrderNo(String orderNo) {
+        return this.getOne(new LambdaQueryWrapper<WorkOrder>().eq(WorkOrder::getOrderNo, orderNo));
+    }
+
+    @Override
     public Boolean createRescueInfo(WorkOrder workOrder) {
         LambdaUpdateWrapper<WorkOrder> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(WorkOrder::getId, workOrder.getId()); // 工单ID

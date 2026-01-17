@@ -37,6 +37,13 @@ public class ExportTaskController {
         return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
     }
 
+    @PostMapping("/exec-workorder-report")
+    @Operation(summary = "导出工单报告")
+    public BaseResponse exportWorkorderReport(@RequestBody ExportTaskDTO task) {
+        exportTaskService.exportWorkOrderReport(task);
+        return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
+    }
+
     /************************************基础操作****************************************/
     @PostMapping("/create")
     @Operation(summary = "创建导出任务")

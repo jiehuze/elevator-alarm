@@ -38,6 +38,7 @@ public class DocxPlaceholderReplaceUtil {
 
         return new ByteArrayInputStream(outputStream.toByteArray());
     }
+
     /**
      * 替换 .docx 模板中的占位符（选择性替换）
      *
@@ -53,6 +54,33 @@ public class DocxPlaceholderReplaceUtil {
             throw new FileNotFoundException("模板文件不存在：" + templatePath);
         }
         InputStream inputStream = new FileInputStream(templateFile);
+        XWPFDocument doc = new XWPFDocument(inputStream);
+
+        // 2. 替换「段落中的占位符」（文档正文文本）
+        replaceParagraphs(doc.getParagraphs(), replaceMap);
+
+        // 3. 替换「表格中的占位符」（所有表格的单元格文本）
+        replaceTables(doc.getTables(), replaceMap);
+
+        // 4. 写入新文件
+        OutputStream outputStream = new FileOutputStream(outputPath);
+        doc.write(outputStream);
+
+        // 5. 关闭流
+        outputStream.close();
+        doc.close();
+        inputStream.close();
+    }
+
+    /**
+     * 替换 .docx 模板中的占位符（选择性替换）
+     *
+     * @param inputStream 模板文件路径（如：D:/template/month.docx）
+     * @param replaceMap  要替换的占位符Map（key=占位符名称，如 "DistrictS"；value=替换值，如 "承德市"）
+     * @param outputPath  输出文件路径（如：D:/output/电梯统计报告202401.docx）
+     * @throws Exception 异常（文件读取/写入失败）
+     */
+    public static void replacePlaceholder(InputStream inputStream, Map<String, String> replaceMap, String outputPath) throws Exception {
         XWPFDocument doc = new XWPFDocument(inputStream);
 
         // 2. 替换「段落中的占位符」（文档正文文本）
