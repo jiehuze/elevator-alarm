@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 故障分类
@@ -61,9 +62,10 @@ public class FaultCategoryController {
      */
     @GetMapping("/list")
     public BaseResponse listAll() {
-        List<FaultCategory> list = faultCategoryService.list();
+//        List<FaultCategory> list = faultCategoryService.list();
+        Map<String, FaultCategory> faultCategoryMap = faultCategoryService.getFaultCategoryMap();
 
-        return new BaseResponse(200, "success", list, null);
+        return new BaseResponse(200, "success", faultCategoryMap, null);
     }
 
     /**

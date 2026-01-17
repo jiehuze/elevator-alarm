@@ -44,14 +44,17 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorName()), ElevatorInfo::getElevatorName, elevatorInfoDTO.getElevatorName());
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorType()), ElevatorInfo::getElevatorType, elevatorInfoDTO.getElevatorType());
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorNo()), ElevatorInfo::getElevatorNo, elevatorInfoDTO.getElevatorNo());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getUsingUnit()), ElevatorInfo::getUsingUnit, elevatorInfoDTO.getUsingUnit());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getDistrict()), ElevatorInfo::getDistrict, elevatorInfoDTO.getDistrict());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getProjectName()), ElevatorInfo::getProjectName, elevatorInfoDTO.getProjectName());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getRescueCode()), ElevatorInfo::getRescueCode, elevatorInfoDTO.getRescueCode());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getMaintenanceUnit()), ElevatorInfo::getMaintenanceUnit, elevatorInfoDTO.getMaintenanceUnit());
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, elevatorInfoDTO.getMaintenanceUnitId());
         queryWrapper.eq(elevatorInfoDTO.getUsageStatus() != null, ElevatorInfo::getUsageStatus, elevatorInfoDTO.getUsageStatus());
-        queryWrapper.eq(elevatorInfoDTO.getUsingUnit() != null, ElevatorInfo::getUsingUnit, elevatorInfoDTO.getUsingUnit());
         queryWrapper.eq(elevatorInfoDTO.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, elevatorInfoDTO.getUsingUnitId());
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, elevatorInfoDTO.getMaintenanceTeamId());
         queryWrapper.eq(elevatorInfoDTO.getCommunityId() != null, ElevatorInfo::getCommunityId, elevatorInfoDTO.getCommunityId());
 
-//        queryWrapper.orderByDesc(ElevatorInfo::getCreatedAt);
         queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
         return this.page(page, queryWrapper);
     }

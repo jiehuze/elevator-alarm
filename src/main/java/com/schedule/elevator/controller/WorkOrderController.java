@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
 import com.schedule.elevator.dto.SearchDTO;
-import com.schedule.elevator.entity.ElevatorInfo;
-import com.schedule.elevator.entity.PropertyInfo;
-import com.schedule.elevator.entity.WorkOrder;
-import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.RescueLevelEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.service.*;
@@ -48,6 +45,9 @@ public class WorkOrderController {
 
     @Autowired
     private IPropertyInfoService propertyInfoService;
+
+    @Autowired
+    private IFaultCategoryService faultCategoryService;
 
     @Autowired
     private IFaultRecordService faultRecordService;
@@ -129,24 +129,29 @@ public class WorkOrderController {
                     .setTrappedCount(handleDTO.getTrappedCount())
                     .setSuspectedDeathCount(handleDTO.getSuspectedDeathCount())
                     .setStatus(handleDTO.getStatus());
+            HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
+
             //到达现场时间，计算用时
             if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) && handleDTO.getIsSuccess() == 1) {
-                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
-
-                workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+                if (progress != null) {
+                    workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+                }
             }
             //救援完成时间，计算用时
             if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
-                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
-                workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+                if (progress != null) {
+                    workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+                }
             }
             //维修完成时间，计算用时
             if (handleDTO.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
-                HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
-                workOrder.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+                if (progress != null) {
+                    workOrder.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
+
+                }
             }
 
             WorkOrderProgress workOrderProgress = new WorkOrderProgress().setOrderNo(handleDTO.getOrderNo())
@@ -156,10 +161,31 @@ public class WorkOrderController {
                     .setEmployeeId(handleDTO.getEmployeeId())
                     .setRemark(handleDTO.getRemark());
             workOrderProgressService.save(workOrderProgress);
-            workOrderService.updateByOrderNo(workOrder);
+
             if (handleDTO.getFaults() != null && handleDTO.getFaults().size() > 0) {
+                Map<String, FaultCategory> faultCategoryMap = faultCategoryService.getFaultCategoryMap();
+
                 faultRecordService.saveBatch(handleDTO.getFaults());
+                StringBuilder sb = new StringBuilder();
+                for (FaultRecord faultRecord : handleDTO.getFaults()) {
+                    if ("03".equals(faultRecord.getRootCode())
+                            || "04".equals(faultRecord.getRootCode())
+                            || "05".equals(faultRecord.getRootCode())
+                            || "06".equals(faultRecord.getRootCode())
+                            || "07".equals(faultRecord.getRootCode())
+                            || "08".equals(faultRecord.getRootCode())
+                            || "09".equals(faultRecord.getRootCode())) {
+                        workOrder.setMechanicalFailure(true); // 机械故障
+                    }
+                    sb = sb.append(faultCategoryMap.get(faultRecord.getRootCode()).getFaultAnalysis()
+                            + ":"
+                            + faultCategoryMap.get(faultRecord.getSubCode()).getFaultAnalysis()
+                            + "\n");
+                }
+                workOrder.setFailureReason(sb.toString());
             }
+
+            workOrderService.updateByOrderNo(workOrder);
 
             return new BaseResponse(HttpStatus.OK.value(), "更新成功", true, null);
         } catch (Exception e) {

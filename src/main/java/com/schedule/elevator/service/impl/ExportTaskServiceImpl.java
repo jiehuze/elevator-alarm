@@ -77,7 +77,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             queryWrapper.between(ExportTask::getCreatedAt, queryDTO.getStartTime(), queryDTO.getEndTime());
         }
 
-        queryWrapper.orderByAsc(ExportTask::getCreatedAt);
+        queryWrapper.orderByDesc(ExportTask::getCreatedAt);
 
         return this.page(page, queryWrapper);
     }

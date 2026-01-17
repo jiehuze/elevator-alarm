@@ -88,7 +88,7 @@ public class ExportTaskController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", task, null);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(summary = "删除导出任务")
     public BaseResponse deleteExportTask(@PathVariable Long id) {
         try {
