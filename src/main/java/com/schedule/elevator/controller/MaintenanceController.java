@@ -53,7 +53,7 @@ public class MaintenanceController {
         return new BaseResponse(HttpStatus.OK.value(), "维保信息添加成功", maintenance, null);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
         maintenanceUnitService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息删除成功", null, null);

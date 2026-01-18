@@ -18,6 +18,7 @@ public class WorkOrderExcelConverter {
         dto.setOrderNo(entity.getOrderNo());
         dto.setOrderType(WorkOrderTypeEnum.getByCode(entity.getOrderType()).getDescription());
         dto.setOrderSubType("无");
+        System.out.println("----------------workorder: " + entity);
         dto.setLocation(ProjectTypeEnum.getByCode(entity.getProjectType()).getDescription());
         dto.setRegisterCode(entity.getRegisterCode());
         dto.setRescueCode(entity.getRescueCode());

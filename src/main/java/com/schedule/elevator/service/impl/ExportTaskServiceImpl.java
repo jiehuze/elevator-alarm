@@ -259,16 +259,17 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
+    @Async
     public void exportInfoList(SearchDTO searchDTO) {
         ExportTask exportTask = createExportTask(searchDTO);
         updateToProcessing(exportTask.getId());
 
         if (searchDTO.getExportType() == ExportTypeEnum.WORK_ORDER_LIST.getCode()) { //工单列表
             try {
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
-                FileUtil.ensureDirectoryExists(filePath);
+//                FileUtil.ensureDirectoryExists(filePath);
 
                 LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
                 ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
@@ -331,7 +332,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
                 System.out.println("list size:" + dtoList.toString());
 
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -350,7 +351,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 List<MaintenanceUnit> dtoList = maintenanceUnitService.listByQuery(searchDTO);
                 System.out.println("list size:" + dtoList.toString());
 
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -372,7 +373,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 }
 
                 System.out.println("list size:" + dtoList.toString());
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
