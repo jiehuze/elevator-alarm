@@ -15,7 +15,7 @@ public interface IElevatorInfoService extends IService<ElevatorInfo> {
 
     IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO);
 
-    List<ElevatorInfo> listElevators(String keyword);
+    List<ElevatorInfo> listElevators(ElevatorInfoDTO elevatorInfoDTO);
 
     boolean createElevatorInfo(ElevatorInfo elevatorInfo) throws Exception;
 

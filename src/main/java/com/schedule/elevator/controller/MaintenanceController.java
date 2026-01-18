@@ -2,10 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.schedule.common.BaseResponse;
-import com.schedule.elevator.dto.ElevatorInfoDTO;
-import com.schedule.elevator.dto.MaintenanceQueryDTO;
-import com.schedule.elevator.dto.NearbyMaintenanceDTO;
-import com.schedule.elevator.dto.TeamPersonDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
@@ -14,10 +11,18 @@ import com.schedule.elevator.service.IMaintenancePersonnelService;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import com.schedule.elevator.service.IMaintenanceUnitService;
 import com.schedule.elevator.service.impl.MaintenanceUnitServiceImpl;
+import com.schedule.excel.MaintenanceExcelConverter;
+import com.schedule.excel.MaintenancePersonnelExcel;
+import com.schedule.excel.MaintenanceUnitExcel;
+import com.schedule.utils.ExcelUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +34,7 @@ import java.util.List;
 public class MaintenanceController {
 
     @Autowired
-    private IMaintenanceUnitService maintenanceInfoService;
+    private IMaintenanceUnitService maintenanceUnitService;
 
     @Autowired
     private IMaintenanceTeamService maintenanceTeamService;
@@ -44,25 +49,25 @@ public class MaintenanceController {
 
     @PostMapping("/add")
     public BaseResponse add(@RequestBody MaintenanceUnit maintenance) {
-        maintenanceInfoService.save(maintenance);
+        maintenanceUnitService.save(maintenance);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息添加成功", maintenance, null);
     }
 
     @DeleteMapping("/{id}")
     public BaseResponse delete(@PathVariable Long id) {
-        maintenanceInfoService.removeById(id);
+        maintenanceUnitService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息删除成功", null, null);
     }
 
     @PutMapping("/update")
     public BaseResponse update(@RequestBody MaintenanceUnit maintenance) {
-        maintenanceInfoService.updateById(maintenance);
+        maintenanceUnitService.updateById(maintenance);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息更新成功", maintenance, null);
     }
 
     @GetMapping("/{id}")
     public BaseResponse get(@PathVariable Long id) {
-        MaintenanceUnit info = maintenanceInfoService.getById(id);
+        MaintenanceUnit info = maintenanceUnitService.getById(id);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", info, null);
     }
 
@@ -71,7 +76,7 @@ public class MaintenanceController {
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
             @ModelAttribute MaintenanceUnit searchInfo) {
-        IPage<MaintenanceUnit> result = maintenanceInfoService.page(searchInfo, current, size);
+        IPage<MaintenanceUnit> result = maintenanceUnitService.page(searchInfo, current, size);
 
         if (result != null) {
             for (MaintenanceUnit info : result.getRecords()) {
@@ -87,7 +92,7 @@ public class MaintenanceController {
 
     @GetMapping("/unit/{id}")
     public BaseResponse getMaintenanceUnitById(@PathVariable Long id) {
-        MaintenanceUnit unit = maintenanceInfoService.getById(id);
+        MaintenanceUnit unit = maintenanceUnitService.getById(id);
         List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, id);
 
         for (MaintenanceTeam team : teams) {
@@ -105,7 +110,7 @@ public class MaintenanceController {
     @GetMapping("/level")
     public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute MaintenanceQueryDTO maintenanceQueryDTO) {
 
-        List<MaintenanceUnit> units = maintenanceInfoService.listByQuery(maintenanceQueryDTO);
+        List<MaintenanceUnit> units = maintenanceUnitService.listByQuery(maintenanceQueryDTO);
 
         for (MaintenanceUnit unit : units) {
 //            List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, unit.getId());
@@ -129,7 +134,7 @@ public class MaintenanceController {
 
     @GetMapping("/team/nearby")
     public BaseResponse getNearby(@ModelAttribute NearbyMaintenanceDTO nearbyMaintenanceDTO) {
-        List<NearbyMaintenanceDTO> nearby = maintenanceInfoService.getNearby(
+        List<NearbyMaintenanceDTO> nearby = maintenanceUnitService.getNearby(
                 nearbyMaintenanceDTO.getLatitude(),
                 nearbyMaintenanceDTO.getLongitude(),
                 nearbyMaintenanceDTO.getDistanceKm());
@@ -151,7 +156,7 @@ public class MaintenanceController {
             team = maintenanceTeamService.getById(maintenanceQueryDTO.getMaintenanceTeamId());
         }
         // 单位信息
-        MaintenanceUnit unit = maintenanceInfoService.getById(team.getMaintenanceUnitId());
+        MaintenanceUnit unit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
         // 返回
         info.put("unit", unit);
         info.put("team", team);
@@ -239,27 +244,36 @@ public class MaintenanceController {
     }
 
 
-//    @GetMapping("/export")
-//    public void exportElevators(HttpServletResponse response) throws Exception {
-//        // 设置响应头
-//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//        response.setCharacterEncoding("utf-8");
-//        String fileName = URLEncoder.encode("维保信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-//        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-//
-//
-//        List<MaintenanceUnit> list = maintenanceInfoService.list(); // 从数据库查所有
-//
-//        // 转换为 Excel DTO
-//        List<MaintenanceTemplateExcel> dtoList = list.stream()
-//                .map(MaintenanceExcelConverter::toDto)
-//                .collect(Collectors.toList());
-//
-//        System.out.println("list size:" + dtoList.toString());
-//
-//        // 写入 Excel
-//        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "维保信息", dtoList, MaintenanceTemplateExcel.class, "doc/maintenance.xlsx");
-//    }
+    @GetMapping("/export-person")
+    public void exportPerson(@ModelAttribute SearchDTO searchDTO,
+                             HttpServletResponse response) throws Exception {
+
+        String fileName = URLEncoder.encode("维修人员信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        List<MaintenancePersonnel> list = maintenancePersonnelService.listBySearchDTO(searchDTO);
+        List<MaintenancePersonnelExcel> dtoList = new ArrayList<>();
+        for (MaintenancePersonnel personnel : list) {
+            MaintenancePersonnelExcel dto = MaintenanceExcelConverter.toPersonDto(personnel);
+            dtoList.add(dto);
+        }
+
+        System.out.println("list size:" + dtoList.toString());
+
+        // 写入 Excel
+        ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "维保信息", dtoList, MaintenancePersonnelExcel.class, "doc/maintenance_person.xlsx");
+    }
+
+    @GetMapping("/export-unit")
+    public void exportUnit(@ModelAttribute MaintenanceQueryDTO queryDTO,
+                           HttpServletResponse response) throws Exception {
+        // 设置响应头
+        String fileName = URLEncoder.encode("维保单位信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+        List<MaintenanceUnit> dtoList = maintenanceUnitService.listByQuery(queryDTO);
+        System.out.println("list size:" + dtoList.toString());
+
+        // 写入 Excel
+        ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "维保信息", dtoList, MaintenanceUnitExcel.class, "doc/maintenance_unit.xlsx");
+    }
 
 //    @PostMapping("/import")
 //    public BaseResponse importElevators(@RequestParam("file") MultipartFile file) {

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.MaintenancePersonnelMapper;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.service.IMaintenancePersonnelService;
@@ -96,5 +97,15 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     public List<MaintenancePersonnel> listByTeamId(Long teamId) {
         return this.list(new LambdaQueryWrapper<MaintenancePersonnel>()
                 .eq(MaintenancePersonnel::getMaintenanceTeamId, teamId));
+    }
+
+    @Override
+    public List<MaintenancePersonnel> listBySearchDTO(SearchDTO searchDTO) {
+        LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(searchDTO.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, searchDTO.getMaintenanceUnitId())
+                .like(StringUtils.hasText(searchDTO.getMaintenanceUnit()), MaintenancePersonnel::getCompany, searchDTO.getMaintenanceUnit())
+                .orderByAsc(MaintenancePersonnel::getCompany);
+
+        return this.list(queryWrapper);
     }
 }

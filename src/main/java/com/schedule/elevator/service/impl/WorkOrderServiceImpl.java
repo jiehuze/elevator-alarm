@@ -9,6 +9,7 @@ import com.schedule.elevator.dao.mapper.WorkOrderMapper;
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.ProjectTypeEnum;
+import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IWorkOrderService;
@@ -30,14 +31,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Autowired
     protected IElevatorInfoService elevatorInfoService;
 
-    @Override
-    public Page<WorkOrder> queryByConditionsPage(SearchDTO dto) {
-        // 校验分页参数
-        int current = (dto.getCurrent() == null || dto.getCurrent() < 1) ? 1 : dto.getCurrent();
-        int size = (dto.getSize() == null || dto.getSize() < 1 || dto.getSize() > 100) ? 10 : dto.getSize();
-
-        Page<WorkOrder> page = new Page<>(current, size);
-
+    private LambdaQueryWrapper<WorkOrder> buildQueryWrapper(SearchDTO dto) {
         LambdaQueryWrapper<WorkOrder> query = new LambdaQueryWrapper<>();
 
         // 字符串字段：模糊查询（LIKE）
@@ -66,8 +60,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.like(StringUtils.isNotBlank(dto.getUsingUnit()), WorkOrder::getUsingUnit, dto.getUsingUnit());
 
         if (dto.getHistoryWorkOrder() != null) {
+            query.eq(WorkOrder::getStatus, WorkOrderStatusEnum.CLOSED.getCode());
             query.notIn(WorkOrder::getOrderType, WorkOrderTypeEnum.COMPLAINT.getCode(), WorkOrderTypeEnum.CONSULTATION.getCode()); // 不包含 3,4,投诉和咨询
         }
+
+        return query;
+    }
+
+    @Override
+    public Page<WorkOrder> queryByConditionsPage(SearchDTO dto) {
+        // 校验分页参数
+        int current = (dto.getCurrent() == null || dto.getCurrent() < 1) ? 1 : dto.getCurrent();
+        int size = (dto.getSize() == null || dto.getSize() < 1 || dto.getSize() > 100) ? 10 : dto.getSize();
+
+        Page<WorkOrder> page = new Page<>(current, size);
+
+        LambdaQueryWrapper<WorkOrder> query = buildQueryWrapper(dto);
 
         if (StringUtils.isNotBlank(dto.getRescueCodeOrder())) {
             if (dto.getRescueCodeOrder().equals("asc")) {
@@ -87,6 +95,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         return this.page(page, query);
+    }
+
+    @Override
+    public List<WorkOrder> queryByConditions(SearchDTO dto) {
+        LambdaQueryWrapper<WorkOrder> query = buildQueryWrapper(dto);
+
+        if (StringUtils.isNotBlank(dto.getRescueCodeOrder())) {
+            if (dto.getRescueCodeOrder().equals("asc")) {
+                query.orderByAsc(WorkOrder::getRescueCode);
+            } else {
+                query.orderByDesc(WorkOrder::getRescueCode);
+            }
+        }
+        if (StringUtils.isNotBlank(dto.getTimeOrder())) {
+            if (dto.getTimeOrder().equals("asc")) {
+                query.orderByAsc(WorkOrder::getCreateTime);
+            } else {
+                query.orderByDesc(WorkOrder::getCreateTime);
+            }
+        } else {
+            query.orderByDesc(WorkOrder::getCreateTime);
+        }
+
+        return this.list(query);
     }
 
     @Override

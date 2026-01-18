@@ -22,7 +22,7 @@ public class MaintenanceTemplateExcel {
     @ColumnWidth(25)
     private String maintenanceCompany;
 
-    @ExcelProperty("维保名称")
+    @ExcelProperty("维保单位")
     @ColumnWidth(20)
     private String maintainerName;
 

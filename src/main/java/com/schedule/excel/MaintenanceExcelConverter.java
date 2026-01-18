@@ -1,8 +1,21 @@
 package com.schedule.excel;
 
-import com.schedule.elevator.entity.MaintenanceUnit;
+import com.schedule.elevator.entity.MaintenancePersonnel;
+import com.schedule.utils.DateUtils;
 
 public class MaintenanceExcelConverter {
+
+    public static MaintenancePersonnelExcel toPersonDto(MaintenancePersonnel entity) {
+        if (entity == null) return null;
+        MaintenancePersonnelExcel dto = new MaintenancePersonnelExcel();
+        dto.setName(entity.getName());
+        dto.setPhone(entity.getPhone());
+        dto.setCompany(entity.getCompany());
+        dto.setStatus(entity.getStatus() == 1 ? "在岗" : "离岗");
+        dto.setCreatedAt(DateUtils.format(entity.getCreatedAt(), DateUtils.DATE_PATTERN));
+        dto.setUpdatedAt(DateUtils.format(entity.getUpdatedAt(), DateUtils.DATE_PATTERN));
+        return dto;
+    }
 
 //    public static MaintenanceTemplateExcel toDto(MaintenanceUnit entity) {
 //        if (entity == null) return null;

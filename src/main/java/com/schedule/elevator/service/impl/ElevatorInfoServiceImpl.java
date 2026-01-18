@@ -37,8 +37,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         return this.getOne(queryWrapper);
     }
 
-    @Override
-    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
+    private LambdaQueryWrapper<ElevatorInfo> buildQueryWrapper(ElevatorInfoDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorName()), ElevatorInfo::getElevatorName, elevatorInfoDTO.getElevatorName());
@@ -55,35 +54,20 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceTeamId() != null, ElevatorInfo::getMaintenanceTeamId, elevatorInfoDTO.getMaintenanceTeamId());
         queryWrapper.eq(elevatorInfoDTO.getCommunityId() != null, ElevatorInfo::getCommunityId, elevatorInfoDTO.getCommunityId());
 
+        return queryWrapper;
+    }
+
+    @Override
+    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
+        LambdaQueryWrapper<ElevatorInfo> queryWrapper = buildQueryWrapper(elevatorInfoDTO);
         queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<ElevatorInfo> listElevators(String keyword) {
-        if (StringUtils.isBlank(keyword)) {
-            return this.list(); // 如果关键词为空，返回所有记录
-        }
-
-        LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
-        // 使用 or 连接多个 like 条件
-        queryWrapper.and(wrapper -> wrapper
-                .like(ElevatorInfo::getElevatorName, keyword)
-                .or()
-                .like(ElevatorInfo::getElevatorNo, keyword)
-                .or()
-                .like(ElevatorInfo::getElevatorType, keyword)
-                .or()
-                .like(ElevatorInfo::getRescueCode, keyword)
-                .or()
-                .like(ElevatorInfo::getDistrict, keyword)
-                .or()
-                .like(ElevatorInfo::getProjectName, keyword)
-                .or()
-                .like(ElevatorInfo::getLocation, keyword)
-                .or()
-                .like(ElevatorInfo::getUsingUnit, keyword)
-        );
+    public List<ElevatorInfo> listElevators(ElevatorInfoDTO elevatorInfoDTO) {
+        LambdaQueryWrapper<ElevatorInfo> queryWrapper = buildQueryWrapper(elevatorInfoDTO);
+        queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
 
         return this.list(queryWrapper);
     }

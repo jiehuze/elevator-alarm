@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface IWorkOrderService extends IService<WorkOrder> {
     Page<WorkOrder> queryByConditionsPage(SearchDTO wrokOrderDTO);
+    List<WorkOrder> queryByConditions(SearchDTO workOrderDTO);
 
     WorkOrder createWorkOrder(WorkOrder workOrder);
 

@@ -3,6 +3,7 @@ package com.schedule.elevator.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 
@@ -16,6 +17,8 @@ public interface IMaintenancePersonnelService extends IService<MaintenancePerson
     IPage<MaintenancePersonnel> pagePersonnels(MaintenancePersonnel entity, int current, int size);
 
     List<MaintenancePersonnel> listByTeamId(Long teamId);
+
+    List<MaintenancePersonnel> listBySearchDTO(SearchDTO searchDTO);
 
     /**
      * 根据手机号获取或创建维保人员

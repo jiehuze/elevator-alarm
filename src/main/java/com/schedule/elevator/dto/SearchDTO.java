@@ -58,6 +58,9 @@ public class SearchDTO implements Serializable {
     @ApiModelProperty("维保单位ID")
     private Long maintenanceUnitId;
 
+    @ApiModelProperty("维保单位")
+    private String maintenanceUnit;
+
     @ApiModelProperty("报警开始时间")
     private LocalDateTime alarmTimeStart;
 

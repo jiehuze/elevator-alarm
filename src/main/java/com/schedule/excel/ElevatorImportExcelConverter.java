@@ -123,7 +123,12 @@ public class ElevatorImportExcelConverter {
     /**
      * 将 Entity 转换为 DTO（用于导出或返回前端）
      */
-    public static ElevatorImportTemplateExcel toDTO(ElevatorInfo entity) {
+    public static ElevatorImportTemplateExcel toDTO(ElevatorInfo entity,
+                                                    Community community,
+                                                    PropertyInfo propertyInfo,
+                                                    MaintenanceUnit maintenanceUnit,
+                                                    MaintenanceTeam maintenanceTeam,
+                                                    MaintenancePersonnel maintenancePersonnel) {
         if (entity == null) return null;
 
         ElevatorImportTemplateExcel dto = new ElevatorImportTemplateExcel();
@@ -153,6 +158,33 @@ public class ElevatorImportExcelConverter {
         dto.setDistrict(entity.getDistrict());
         dto.setProjectName(entity.getProjectName());
         dto.setUsingUnit(entity.getUsingUnit());
+
+        if (propertyInfo != null) {
+            dto.setUsingUnitManager(propertyInfo.getUsingUnitManager());
+            dto.setUsingUnitManagerPhone(propertyInfo.getUsingUnitManagerPhone());
+            dto.setUsingUnit(propertyInfo.getUsingUnit());
+        }
+
+        if (community != null) {
+            dto.setRealEstateBrand(community.getRealEstateBrand());
+            dto.setProjectType(ProjectTypeEnum.getByCode(community.getProjectType()).getDescription());
+            dto.setSafetyOfficerName(community.getSafetyOfficerName());
+            dto.setSafetyOfficerPhone(community.getSafetyOfficerPhone());
+        }
+        if (maintenanceUnit != null) {
+            dto.setMaintenanceUnitName(maintenanceUnit.getMaintainerUnitName());
+            dto.setMaintenanceUnitManager(maintenanceUnit.getMaintainerUnitManager());
+            dto.setMaintenanceUnitManagerPhone(maintenanceUnit.getMaintainerUnitManagerPhone());
+        }
+        if (maintenanceTeam != null) {
+            dto.setTeamName(maintenanceTeam.getTeamName());
+            dto.setTeamLeaderName(maintenanceTeam.getLeaderName());
+            dto.setTeamLeaderPhone(maintenanceTeam.getLeaderPhone());
+        }
+        if (maintenancePersonnel != null) {
+            dto.setWorkerName(maintenancePersonnel.getName());
+            dto.setWorkerPhone(maintenancePersonnel.getPhone());
+        }
 
         return dto;
     }

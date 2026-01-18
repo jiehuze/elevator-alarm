@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.MaintenanceDTO;
-import com.schedule.elevator.entity.Community;
-import com.schedule.elevator.entity.ElevatorInfo;
-import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.entity.*;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
 import com.schedule.excel.ElevatorImportTemplateExcel;
@@ -22,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.schedule.utils.ExcelUtil.isExcelFile;
 
@@ -95,31 +93,34 @@ public class ElevatorInfoController {
     }
 
     @GetMapping("/search")
-    public BaseResponse search(@RequestParam String keyword) {
-        List<ElevatorInfo> elevatorInfos = elevatorInfoService.listElevators(keyword);
+    public BaseResponse search(@ModelAttribute ElevatorInfoDTO elevatorInfoDTO) {
+        List<ElevatorInfo> elevatorInfos = elevatorInfoService.listElevators(elevatorInfoDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", elevatorInfos, null);
     }
 
     @GetMapping("/export")
-    public void exportElevators(HttpServletResponse response) throws Exception {
-        // 设置响应头
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
+    public void exportElevators(@ModelAttribute ElevatorInfoDTO elevatorInfoDTO,
+                                HttpServletResponse response) throws Exception {
         String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 
+        List<ElevatorInfo> list = elevatorInfoService.listElevators(elevatorInfoDTO); // 从数据库查所有
+        List<ElevatorImportTemplateExcel> dtoList = new ArrayList<>();
+        for (ElevatorInfo info : list) {
+            Community community = communityService.getById(info.getCommunityId());
+            PropertyInfo propertyInfo = propertyInfoService.getById(info.getUsingUnitId());
+            MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(info.getMaintenanceUnitId());
+            MaintenanceTeam maintenanceTeam = maintenanceTeamService.getById(info.getMaintenanceTeamId());
+            MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
 
-        List<ElevatorInfo> list = elevatorInfoService.list(); // 从数据库查所有
+            ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
 
-        // 转换为 Excel DTO
-        List<ElevatorImportTemplateExcel> dtoList = list.stream()
-                .map(ElevatorImportExcelConverter::toDTO)
-                .collect(Collectors.toList());
+            dtoList.add(dto);
+        }
 
         System.out.println("list size:" + dtoList.toString());
 
         // 写入 Excel
-        ExcelUtil.exportExcelToTargetWithTemplate(response, null, "电梯信息", dtoList, ElevatorImportTemplateExcel.class, "doc/elevator.xlsx");
+        ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "电梯信息", dtoList, ElevatorImportTemplateExcel.class, "doc/elevator.xlsx");
     }
 
     @PostMapping("/import")

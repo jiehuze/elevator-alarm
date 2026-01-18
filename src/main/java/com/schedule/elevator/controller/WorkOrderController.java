@@ -7,10 +7,15 @@ import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.HandleDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.*;
+import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.RescueLevelEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.service.*;
+import com.schedule.excel.MaintenanceUnitExcel;
+import com.schedule.excel.WorkOrderExcel;
+import com.schedule.excel.WorkOrderExcelConverter;
 import com.schedule.utils.DateUtils;
+import com.schedule.utils.ExcelUtil;
 import com.schedule.utils.FileReplace;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +25,12 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -255,6 +263,47 @@ public class WorkOrderController {
                 .list();
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
+    }
+
+    @GetMapping("/export-workorder-list")
+    public void exportWorkOrder(@ModelAttribute SearchDTO workOrderDTO, HttpServletResponse response) throws Exception {
+        // 设置响应头
+        String fileName = URLEncoder.encode("历史工单", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+        LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
+        ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
+
+        List<WorkOrder> workOrders = workOrderService.queryByConditions(workOrderDTO);
+        for (WorkOrder workOrder : workOrders) {
+            HashMap<Integer, WorkOrderProgress> progressHashMap = workOrderProgressService.queryMapByOrderNo(workOrder.getOrderNo());
+            WorkOrderProgress dispatch = progressHashMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
+            if (dispatch != null) {
+                dispatchTime = dispatch.getCreateTime();
+            }
+            WorkOrderProgress arrive = progressHashMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
+            if (arrive != null) {
+                arriveTime = arrive.getCreateTime();
+            }
+            WorkOrderProgress rescue = progressHashMap.get(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode());
+            if (rescue != null) {
+                rescueTime = rescue.getCreateTime();
+            }
+            WorkOrderProgress followUp = progressHashMap.get(WorkOrderStatusEnum.RESCUE_FOLLOW_UP.getCode());
+            if (followUp != null) {
+                followUpTime = followUp.getCreateTime();
+            }
+            WorkOrderProgress close = progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode());
+            if (close != null) {
+                closeTime = close.getCreateTime();
+            }
+
+            dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, closeTime));
+        }
+
+        System.out.println("list size:" + dtoList.toString());
+
+        // 写入 Excel
+        ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "历史工单", dtoList, WorkOrderExcel.class, "doc/workorder.xlsx");
     }
 
     @GetMapping("/export/{id}")
