@@ -37,7 +37,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         return this.getOne(queryWrapper);
     }
 
-    private LambdaQueryWrapper<ElevatorInfo> buildQueryWrapper(ElevatorInfoDTO elevatorInfoDTO) {
+    private LambdaQueryWrapper<ElevatorInfo> buildQueryWrapper(SearchDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getElevatorName()), ElevatorInfo::getElevatorName, elevatorInfoDTO.getElevatorName());
@@ -58,14 +58,14 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
     }
 
     @Override
-    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO) {
+    public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, SearchDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = buildQueryWrapper(elevatorInfoDTO);
         queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<ElevatorInfo> listElevators(ElevatorInfoDTO elevatorInfoDTO) {
+    public List<ElevatorInfo> listElevators(SearchDTO elevatorInfoDTO) {
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = buildQueryWrapper(elevatorInfoDTO);
         queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
 

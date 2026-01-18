@@ -110,6 +110,27 @@ public class ExcelUtil {
     }
 
     /**
+     * Excel导出，先sourceList转换成List<targetClass>，再导出
+     *
+     * @param output      response
+     * @param fileName    文件名
+     * @param sheetName   sheetName
+     * @param sourceList  原数据List
+     * @param targetClass 目标对象Class
+     */
+    public static void exportExcelToTargetWithTemplate(String output, String fileName, String sheetName, List<?> sourceList,
+                                                       Class<?> targetClass, String templateFileName) throws Exception {
+        List targetList = new ArrayList<>(sourceList.size());
+        for (Object source : sourceList) {
+            Object target = targetClass.getDeclaredConstructor().newInstance();
+            BeanUtils.copyProperties(source, target);
+            targetList.add(target);
+        }
+
+        exportExcelWithTemplate(output, fileName, sheetName, targetList, targetClass, templateFileName);
+    }
+
+    /**
      * Excel导出
      *
      * @param response  response
@@ -151,6 +172,47 @@ public class ExcelUtil {
         try (InputStream inputStream = resource.getInputStream()) {
             // 使用EasyExcel写入数据
             EasyExcel.write(response.getOutputStream(), pojoClass)
+                    .registerWriteHandler(styleStrategy)
+//                    .registerWriteHandler(new CustomMergeStrategy(list))
+                    .withTemplate(inputStream)
+                    .sheet()
+                    .needHead(false)
+                    .doWrite(list);
+        }
+    }
+
+    /**
+     * Excel导出
+     *
+     * @param response  response
+     * @param fileName  文件名
+     * @param sheetName sheetName
+     * @param list      数据List
+     * @param pojoClass 对象Class
+     */
+    public static void exportExcelWithTemplate(String output, String fileName, String sheetName, List<?> list,
+                                               Class<?> pojoClass, String templateFileName) throws IOException {
+        // 创建字体对象并设置大小
+        WriteFont font = new WriteFont();
+        font.setFontHeightInPoints((short) 16); // 设置字体大小为12磅
+
+        // 创建内容样式并关联字体
+        WriteCellStyle contentStyle = new WriteCellStyle();
+        contentStyle.setWriteFont(font);
+        contentStyle.setBorderLeft(BorderStyle.THIN);      // 左边框
+        contentStyle.setBorderRight(BorderStyle.THIN);     // 右边框
+        contentStyle.setBorderTop(BorderStyle.THIN);       // 上边框
+        contentStyle.setBorderBottom(BorderStyle.THIN);    // 下边框
+        contentStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());  // 边框颜色
+        contentStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+        contentStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        contentStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        HorizontalCellStyleStrategy styleStrategy = new HorizontalCellStyleStrategy(null, contentStyle);
+
+        Resource resource = new ClassPathResource(templateFileName);
+        try (InputStream inputStream = resource.getInputStream()) {
+            // 使用EasyExcel写入数据
+            EasyExcel.write(output, pojoClass)
                     .registerWriteHandler(styleStrategy)
 //                    .registerWriteHandler(new CustomMergeStrategy(list))
                     .withTemplate(inputStream)

@@ -108,7 +108,7 @@ public class MaintenanceController {
     }
 
     @GetMapping("/level")
-    public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute MaintenanceQueryDTO maintenanceQueryDTO) {
+    public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute SearchDTO maintenanceQueryDTO) {
 
         List<MaintenanceUnit> units = maintenanceUnitService.listByQuery(maintenanceQueryDTO);
 
@@ -263,7 +263,7 @@ public class MaintenanceController {
     }
 
     @GetMapping("/export-unit")
-    public void exportUnit(@ModelAttribute MaintenanceQueryDTO queryDTO,
+    public void exportUnit(@ModelAttribute SearchDTO queryDTO,
                            HttpServletResponse response) throws Exception {
         // 设置响应头
         String fileName = URLEncoder.encode("维保单位信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");

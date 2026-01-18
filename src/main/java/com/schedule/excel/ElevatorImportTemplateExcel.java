@@ -138,7 +138,7 @@ public class ElevatorImportTemplateExcel {
     // ========== 维保单位及班组信息（可选存入 description 或扩展表）==========
     @ExcelProperty("维保单位名称")
     @ColumnWidth(25)
-    private String maintenanceUnitName;
+    private String maintenanceUnit;
 
     @ExcelProperty("维保单位负责人姓名")
     @ColumnWidth(15)

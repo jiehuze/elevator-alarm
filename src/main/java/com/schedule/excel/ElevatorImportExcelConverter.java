@@ -45,7 +45,7 @@ public class ElevatorImportExcelConverter {
         entity.setDistrict(dto.getDistrict());
         entity.setProjectName(dto.getProjectName());
         entity.setUsingUnit(dto.getUsingUnit());
-        entity.setMaintenanceUnit(dto.getMaintenanceUnitName());
+        entity.setMaintenanceUnit(dto.getMaintenanceUnit());
 
         if (StringUtils.isNotBlank(dto.getProjectType()) && ProjectTypeEnum.getByDescription(dto.getProjectType()) != null) {
             entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getProjectType()).getCode());
@@ -86,9 +86,9 @@ public class ElevatorImportExcelConverter {
         entity.setMaintenanceTeam(new MaintenanceTeam());
         entity.setMaintenancePersonnel(new MaintenancePersonnel());
 
-        entity.getMaintenanceUnit().setMaintainerUnitName(dto.getMaintenanceUnitName());
-        entity.getMaintenanceUnit().setMaintainerUnitManager(dto.getMaintenanceUnitManager());
-        entity.getMaintenanceUnit().setMaintainerUnitManagerPhone(dto.getMaintenanceUnitManagerPhone());
+        entity.getMaintenanceUnit().setMaintenanceUnit(dto.getMaintenanceUnit());
+        entity.getMaintenanceUnit().setMaintenanceUnitManager(dto.getMaintenanceUnitManager());
+        entity.getMaintenanceUnit().setMaintenanceUnitManagerPhone(dto.getMaintenanceUnitManagerPhone());
 
         entity.getMaintenanceTeam().setTeamName(dto.getTeamName());
         entity.getMaintenanceTeam().setLeaderName(dto.getTeamLeaderName());
@@ -99,7 +99,7 @@ public class ElevatorImportExcelConverter {
 
         entity.getMaintenancePersonnel().setName(dto.getWorkerName());
         entity.getMaintenancePersonnel().setPhone(dto.getWorkerPhone());
-        entity.getMaintenancePersonnel().setCompany(dto.getMaintenanceUnitName());
+        entity.getMaintenancePersonnel().setCompany(dto.getMaintenanceUnit());
         entity.getMaintenancePersonnel().setStatus(1);
 
         return entity;
@@ -172,9 +172,9 @@ public class ElevatorImportExcelConverter {
             dto.setSafetyOfficerPhone(community.getSafetyOfficerPhone());
         }
         if (maintenanceUnit != null) {
-            dto.setMaintenanceUnitName(maintenanceUnit.getMaintainerUnitName());
-            dto.setMaintenanceUnitManager(maintenanceUnit.getMaintainerUnitManager());
-            dto.setMaintenanceUnitManagerPhone(maintenanceUnit.getMaintainerUnitManagerPhone());
+            dto.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
+            dto.setMaintenanceUnitManager(maintenanceUnit.getMaintenanceUnitManager());
+            dto.setMaintenanceUnitManagerPhone(maintenanceUnit.getMaintenanceUnitManagerPhone());
         }
         if (maintenanceTeam != null) {
             dto.setTeamName(maintenanceTeam.getTeamName());

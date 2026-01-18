@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ExportTaskDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
+import com.schedule.elevator.enums.ExportTypeEnum;
 import com.schedule.elevator.service.IExportTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +31,7 @@ public class ExportTaskController {
     /************************************异步操作操作****************************************/
     @PostMapping("/exec-report")
     @Operation(summary = "导出任务")
-    public BaseResponse exportTask(@RequestBody ExportTaskDTO task) {
+    public BaseResponse exportTask(@RequestBody SearchDTO task) {
         task.setIsReport(true);
         if (task.getExportType() == 1) {
             exportTaskService.exportMonthlyReportAsync(task);
@@ -39,8 +41,15 @@ public class ExportTaskController {
 
     @PostMapping("/exec-workorder-report")
     @Operation(summary = "导出工单报告")
-    public BaseResponse exportWorkorderReport(@RequestBody ExportTaskDTO task) {
+    public BaseResponse exportWorkorderReport(@RequestBody SearchDTO task) {
         exportTaskService.exportWorkOrderReport(task);
+        return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
+    }
+
+    @PostMapping("/exec-list")
+    @Operation(summary = "导出列表")
+    public BaseResponse exportInfoList(@RequestBody SearchDTO searchDTO) {
+        exportTaskService.exportInfoList(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
     }
 

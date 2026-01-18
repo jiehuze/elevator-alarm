@@ -163,7 +163,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             updateWrapper.set(WorkOrder::getMaintenancePersonnelId, workOrder.getMaintenancePersonnelId()); // 维修人员ID
         }
         updateWrapper.set(StringUtils.isNotBlank(workOrder.getEmployeeId()), WorkOrder::getEmployeeId, workOrder.getEmployeeId()); // 员工ID
-        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceUnitName()), WorkOrder::getMaintenanceUnitName, workOrder.getMaintenanceUnitName());
+        updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceUnit()), WorkOrder::getMaintenanceUnit, workOrder.getMaintenanceUnit());
         updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenanceTeamName()), WorkOrder::getMaintenanceTeamName, workOrder.getMaintenanceTeamName());
         updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelName()), WorkOrder::getMaintenancePersonnelName, workOrder.getMaintenancePersonnelName());
         updateWrapper.set(StringUtils.isNotBlank(workOrder.getMaintenancePersonnelPhone()), WorkOrder::getMaintenancePersonnelPhone, workOrder.getMaintenancePersonnelPhone());

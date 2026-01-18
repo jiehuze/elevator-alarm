@@ -22,29 +22,29 @@ public class MaintenanceUnit implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id; // 维保单位ID
 
-    @TableField("maintainer_unit_name")
-    private String maintainerUnitName; // 维护单位名称
+    @TableField("maintenance_unit")
+    private String maintenanceUnit; // 维护单位名称
 
-    @TableField("maintainer_unit_phone")
-    private String maintainerUnitPhone; // 维保单位电话
+    @TableField("maintenance_unit_phone")
+    private String maintenanceUnitPhone; // 维保单位电话
 
-    @TableField("maintainer_unit_manager")
-    private String maintainerUnitManager; // 维保单位负责人
+    @TableField("maintenance_unit_manager")
+    private String maintenanceUnitManager; // 维保单位负责人
 
-    @TableField("maintainer_unit_manager_phone")
-    private String maintainerUnitManagerPhone; // 维保单位负责人电话
+    @TableField("maintenance_unit_manager_phone")
+    private String maintenanceUnitManagerPhone; // 维保单位负责人电话
 
-    @TableField("maintainer_unit_address")
+    @TableField("maintenance_unit_address")
     private String companyAddress; // 维护公司地址
 
-    @TableField("maintainer_unit_type")
-    private String maintainerUnitType; // 维保单位类型
+    @TableField("maintenance_unit_type")
+    private String maintenanceUnitType; // 维保单位类型
 
-    @TableField("maintainer_unit_status")
-    private String maintainerUnitStatus; // 维保单位状态
+    @TableField("maintenance_unit_status")
+    private String maintenanceUnitStatus; // 维保单位状态
 
-    @TableField("maintainer_unit_code")
-    private String maintainerUnitCode; // 维保单位编码（营业执照）
+    @TableField("maintenance_unit_code")
+    private String maintenanceUnitCode; // 维保单位编码（营业执照）
 
     @TableField("level")
     private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位

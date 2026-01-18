@@ -22,7 +22,7 @@ public class WorkOrderExcelConverter {
         dto.setRegisterCode(entity.getRegisterCode());
         dto.setRescueCode(entity.getRescueCode());
         dto.setUsingUnit(entity.getUsingUnit());
-        dto.setMaintenanceUnit(entity.getMaintenanceUnitName());
+        dto.setMaintenanceUnit(entity.getMaintenanceUnit());
         dto.setProjectName(entity.getProjectName());
         dto.setElevatorAddress(entity.getElevatorAddress());
         dto.setFaultReason(entity.getFailureReason());

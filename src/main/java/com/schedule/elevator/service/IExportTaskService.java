@@ -2,6 +2,7 @@ package com.schedule.elevator.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
 import com.schedule.elevator.dto.ExportTaskDTO;
 
@@ -47,16 +48,20 @@ public interface IExportTaskService extends IService<ExportTask> {
     /**
      * 导出数据
      */
-    void exportMonthlyReportAsync(ExportTaskDTO task);
+    void exportMonthlyReportAsync(SearchDTO task);
 
     /**
      * 导出数据
      */
-    void exportYearReportAsync(ExportTaskDTO task);
+    void exportYearReportAsync(SearchDTO task);
 
     /**
      * 导出数据
      */
-    void exportWorkOrderReport(ExportTaskDTO task);
+    void exportWorkOrderReport(SearchDTO task);
 
+    /**
+     * 导出数据
+     */
+    void exportInfoList(SearchDTO searchDTO);
 }

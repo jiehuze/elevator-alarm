@@ -15,19 +15,19 @@ public class MaintenanceUnitExcel {
 
     @ExcelProperty("维护单位名称")
     @ColumnWidth(25)
-    private String maintainerUnitName;
+    private String maintenanceUnit;
 
     @ExcelProperty("维保单位电话")
     @ColumnWidth(12)
-    private String maintainerUnitPhone;
+    private String maintenanceUnitPhone;
 
     @ExcelProperty("维保单位负责人")
     @ColumnWidth(25)
-    private String maintainerUnitManager;
+    private String maintenanceUnitManager;
 
     @ExcelProperty("维保单位负责人电话")
     @ColumnWidth(25)
-    private String maintainerUnitManagerPhone;
+    private String maintenanceUnitManagerPhone;
 
     @ExcelProperty("维护公司地址")
     @ColumnWidth(30)
@@ -35,13 +35,13 @@ public class MaintenanceUnitExcel {
 
     @ExcelProperty("维保单位类型")
     @ColumnWidth(25)
-    private String maintainerUnitType;
+    private String maintenanceUnitType;
 
     @ExcelProperty("维保单位状态")
     @ColumnWidth(25)
-    private String maintainerUnitStatus;
+    private String maintenanceUnitStatus;
 
     @ExcelProperty("维保单位编码")
     @ColumnWidth(30)
-    private String maintainerUnitCode;
+    private String maintenanceUnitCode;
 }

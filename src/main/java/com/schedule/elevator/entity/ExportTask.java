@@ -27,7 +27,7 @@ public class ExportTask implements Serializable {
     private String taskName;      // 导出任务名称（如：2025年Q1工单汇总）
 
     @TableField("export_type")
-    private Integer exportType;    // // 导出类型(1. 月报，2， 半年报，3. 年报，4. 工单导出，5. 电梯信息，6， 维保单位，7， 小区信息)
+    private Integer exportType;    //导出类型(1. 月报，2， 半年报，3. 年报，4. 工单报告，5. 工单列表，6. 电梯信息list，7， 维保单位list，8， 维修人员list)
 
     @TableField("is_report")
     private Boolean isReport;     // 是否为报告：0-否（普通数据导出），1-是（分析/汇总报告）

@@ -86,8 +86,8 @@ public class WorkOrder implements Serializable {
     @TableField("maintenance_personnel_id")
     private Long maintenancePersonnelId; // 维保人员ID
 
-    @TableField("maintenance_unit_name")
-    private String maintenanceUnitName; // 维保单位名称
+    @TableField("maintenance_unit")
+    private String maintenanceUnit; // 维保单位名称
 
     @TableField("maintenance_team_name")
     private String maintenanceTeamName; // 维保班组名称

@@ -1,5 +1,6 @@
 package com.schedule.elevator.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 @ApiModel("工单查询条件")
-public class SearchDTO implements Serializable {
+public class SearchDTO extends ExportTaskDTO implements Serializable {
 
     @ApiModelProperty("工单编号")
     private String orderNo;
@@ -19,8 +20,20 @@ public class SearchDTO implements Serializable {
     @ApiModelProperty("电梯救援码")
     private String rescueCode;
 
+    @ApiModelProperty("电梯名称")
+    private String elevatorName;
+
+    @ApiModelProperty("电梯类型")
+    private String elevatorType;
+
+    @ApiModelProperty("电梯编号")
+    private String elevatorNo;
+
     @ApiModelProperty("电梯注册码")
     private String registerCode;
+
+    @ApiModelProperty("电梯使用状态")
+    private Integer usageStatus;
 
     @ApiModelProperty("员工ID")
     private String employeeId;
@@ -43,8 +56,11 @@ public class SearchDTO implements Serializable {
     @ApiModelProperty("使用单位")
     private String usingUnit;
 
+    @ApiModelProperty("使用单位ID")
+    private Long usingUnitId;
+
     @ApiModelProperty("工单状态")
-    private Byte status;
+    private Integer status;  // 工单状态
 
     @ApiModelProperty("是否为重大事项")
     private Boolean majorIncident;
@@ -60,6 +76,15 @@ public class SearchDTO implements Serializable {
 
     @ApiModelProperty("维保单位")
     private String maintenanceUnit;
+
+    @ApiModelProperty("维保班组ID")
+    private Long maintenanceTeamId; // 维保班组ID
+
+    @ApiModelProperty("维保单位级别,1：一级维保单位，2：二级维保单位")
+    private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位
+
+    @ApiModelProperty("小区id")
+    private Long communityId;
 
     @ApiModelProperty("报警开始时间")
     private LocalDateTime alarmTimeStart;

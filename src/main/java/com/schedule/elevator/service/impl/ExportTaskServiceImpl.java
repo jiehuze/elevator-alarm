@@ -9,15 +9,14 @@ import com.schedule.elevator.dao.mapper.ExportTaskMapper;
 import com.schedule.elevator.dto.ExportTaskDTO;
 import com.schedule.elevator.dto.ParamDTO;
 import com.schedule.elevator.dto.SearchDTO;
-import com.schedule.elevator.entity.ExportTask;
-import com.schedule.elevator.entity.PropertyInfo;
-import com.schedule.elevator.entity.WorkOrder;
-import com.schedule.elevator.entity.WorkOrderProgress;
+import com.schedule.elevator.entity.*;
+import com.schedule.elevator.enums.ExportTypeEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.*;
-import com.schedule.excel.DocxPlaceholderReplaceUtil;
+import com.schedule.excel.*;
 import com.schedule.utils.DateUtils;
+import com.schedule.utils.ExcelUtil;
 import com.schedule.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +26,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -52,6 +50,21 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
     @Autowired
     private IWorkOrderProgressService workOrderProgressService;
+
+    @Autowired
+    private IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    private ICommunityService communityService;
+
+    @Autowired
+    private IMaintenanceUnitService maintenanceUnitService;
+
+    @Autowired
+    private IMaintenanceTeamService maintenanceTeamService;
+
+    @Autowired
+    private IMaintenancePersonnelService maintenancePersonnelService;
 
     @Autowired
     private ParamDTO paramDTO;
@@ -150,7 +163,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
     @Override
     @Async
-    public void exportMonthlyReportAsync(ExportTaskDTO task) {
+    public void exportMonthlyReportAsync(SearchDTO task) {
         System.out.println("开始导出数据");
         ExportTask exportTask = createExportTask(task);
         try {
@@ -173,13 +186,13 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
     @Override
     @Async
-    public void exportYearReportAsync(ExportTaskDTO task) {
+    public void exportYearReportAsync(SearchDTO task) {
         return;
     }
 
     @Override
     @Async
-    public void exportWorkOrderReport(ExportTaskDTO task) {
+    public void exportWorkOrderReport(SearchDTO task) {
         ExportTask exportTask = createExportTask(task);
         updateToProcessing(exportTask.getId());
 
@@ -199,7 +212,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         replaceMap.put("rescueCode", workOrder.getRescueCode());
         replaceMap.put("usingUnit", workOrder.getUsingUnit());
         replaceMap.put("usingUnitPhone", propertyInfo.getUsingUnitManagerPhone());
-        replaceMap.put("maintenanceUnitName", workOrder.getMaintenanceUnitName());
+        replaceMap.put("maintenanceUnitName", workOrder.getMaintenanceUnit());
         replaceMap.put("maintenanceUnitPhone", workOrder.getMaintenancePersonnelPhone());
         replaceMap.put("elevatorAddress", workOrder.getElevatorAddress());
         replaceMap.put("alarmPersonName", workOrder.getAlarmPersonName());
@@ -242,6 +255,133 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             updateToFailed(exportTask.getId(), e.getMessage());
             System.out.println("数据导出失败");
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void exportInfoList(SearchDTO searchDTO) {
+        ExportTask exportTask = createExportTask(searchDTO);
+        updateToProcessing(exportTask.getId());
+
+        if (searchDTO.getExportType() == ExportTypeEnum.WORK_ORDER_LIST.getCode()) { //工单列表
+            try {
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+
+                LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
+                ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
+
+                List<WorkOrder> workOrders = workOrderService.queryByConditions(searchDTO);
+                for (WorkOrder workOrder : workOrders) {
+                    HashMap<Integer, WorkOrderProgress> progressHashMap = workOrderProgressService.queryMapByOrderNo(workOrder.getOrderNo());
+                    WorkOrderProgress dispatch = progressHashMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
+                    if (dispatch != null) {
+                        dispatchTime = dispatch.getCreateTime();
+                    }
+                    WorkOrderProgress arrive = progressHashMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
+                    if (arrive != null) {
+                        arriveTime = arrive.getCreateTime();
+                    }
+                    WorkOrderProgress rescue = progressHashMap.get(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode());
+                    if (rescue != null) {
+                        rescueTime = rescue.getCreateTime();
+                    }
+                    WorkOrderProgress followUp = progressHashMap.get(WorkOrderStatusEnum.RESCUE_FOLLOW_UP.getCode());
+                    if (followUp != null) {
+                        followUpTime = followUp.getCreateTime();
+                    }
+                    WorkOrderProgress close = progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode());
+                    if (close != null) {
+                        closeTime = close.getCreateTime();
+                    }
+
+                    dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, closeTime));
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "历史工单", dtoList, WorkOrderExcel.class, "doc/workorder.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+
+        } else if (searchDTO.getExportType() == ExportTypeEnum.ELEVATOR_INFO_LIST.getCode()) { //电梯信息列表
+            try {
+
+//                String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+                List<ElevatorInfo> list = elevatorInfoService.listElevators(searchDTO); // 从数据库查所有
+                List<ElevatorImportTemplateExcel> dtoList = new ArrayList<>();
+                for (ElevatorInfo info : list) {
+                    Community community = communityService.getById(info.getCommunityId());
+                    PropertyInfo propertyInfo = propertyInfoService.getById(info.getUsingUnitId());
+                    MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(info.getMaintenanceUnitId());
+                    MaintenanceTeam maintenanceTeam = maintenanceTeamService.getById(info.getMaintenanceTeamId());
+                    MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
+
+                    ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
+
+                    dtoList.add(dto);
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "电梯信息", dtoList, ElevatorImportTemplateExcel.class, "doc/elevator.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.MAINTENANCE_UNIT_LIST.getCode()) { //维保单位列表
+            try {
+                // 设置响应头
+//                String fileName = URLEncoder.encode("维保单位信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+                List<MaintenanceUnit> dtoList = maintenanceUnitService.listByQuery(searchDTO);
+                System.out.println("list size:" + dtoList.toString());
+
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "维保信息", dtoList, MaintenanceUnitExcel.class, "doc/maintenance_unit.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.MAINTENANCE_PERSONNEL_LIST.getCode()) { //维保人员列表
+            try {
+//            String fileName = URLEncoder.encode("维修人员信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+                List<MaintenancePersonnel> list = maintenancePersonnelService.listBySearchDTO(searchDTO);
+                List<MaintenancePersonnelExcel> dtoList = new ArrayList<>();
+                for (MaintenancePersonnel personnel : list) {
+                    MaintenancePersonnelExcel dto = MaintenanceExcelConverter.toPersonDto(personnel);
+                    dtoList.add(dto);
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".docx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "维保信息", dtoList, MaintenancePersonnelExcel.class, "doc/maintenance_person.xlsx");
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
 }

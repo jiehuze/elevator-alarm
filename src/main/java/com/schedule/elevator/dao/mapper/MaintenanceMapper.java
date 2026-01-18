@@ -24,8 +24,8 @@ public interface MaintenanceMapper extends BaseMapper<MaintenanceUnit> {
     @Select({
             "<script>",
             "SELECT",
-            "  id, site_name, maintenance_company, maintainer_name,",
-            "  company_phone, maintainer_phone, company_address,",
+            "  id, site_name, maintenance_company, maintenance_name,",
+            "  company_phone, maintenance_phone, company_address,",
             "  latitude, longitude, company_code, company_manager, company_level,",
             "  create_time, update_time,",
             "  (6371 * ACOS(",

@@ -324,7 +324,7 @@ public class WorkOrderController {
                 new SimpleEntry<>("{{rescueCode}}", workOrder.getRescueCode()),
                 new SimpleEntry<>("{{usingUnit}}", workOrder.getUsingUnit()),
                 new SimpleEntry<>("{{usingUnitPhone}}", propertyInfo.getUsingUnitManagerPhone()),
-                new SimpleEntry<>("{{maintenanceUnitName}}", workOrder.getMaintenanceUnitName()),
+                new SimpleEntry<>("{{maintenanceUnitName}}", workOrder.getMaintenanceUnit()),
                 new SimpleEntry<>("{{maintenanceUnitPhone}}", workOrder.getMaintenancePersonnelPhone()),
                 new SimpleEntry<>("{{elevatorAddress}}", workOrder.getElevatorAddress()),
                 new SimpleEntry<>("{{alarmPersonName}}", workOrder.getAlarmPersonName()),

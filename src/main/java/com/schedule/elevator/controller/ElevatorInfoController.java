@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.MaintenanceDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
@@ -86,20 +87,20 @@ public class ElevatorInfoController {
     public BaseResponse list(
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
-            @ModelAttribute ElevatorInfoDTO elevatorInfoDTO) {
+            @ModelAttribute SearchDTO elevatorInfoDTO) {
         Page<ElevatorInfo> page = new Page<>(current, size);
         IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, elevatorInfoDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
     @GetMapping("/search")
-    public BaseResponse search(@ModelAttribute ElevatorInfoDTO elevatorInfoDTO) {
+    public BaseResponse search(@ModelAttribute SearchDTO elevatorInfoDTO) {
         List<ElevatorInfo> elevatorInfos = elevatorInfoService.listElevators(elevatorInfoDTO);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", elevatorInfos, null);
     }
 
     @GetMapping("/export")
-    public void exportElevators(@ModelAttribute ElevatorInfoDTO elevatorInfoDTO,
+    public void exportElevators(@ModelAttribute SearchDTO elevatorInfoDTO,
                                 HttpServletResponse response) throws Exception {
         String fileName = URLEncoder.encode("电梯信息列表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 

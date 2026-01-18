@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dto.MaintenanceQueryDTO;
 import com.schedule.elevator.dto.NearbyMaintenanceDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.elevator.dao.mapper.MaintenanceMapper;
 import com.schedule.elevator.service.IMaintenanceUnitService;
@@ -78,20 +79,20 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
         Page<MaintenanceUnit> page = new Page<>(current, size);
         LambdaQueryWrapper<MaintenanceUnit> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.like(StringUtils.isNotBlank(mt.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, mt.getMaintainerUnitName());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManager()), MaintenanceUnit::getMaintainerUnitManager, mt.getMaintainerUnitManager());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitManagerPhone()), MaintenanceUnit::getMaintainerUnitManagerPhone, mt.getMaintainerUnitManagerPhone());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitCode()), MaintenanceUnit::getMaintainerUnitCode, mt.getMaintainerUnitCode());
-        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintainerUnitStatus()), MaintenanceUnit::getMaintainerUnitStatus, mt.getMaintainerUnitStatus());
+        queryWrapper.like(StringUtils.isNotBlank(mt.getMaintenanceUnit()), MaintenanceUnit::getMaintenanceUnit, mt.getMaintenanceUnit());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitManager()), MaintenanceUnit::getMaintenanceUnitManager, mt.getMaintenanceUnitManager());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitManagerPhone()), MaintenanceUnit::getMaintenanceUnitManagerPhone, mt.getMaintenanceUnitManagerPhone());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitCode()), MaintenanceUnit::getMaintenanceUnitCode, mt.getMaintenanceUnitCode());
+        queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitStatus()), MaintenanceUnit::getMaintenanceUnitStatus, mt.getMaintenanceUnitStatus());
 
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<MaintenanceUnit> listByQuery(MaintenanceQueryDTO queryDTO) {
+    public List<MaintenanceUnit> listByQuery(SearchDTO queryDTO) {
         LambdaQueryWrapper<MaintenanceUnit> eq = new LambdaQueryWrapper<MaintenanceUnit>()
                 .eq(queryDTO.getMaintenanceUnitId() != null, MaintenanceUnit::getId, queryDTO.getMaintenanceUnitId())
-                .eq(StringUtils.isNotBlank(queryDTO.getMaintainerUnitName()), MaintenanceUnit::getMaintainerUnitName, queryDTO.getMaintainerUnitName())
+                .eq(StringUtils.isNotBlank(queryDTO.getMaintenanceUnit()), MaintenanceUnit::getMaintenanceUnit, queryDTO.getMaintenanceUnit())
                 .ge(queryDTO.getLevel() != null, MaintenanceUnit::getLevel, queryDTO.getLevel());
 
         return this.list(eq);
@@ -101,7 +102,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
     public long getOrCreateMaintenanceUnitId(MaintenanceUnit entity) throws Exception {
         // 1. 先查询是否已存在
         MaintenanceUnit existing = this.getOne(new LambdaQueryWrapper<MaintenanceUnit>()
-                .eq(MaintenanceUnit::getMaintainerUnitManagerPhone, entity.getMaintainerUnitManagerPhone()));
+                .eq(MaintenanceUnit::getMaintenanceUnitManagerPhone, entity.getMaintenanceUnitManagerPhone()));
 
         if (existing != null) {
 //            log.debug("维保单位已存在，ID: {}", existing.getId());

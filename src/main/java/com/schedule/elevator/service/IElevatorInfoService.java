@@ -13,9 +13,9 @@ public interface IElevatorInfoService extends IService<ElevatorInfo> {
 
     ElevatorInfo searchElevatorInfo(SearchDTO searchDTO);
 
-    IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, ElevatorInfoDTO elevatorInfoDTO);
+    IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, SearchDTO elevatorInfoDTO);
 
-    List<ElevatorInfo> listElevators(ElevatorInfoDTO elevatorInfoDTO);
+    List<ElevatorInfo> listElevators(SearchDTO elevatorInfoDTO);
 
     boolean createElevatorInfo(ElevatorInfo elevatorInfo) throws Exception;
 
