@@ -39,6 +39,8 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
         queryWrapper.like(StringUtils.hasText(searchDTO.getAddress()), Community::getAddress, searchDTO.getAddress())
                 .like(StringUtils.hasText(searchDTO.getProjectName()), Community::getProjectName, searchDTO.getProjectName())
                 .eq(StringUtils.hasText(searchDTO.getDistrict()), Community::getDistrict, searchDTO.getDistrict())
+                .like(StringUtils.hasText(searchDTO.getSafetyOfficerName()), Community::getSafetyOfficerName, searchDTO.getSafetyOfficerName())
+                .eq(StringUtils.hasText(searchDTO.getSafetyOfficerPhone()), Community::getSafetyOfficerPhone, searchDTO.getSafetyOfficerPhone())
                 .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
                 .eq(StringUtils.hasText(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
 

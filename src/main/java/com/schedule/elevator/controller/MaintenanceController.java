@@ -1,8 +1,10 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
@@ -93,14 +95,25 @@ public class MaintenanceController {
     @GetMapping("/unit/{id}")
     public BaseResponse getMaintenanceUnitById(@PathVariable Long id) {
         MaintenanceUnit unit = maintenanceUnitService.getById(id);
+        long elevatorCount = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, id));
+        unit.setCount(elevatorCount);
+
         List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, id);
 
         for (MaintenanceTeam team : teams) {
 
-            List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId());
-            team.setPersons(list);
+            List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId(), team.getLevel());
+            for (MaintenancePersonnel personnel : list) {
+                long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, personnel.getId()));
+                personnel.setCount(count);
+            }
 
+            long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceTeamId, team.getId()));
+            team.setCount(count);
+
+            team.setPersons(list);
             team.setNumbers((long) list.size());
+            team.setCount(count);
         }
         unit.setTeams(teams);
 
@@ -121,7 +134,7 @@ public class MaintenanceController {
 
             for (MaintenanceTeam team : teams) {
 
-                List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId());
+                List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId(), team.getLevel());
                 team.setPersons(list);
 
                 team.setNumbers((long) list.size());
@@ -201,14 +214,28 @@ public class MaintenanceController {
         if (teamPersonDTO.getAddMaintenancePersonnelIds() != null) {
             for (Long id : teamPersonDTO.getAddMaintenancePersonnelIds()) {
                 MaintenancePersonnel personnel = maintenancePersonnelService.getById(id);
-                personnel.setMaintenanceTeamId(teamPersonDTO.getMaintenanceTeamId());
+                if (personnel == null) {
+                    continue;
+                }
+                if (teamPersonDTO.getLevel() == 1) {
+                    personnel.setMaintenanceTeamId(teamPersonDTO.getMaintenanceTeamId());
+                } else {
+                    personnel.setSubMaintenanceTeamId(teamPersonDTO.getMaintenanceTeamId());
+                }
                 maintenancePersonnelService.updateById(personnel);
             }
         }
         if (teamPersonDTO.getDeleteMaintenancePersonnelIds() != null) {
             for (Long id : teamPersonDTO.getDeleteMaintenancePersonnelIds()) {
                 MaintenancePersonnel personnel = maintenancePersonnelService.getById(id);
-                personnel.setMaintenanceTeamId(null);
+                if (personnel == null) {
+                    continue;
+                }
+                if (teamPersonDTO.getLevel() == 1) {
+                    personnel.setMaintenanceTeamId(0l);
+                } else {
+                    personnel.setSubMaintenanceTeamId(0l);
+                }
                 maintenancePersonnelService.updateById(personnel);
             }
         }
@@ -220,8 +247,8 @@ public class MaintenanceController {
     @GetMapping("/persons")
     public BaseResponse getMaintenancePersons(@RequestParam(defaultValue = "1") int current,
                                               @RequestParam(defaultValue = "10") int size,
-                                              @ModelAttribute MaintenancePersonnel searchPerson) {
-        IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchPerson, current, size);
+                                              @ModelAttribute SearchDTO searchDTO) {
+        IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchDTO, current, size);
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeamPage, null);
     }
 

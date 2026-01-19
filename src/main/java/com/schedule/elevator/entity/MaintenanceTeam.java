@@ -62,5 +62,8 @@ public class MaintenanceTeam {
     private Long numbers;  // 计数属性，人数
 
     @TableField(exist = false)
+    private Long count;  // 计数属性，不映射到数据库
+
+    @TableField(exist = false)
     private List<MaintenancePersonnel> persons;
 }

@@ -14,9 +14,9 @@ public interface IMaintenancePersonnelService extends IService<MaintenancePerson
     /**
      * 分页查询维保人员信息
      */
-    IPage<MaintenancePersonnel> pagePersonnels(MaintenancePersonnel entity, int current, int size);
+    IPage<MaintenancePersonnel> pagePersonnels(SearchDTO entity, int current, int size);
 
-    List<MaintenancePersonnel> listByTeamId(Long teamId);
+    List<MaintenancePersonnel> listByTeamId(Long teamId, Integer level);
 
     List<MaintenancePersonnel> listBySearchDTO(SearchDTO searchDTO);
 

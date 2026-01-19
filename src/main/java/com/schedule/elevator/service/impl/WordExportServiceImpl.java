@@ -10,6 +10,7 @@ import com.schedule.utils.FileReplace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,13 +82,13 @@ public class WordExportServiceImpl implements IWordExportService {
 
             HashMap<String, String> replaceStrMap = new HashMap<>();
             String districtS = "";
-            if (searchDTO.getDistrict() == null) {
+            if (StringUtils.hasText(searchDTO.getDistrict())) {
+                districtS = searchDTO.getDistrict();
+            } else {
                 List<SysDistrict> districtList = sysDistrictService.list();
                 for (SysDistrict district : districtList) {
                     districtS += district.getDistrictName() + ",";
                 }
-            } else {
-                districtS = searchDTO.getDistrict();
             }
             replaceStrMap.put("DistrictS", districtS);
             replaceStrMap.put("StartTime", searchDTO.getCreateTimeStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));

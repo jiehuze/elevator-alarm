@@ -79,14 +79,24 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     }
 
     @Override
-    public IPage<MaintenancePersonnel> pagePersonnels(MaintenancePersonnel entity, int current, int size) {
+    public IPage<MaintenancePersonnel> pagePersonnels(SearchDTO entity, int current, int size) {
         Page<MaintenancePersonnel> page = new Page<>(current, size);
         LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
+        if (entity.getNoMaintenanceTeam() != null && entity.getNoMaintenanceTeam() == true) {
+            queryWrapper.eq(MaintenancePersonnel::getSubMaintenanceTeamId, 0);
+        }
+
+        if (entity.getLevel() != null) {
+            if (entity.getLevel() == 1) {
+                queryWrapper.eq(entity.getMaintenanceTeamId() != null, MaintenancePersonnel::getMaintenanceTeamId, entity.getMaintenanceTeamId());
+            } else if (entity.getLevel() == 2) {
+                queryWrapper.eq(entity.getMaintenanceTeamId() != null, MaintenancePersonnel::getSubMaintenanceTeamId, entity.getMaintenanceTeamId());
+            }
+        }
+
         queryWrapper.eq(entity.getId() != null, MaintenancePersonnel::getId, entity.getId())
                 .eq(entity.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, entity.getMaintenanceUnitId())
-                .eq(entity.getMaintenanceTeamId() != null, MaintenancePersonnel::getMaintenanceTeamId, entity.getMaintenanceTeamId())
-                .eq(StringUtils.hasText(entity.getPhone()), MaintenancePersonnel::getPhone, entity.getPhone())
-                .eq(StringUtils.hasText(entity.getName()), MaintenancePersonnel::getName, entity.getName())
+                .eq(entity.getMaintenancePersonnelId() != null, MaintenancePersonnel::getId, entity.getMaintenancePersonnelId())
                 .eq(entity.getStatus() != null, MaintenancePersonnel::getStatus, entity.getStatus())
                 .orderByDesc(MaintenancePersonnel::getCreatedAt);
 
@@ -94,9 +104,16 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     }
 
     @Override
-    public List<MaintenancePersonnel> listByTeamId(Long teamId) {
-        return this.list(new LambdaQueryWrapper<MaintenancePersonnel>()
-                .eq(MaintenancePersonnel::getMaintenanceTeamId, teamId));
+    public List<MaintenancePersonnel> listByTeamId(Long teamId, Integer level) {
+        LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (level == 1) {
+            queryWrapper.eq(MaintenancePersonnel::getMaintenanceTeamId, teamId);
+        } else {
+            queryWrapper.eq(MaintenancePersonnel::getSubMaintenanceTeamId, teamId);
+        }
+
+        return this.list(queryWrapper);
     }
 
     @Override

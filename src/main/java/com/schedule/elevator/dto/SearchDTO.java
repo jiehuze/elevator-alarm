@@ -80,6 +80,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("维保班组ID")
     private Long maintenanceTeamId; // 维保班组ID
 
+    @ApiModelProperty("维保人ID")
+    private Long maintenancePersonnelId;
+
     @ApiModelProperty("维保单位级别,1：一级维保单位，2：二级维保单位")
     private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位
 
@@ -109,6 +112,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
 
     @ApiModelProperty("救援码排序")
     private String rescueCodeOrder;
+
+    @ApiModelProperty("无维保组")
+    private Boolean noMaintenanceTeam;
 
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;

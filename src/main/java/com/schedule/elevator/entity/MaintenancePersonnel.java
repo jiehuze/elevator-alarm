@@ -36,6 +36,9 @@ public class MaintenancePersonnel {
     @TableField("status")
     private Integer status; // 在岗状态：1=在岗，0=离岗
 
+    @TableField(exist = false)
+    private Long count;  // 计数属性，不映射到数据库
+
     @TableField(value = "created_at")
     private LocalDateTime createdAt; // 创建时间
 

@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class TeamPersonDTO implements Serializable {
     private Long maintenanceTeamId;
+    private Integer level;
     private List<Long> addMaintenancePersonnelIds;
     private List<Long> deleteMaintenancePersonnelIds;
 }
