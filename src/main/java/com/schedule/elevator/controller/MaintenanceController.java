@@ -250,6 +250,10 @@ public class MaintenanceController {
                                               @RequestParam(defaultValue = "10") int size,
                                               @ModelAttribute SearchDTO searchDTO) {
         IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchDTO, current, size);
+        for (MaintenancePersonnel person : maintenanceTeamPage.getRecords()) {
+            long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, person.getId()));
+            person.setCount(count);
+        }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeamPage, null);
     }
 

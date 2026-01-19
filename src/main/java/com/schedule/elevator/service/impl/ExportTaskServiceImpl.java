@@ -162,7 +162,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
-    @Async
+//    @Async
     public void exportMonthlyReportAsync(SearchDTO task) {
         System.out.println("开始导出数据");
         ExportTask exportTask = createExportTask(task);
@@ -185,7 +185,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
-    @Async
+//    @Async
     public void exportYearReportAsync(SearchDTO task) {
         return;
     }

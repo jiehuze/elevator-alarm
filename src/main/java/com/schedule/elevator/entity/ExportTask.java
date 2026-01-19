@@ -47,6 +47,15 @@ public class ExportTask implements Serializable {
     @TableField("remark")
     private String remark;        // 备注信息（如：仅包含重大事故工单、用于审计等）
 
+    @TableField("district")
+    private String district; // 区域名称
+
+    @TableField("time_range")
+    private String timeRange; // 时间范围
+
+    @TableField("query_conditions")
+    private String queryConditions; // 导出条件
+
     @TableField("trigger_user_id")
     private String triggerUserId; // 触发用户ID（工号或系统账号）
 

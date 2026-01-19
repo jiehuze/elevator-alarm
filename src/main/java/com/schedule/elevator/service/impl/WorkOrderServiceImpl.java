@@ -378,7 +378,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             BigDecimal percentage = BigDecimal.ZERO;
             ProjectTypeCountDTO projectTypeCountDTO = projectTypeMap.get(type.getCode());
             if (projectTypeCountDTO != null) {
-                if (faultTotal > 0) {
+                if (faultTotal > 0 && projectTypeCountDTO.getFaultCount() != null) {
                     percentage = BigDecimal.valueOf(projectTypeCountDTO.getFaultCount())
                             .divide(BigDecimal.valueOf(faultTotal), 4, RoundingMode.HALF_UP)
                             .multiply(BigDecimal.valueOf(100))

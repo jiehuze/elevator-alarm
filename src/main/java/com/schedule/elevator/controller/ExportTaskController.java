@@ -8,6 +8,7 @@ import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ExportTask;
 import com.schedule.elevator.enums.ExportTypeEnum;
 import com.schedule.elevator.service.IExportTaskService;
+import com.schedule.utils.DateUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ExportTaskController {
     @Operation(summary = "导出任务")
     public BaseResponse exportTask(@RequestBody SearchDTO task) {
         task.setIsReport(true);
+        task.setTimeRange(DateUtils.format(task.getStartTime(), DateUtils.DATE_PATTERN) + "-" + DateUtils.format(task.getEndTime(), DateUtils.DATE_PATTERN));
+        task.setQueryConditions(task.toString());
         if (task.getExportType() == 1) {
             exportTaskService.exportMonthlyReportAsync(task);
         }
