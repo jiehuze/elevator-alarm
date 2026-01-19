@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.MaintenanceTeamMapper;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.service.IMaintenanceTeamService;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,14 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
     }
 
     @Override
-    public List<MaintenanceTeam> listByDt(MaintenanceTeam mt) {
+    public List<MaintenanceTeam> listByDt(SearchDTO mt) {
         LambdaQueryWrapper<MaintenanceTeam> wrapper = new LambdaQueryWrapper<>();
 
-        if (mt.getTeamName() != null) {
-            wrapper.eq(MaintenanceTeam::getTeamName, mt.getTeamName());
-        }
-        if (mt.getMaintenanceUnitId() != null) {
-            wrapper.eq(MaintenanceTeam::getMaintenanceUnitId, mt.getMaintenanceUnitId());
-        }
-        wrapper.like(StringUtils.isNotBlank(mt.getLeaderName()), MaintenanceTeam::getLeaderName, mt.getLeaderName());
+        wrapper.like(StringUtils.isNotBlank(mt.getMaintenanceTeam()), MaintenanceTeam::getTeamName, mt.getMaintenanceTeam());
+        wrapper.eq(mt.getMaintenanceUnitId() != null, MaintenanceTeam::getMaintenanceUnitId, mt.getMaintenanceUnitId());
+        wrapper.like(StringUtils.isNotBlank(mt.getMaintenanceTeamLeader()), MaintenanceTeam::getLeaderName, mt.getMaintenanceTeamLeader());
         wrapper.eq(StringUtils.isNotBlank(mt.getDistrict()), MaintenanceTeam::getDistrict, mt.getDistrict());
+        wrapper.eq(mt.getLevel() != null, MaintenanceTeam::getLevel, mt.getLevel());
 
         return this.list(wrapper);
     }

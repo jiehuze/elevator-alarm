@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -121,25 +122,25 @@ public class MaintenanceController {
     }
 
     @GetMapping("/level")
-    public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute SearchDTO maintenanceQueryDTO) {
+    public BaseResponse getMaintenanceUnitByLevel(@ModelAttribute SearchDTO searchDTO) {
+        List<MaintenanceUnit> units = maintenanceUnitService.listByQuery(searchDTO);
 
-        List<MaintenanceUnit> units = maintenanceUnitService.listByQuery(maintenanceQueryDTO);
+        Iterator<MaintenanceUnit> iterator = units.iterator();
+        while (iterator.hasNext()) {
+            MaintenanceUnit unit = iterator.next();
+            searchDTO.setMaintenanceUnitId(unit.getId());
+            List<MaintenanceTeam> teams = maintenanceTeamService.listByDt(searchDTO);
 
-        for (MaintenanceUnit unit : units) {
-//            List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, unit.getId());
-            MaintenanceTeam maintenanceTeam = new MaintenanceTeam();
-            maintenanceTeam.setMaintenanceUnitId(unit.getId());
-            maintenanceTeam.setDistrict(maintenanceQueryDTO.getDistrict());
-            List<MaintenanceTeam> teams = maintenanceTeamService.listByDt(maintenanceTeam);
-
-            for (MaintenanceTeam team : teams) {
-
-                List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId(), team.getLevel());
-                team.setPersons(list);
-
-                team.setNumbers((long) list.size());
+            if (teams == null || teams.isEmpty()) {
+                iterator.remove(); // 使用迭代器删除，安全
+            } else {
+                for (MaintenanceTeam team : teams) {
+                    List<MaintenancePersonnel> list = maintenancePersonnelService.listByTeamId(team.getId(), team.getLevel());
+                    team.setPersons(list);
+                    team.setNumbers((long) list.size());
+                }
+                unit.setTeams(teams);
             }
-            unit.setTeams(teams);
         }
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", units, null);

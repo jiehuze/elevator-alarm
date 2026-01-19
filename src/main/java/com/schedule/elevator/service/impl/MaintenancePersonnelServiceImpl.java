@@ -107,10 +107,16 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     public List<MaintenancePersonnel> listByTeamId(Long teamId, Integer level) {
         LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
 
-        if (level == 1) {
+        if (level == null) {
             queryWrapper.eq(MaintenancePersonnel::getMaintenanceTeamId, teamId);
-        } else {
+            queryWrapper.or();
             queryWrapper.eq(MaintenancePersonnel::getSubMaintenanceTeamId, teamId);
+        } else {
+            if (level == 1) {
+                queryWrapper.eq(MaintenancePersonnel::getMaintenanceTeamId, teamId);
+            } else {
+                queryWrapper.eq(MaintenancePersonnel::getSubMaintenanceTeamId, teamId);
+            }
         }
 
         return this.list(queryWrapper);
