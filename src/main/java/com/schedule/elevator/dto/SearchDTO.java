@@ -85,8 +85,14 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("维保班组ID")
     private Long maintenanceTeamId; // 维保班组ID
 
+    @ApiModelProperty("维保人")
+    private String maintenancePersonnelName;
+
     @ApiModelProperty("维保人ID")
     private Long maintenancePersonnelId;
+
+    @ApiModelProperty("维保人电话")
+    private String maintenancePersonnelPhone;
 
     @ApiModelProperty("时间范围")
     private String timeRange; // 时间范围

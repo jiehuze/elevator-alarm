@@ -8,7 +8,6 @@ import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @HeadRowHeight(30)
@@ -41,8 +40,11 @@ public class WorkOrderExcel {
     @ExcelProperty("小区项目名")
     private String projectName;
 
-    @ExcelProperty("电梯安装地址")
-    private String elevatorAddress;
+    @ExcelProperty("电梯名称")
+    private String elevatorName; // 电梯名称
+
+    @ExcelProperty("区域")
+    private String district;
 
     @ExcelProperty("故障原因")
     private String faultReason;
@@ -64,6 +66,18 @@ public class WorkOrderExcel {
     @ExcelProperty("疑似死亡人数")
     @NumberFormat("#")
     private Integer suspectedDeathCount;
+
+    @ExcelProperty("报警人")
+    private String alarmPersonName; // 报警人姓名
+
+    @ExcelProperty("报警人电话")
+    private String alarmPersonPhone; // 报警人电话
+
+    @ExcelProperty("维保人员")
+    private String maintenancePersonnelName; // 维保人员名称
+
+    @ExcelProperty("维保人员电话")
+    private String maintenancePersonnelPhone; // 维保人员电话
 
     @ExcelProperty("报警时间")
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")

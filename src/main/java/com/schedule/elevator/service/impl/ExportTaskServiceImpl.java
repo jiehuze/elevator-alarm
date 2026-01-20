@@ -269,7 +269,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
-//                FileUtil.ensureDirectoryExists(filePath);
+                FileUtil.ensureDirectoryExists(filePath);
 
                 LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
                 ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();

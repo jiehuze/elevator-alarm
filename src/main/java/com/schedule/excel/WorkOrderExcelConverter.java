@@ -25,13 +25,20 @@ public class WorkOrderExcelConverter {
         dto.setUsingUnit(entity.getUsingUnit());
         dto.setMaintenanceUnit(entity.getMaintenanceUnit());
         dto.setProjectName(entity.getProjectName());
-        dto.setElevatorAddress(entity.getElevatorAddress());
+        dto.setElevatorName(entity.getElevatorName());
+        dto.setDistrict(entity.getDistrict());
         dto.setFaultReason(entity.getFailureReason());
         dto.setIsMedicalRescueStarted(entity.getMedicalRescueStarted() == true ? "是" : "否");
         dto.setIsMajorIncidentReported(entity.getMajorIncident() == true ? "是" : "否");
         dto.setTrappedCount(entity.getTrappedCount());
         dto.setInjuredCount(entity.getInjuredCount());
         dto.setSuspectedDeathCount(entity.getSuspectedDeathCount());
+
+        dto.setAlarmPersonName(entity.getAlarmPersonName());
+        dto.setAlarmPersonPhone(entity.getAlarmPersonPhone());
+        dto.setMaintenancePersonnelName(entity.getMaintenancePersonnelName());
+        dto.setMaintenancePersonnelPhone(entity.getMaintenancePersonnelPhone());
+
         dto.setAlarmTime(entity.getCreateTime());
 
         dto.setDispatchTime(dispatchTime);

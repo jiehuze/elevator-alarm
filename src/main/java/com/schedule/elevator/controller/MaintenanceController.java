@@ -186,9 +186,10 @@ public class MaintenanceController {
                                             @ModelAttribute MaintenanceTeam searchTeam) {
         IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
         for (MaintenanceTeam team : maintenanceTeams.getRecords()) {
+            MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
+            team.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
             MaintenancePersonnel maintenancePersonnel = new MaintenancePersonnel();
             maintenancePersonnel.setMaintenanceTeamId(team.getId());
-
             team.setNumbers(maintenancePersonnelService.count(maintenancePersonnel));
         }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
@@ -264,6 +265,15 @@ public class MaintenanceController {
     public BaseResponse create(@RequestBody MaintenancePersonnel personnel) {
         maintenancePersonnelService.save(personnel);
         return new BaseResponse(HttpStatus.OK.value(), "添加成功", personnel, null);
+    }
+
+    /**
+     * 删除维保人员
+     */
+    @DeleteMapping("/person/delete/{id}")
+    public BaseResponse deletePerson(@PathVariable Long id) {
+        maintenancePersonnelService.removeById(id);
+        return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
 
     /**

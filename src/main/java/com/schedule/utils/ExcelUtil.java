@@ -153,7 +153,7 @@ public class ExcelUtil {
 
         // 创建字体对象并设置大小
         WriteFont font = new WriteFont();
-        font.setFontHeightInPoints((short) 16); // 设置字体大小为12磅
+        font.setFontHeightInPoints((short) 10); // 设置字体大小为12磅
 
         // 创建内容样式并关联字体
         WriteCellStyle contentStyle = new WriteCellStyle();
@@ -184,7 +184,7 @@ public class ExcelUtil {
     /**
      * Excel导出
      *
-     * @param response  response
+     * @param output  response
      * @param fileName  文件名
      * @param sheetName sheetName
      * @param list      数据List
@@ -194,7 +194,7 @@ public class ExcelUtil {
                                                Class<?> pojoClass, String templateFileName) throws IOException {
         // 创建字体对象并设置大小
         WriteFont font = new WriteFont();
-        font.setFontHeightInPoints((short) 16); // 设置字体大小为12磅
+        font.setFontHeightInPoints((short) 10); // 设置字体大小为12磅
 
         // 创建内容样式并关联字体
         WriteCellStyle contentStyle = new WriteCellStyle();

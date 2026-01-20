@@ -61,6 +61,12 @@ public class ElevatorInfoController {
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
 
+    @DeleteMapping("/batchDelete")
+    public BaseResponse batchDelete(@RequestBody List<Long> ids) {
+        elevatorInfoService.removeByIds(ids);
+        return new BaseResponse(HttpStatus.OK.value(), "批量删除成功", true, null);
+    }
+
     @PutMapping("/update")
     public BaseResponse update(@RequestBody ElevatorInfo elevator) {
         elevatorInfoService.update(elevator,

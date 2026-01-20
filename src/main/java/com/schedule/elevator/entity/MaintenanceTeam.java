@@ -17,6 +17,9 @@ public class MaintenanceTeam {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @TableField(exist = false)
+    private String maintenanceUnit; // 维护单位名称
+
     @TableField("maintenance_unit_id")
     private Long maintenanceUnitId; // 维保单位ID
 

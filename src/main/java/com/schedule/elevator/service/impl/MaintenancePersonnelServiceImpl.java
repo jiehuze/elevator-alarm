@@ -98,6 +98,9 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
                 .eq(entity.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, entity.getMaintenanceUnitId())
                 .eq(entity.getMaintenancePersonnelId() != null, MaintenancePersonnel::getId, entity.getMaintenancePersonnelId())
                 .eq(entity.getStatus() != null, MaintenancePersonnel::getStatus, entity.getStatus())
+                .like(StringUtils.hasText(entity.getMaintenanceUnit()), MaintenancePersonnel::getCompany, entity.getMaintenanceUnit())
+                .like(StringUtils.hasText(entity.getMaintenancePersonnelPhone()), MaintenancePersonnel::getPhone, entity.getMaintenancePersonnelPhone())
+                .like(StringUtils.hasText(entity.getMaintenancePersonnelName()), MaintenancePersonnel::getName, entity.getMaintenancePersonnelName())
                 .orderByDesc(MaintenancePersonnel::getCreatedAt);
 
         return this.page(page, queryWrapper);
