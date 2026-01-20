@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +79,6 @@ public class WordExportServiceImpl implements IWordExportService {
     public void generateMonthlyReport(SearchDTO searchDTO, String outputPath) {
         try {
             String templatePath = "doc/month.docx";
-//            String outputPath = "month.docx";
-
             HashMap<String, String> replaceStrMap = new HashMap<>();
             String districtS = "";
             if (StringUtils.hasText(searchDTO.getDistrict())) {
@@ -96,15 +95,18 @@ public class WordExportServiceImpl implements IWordExportService {
 
             List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(searchDTO);
             Long total = 0l;
+            BigDecimal allPercent = BigDecimal.ZERO;
             for (FaultResultDTO faultResultDTO : faultResultDTOS) {
                 total += faultResultDTO.getTotals();
                 replaceStrMap.put(faultResultDTO.getFaultCode(), faultResultDTO.getPercent().toString());
+                allPercent = allPercent.add(faultResultDTO.getPercent());
                 for (FaultResultDTO child : faultResultDTO.getChild()) {
                     replaceStrMap.put(child.getFaultCode(), child.getTotals().toString());
                     replaceStrMap.put(child.getFaultCode() + "1", child.getPercent().toString());
                 }
             }
             replaceStrMap.put("total", total.toString());
+            replaceStrMap.put("percent", allPercent.toString());
 
             InputStream in = new ClassPathResource(templatePath).getInputStream();
             InputStream inputStream = DocxPlaceholderReplaceUtil.replacePlaceholderToStream(in, replaceStrMap);
@@ -138,6 +140,73 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, ordersByDuplicateRescueCode, SecondaryFaultStatsDTO.class, "SecondaryFault");
             tableMap.put("ProjectTypeStats", projectTypeTableData);
             tableMap.put("ElevatorTypeStats", elevatorTypeStatsTableData);
+
+            WordExporter.generateWordFromTemplateStreamWithMultipleTables(inputStream, tableMap, outputPath);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void generateYearlyReport(SearchDTO searchDTO, String outputPath) {
+        try {
+            String templatePath = "doc/year.docx";
+            HashMap<String, String> replaceStrMap = new HashMap<>();
+            String districtS = "";
+            if (StringUtils.hasText(searchDTO.getDistrict())) {
+                districtS = searchDTO.getDistrict();
+            } else {
+                List<SysDistrict> districtList = sysDistrictService.list();
+                for (SysDistrict district : districtList) {
+                    districtS += district.getDistrictName() + ",";
+                }
+            }
+            replaceStrMap.put("DistrictS", districtS);
+            replaceStrMap.put("StartTime", searchDTO.getCreateTimeStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            replaceStrMap.put("EndTime", searchDTO.getCreateTimeEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+            List<FaultResultDTO> faultResultDTOS = faultRecordService.statisticalFault(searchDTO);
+            Long total = 0l;
+            BigDecimal allPercent = BigDecimal.ZERO;
+            for (FaultResultDTO faultResultDTO : faultResultDTOS) {
+                total += faultResultDTO.getTotals();
+                replaceStrMap.put(faultResultDTO.getFaultCode(), faultResultDTO.getPercent().toString());
+                allPercent = allPercent.add(faultResultDTO.getPercent());
+                for (FaultResultDTO child : faultResultDTO.getChild()) {
+                    replaceStrMap.put(child.getFaultCode(), child.getTotals().toString());
+                    replaceStrMap.put(child.getFaultCode() + "1", child.getPercent().toString());
+                }
+            }
+            replaceStrMap.put("total", total.toString());
+            replaceStrMap.put("percent", allPercent.toString());
+
+            InputStream in = new ClassPathResource(templatePath).getInputStream();
+            InputStream inputStream = DocxPlaceholderReplaceUtil.replacePlaceholderToStream(in, replaceStrMap);
+
+            List<DistrictStatisticsDTO> districtStatistics = workOrderService.getDistrictStatistics(searchDTO);
+            List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
+            List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
+            List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
+            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRate(searchDTO);
+
+            // 构建映射
+            Map<String, TableData> tableMap = new HashMap<>();
+            tableMap = TableData.buildTableData(tableMap, districtStatistics, DistrictStatisticsDTO.class, "DistrictFault");
+            tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
+            tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
+            tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
+            tableMap = TableData.buildTableData(tableMap, maintenanceUnitFaultRate, MaintenanceUnitFaultRateDTO.class, "MaintenanceUnitFaultRate");
+
+
+            List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);
+            TableData elevatorTypeStatsTableData = ElevatorTypeStatsDTO.buildTableData(elevatorTypeStatsList);
+            tableMap.put("ElevatorTypeStats", elevatorTypeStatsTableData);
+
+            ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
+            TableData projectTypeTableData = ProjectTypeStatItemDTO.buildTableData(projectTypeStats);
+            tableMap.put("ProjectTypeStats", projectTypeTableData);
+
 
             WordExporter.generateWordFromTemplateStreamWithMultipleTables(inputStream, tableMap, outputPath);
 

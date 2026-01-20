@@ -20,4 +20,6 @@ public interface IWordExportService {
             String outputPath) throws IOException;
 
     void generateMonthlyReport(SearchDTO searchDTO, String outputPath);
+
+    void generateYearlyReport(SearchDTO searchDTO, String outputPath);
 }

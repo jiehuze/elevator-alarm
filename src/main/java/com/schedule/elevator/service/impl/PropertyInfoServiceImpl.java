@@ -1,13 +1,13 @@
 package com.schedule.elevator.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.PropertyInfoMapper;
 import com.schedule.elevator.dto.PropertyInfoDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.service.IPropertyInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +35,12 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
 
     @Override
     public long getOrCreatePropertyId(PropertyInfo entity) {
+        entity.setUsingUnit(StringUtils.trim(entity.getUsingUnit()));
         // 1. 先查询是否已存在
         PropertyInfo existing = this.getOne(new LambdaQueryWrapper<PropertyInfo>()
                 .eq(PropertyInfo::getUsingUnit, entity.getUsingUnit()));
 
         if (existing != null) {
-//            log.debug("维保单位已存在，ID: {}", existing.getId());
-//            entity.setId(existing.getId());
-//            this.updateById(entity);
             return existing.getId();
         }
 

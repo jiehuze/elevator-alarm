@@ -2,11 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
-import com.schedule.elevator.entity.SysDistrict;
 import com.schedule.elevator.service.*;
-import com.schedule.excel.DocxPlaceholderReplaceUtil;
-import com.schedule.excel.TableData;
-import com.schedule.utils.FileReplace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -152,16 +147,30 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", stats, null);
     }
 
+    @GetMapping("/maintenance-unit-fault-rate")
+    public BaseResponse getMaintenanceUnitFaultRate(@ModelAttribute SearchDTO searchDTO) {
+        List<MaintenanceUnitFaultRateDTO> faultRate = workOrderService.getMaintenanceUnitFaultRate(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", faultRate, null);
+    }
+
 
     @Autowired
     private IWordExportService wordExportService;
 
     /*******************************************导出数据******************************************/
     @GetMapping("/export-month-report")
-    public BaseResponse exportElevatorWord(@ModelAttribute SearchDTO searchDTO) {
+    public BaseResponse exportMonthReport(@ModelAttribute SearchDTO searchDTO) {
         // 获取当前时间并格式化为字符串（包含到分钟）
         String currentTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
         wordExportService.generateMonthlyReport(searchDTO, "/tmp/month-" + currentTimeStr + ".docx");
+        return new BaseResponse(HttpStatus.OK.value(), "success", null, null);
+    }
+
+    @GetMapping("/export-year-report")
+    public BaseResponse exportYearReprt(@ModelAttribute SearchDTO searchDTO) {
+        // 获取当前时间并格式化为字符串（包含到分钟）
+        String currentTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        wordExportService.generateYearlyReport(searchDTO, "/tmp/year-" + currentTimeStr + ".docx");
         return new BaseResponse(HttpStatus.OK.value(), "success", null, null);
     }
 }

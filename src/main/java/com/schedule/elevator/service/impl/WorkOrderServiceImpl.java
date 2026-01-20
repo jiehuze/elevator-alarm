@@ -423,4 +423,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO) {
         return workOrderMapper.getDistrictStatistics(searchDTO);
     }
+
+    @Override
+    public List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(SearchDTO searchDTO) {
+        return workOrderMapper.getMaintenanceUnitFaultRate(searchDTO);
+    }
 }

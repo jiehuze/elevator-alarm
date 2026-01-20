@@ -105,7 +105,6 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
                 .eq(MaintenanceUnit::getMaintenanceUnitManagerPhone, entity.getMaintenanceUnitManagerPhone()));
 
         if (existing != null) {
-//            log.debug("维保单位已存在，ID: {}", existing.getId());
             return existing.getId();
         }
 
@@ -114,7 +113,6 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
             throw new RuntimeException("维保单位插入失败");
         }
 
-//        log.info("新增维保单位成功，ID: {}, 单位编码: {}", maintenance.getId(), unitCode);
         return entity.getId();
     }
 }

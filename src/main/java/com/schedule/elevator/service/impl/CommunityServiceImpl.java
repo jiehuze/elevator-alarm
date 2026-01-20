@@ -7,18 +7,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.CommunityMapper;
 import com.schedule.elevator.entity.Community;
 import com.schedule.elevator.service.ICommunityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community> implements ICommunityService {
 
     @Override
     public long getOrCreateCommunityId(Community entity) {
+        entity.setProjectName(StringUtils.trim(entity.getProjectName()));
+
         LambdaQueryWrapper<Community> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.hasText(entity.getAddress()), Community::getAddress, entity.getAddress());
-        queryWrapper.eq(StringUtils.hasText(entity.getProjectName()), Community::getProjectName, entity.getProjectName());
-        queryWrapper.eq(StringUtils.hasText(entity.getDistrict()), Community::getDistrict, entity.getDistrict());
+        queryWrapper.eq(StringUtils.isNotBlank(entity.getAddress()), Community::getAddress, entity.getAddress());
+        queryWrapper.eq(StringUtils.isNoneBlank(entity.getProjectName()), Community::getProjectName, entity.getProjectName());
+        queryWrapper.eq(StringUtils.isNotBlank(entity.getDistrict()), Community::getDistrict, entity.getDistrict());
         Community one = this.getOne(queryWrapper);
 
         if (one != null) {

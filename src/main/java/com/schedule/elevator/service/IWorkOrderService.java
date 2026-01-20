@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.WorkOrder;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,4 +48,6 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     List<OvertimeWorkOrderDTO> getOvertimeWorkOrders(SearchDTO searchDTO);
 
     List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO);
+
+    List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 }

@@ -486,6 +486,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     List<DistrictStatisticsDTO> getDistrictStatistics2(@Param("searchDTO") SearchDTO searchDTO);
+
     @Select({
             "<script>",
             "SELECT ",
@@ -538,5 +539,53 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     List<DistrictStatisticsDTO> getDistrictStatistics(@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 按维保单位统计电梯数、故障数和故障率
+     *
+     * @param searchDTO 包含开始时间、结束时间和区县的搜索条件
+     * @return 维保单位统计数据列表
+     */
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  ROW_NUMBER() OVER (ORDER BY m.maintenance_unit) AS idx, ",
+            "  m.maintenance_unit AS maintenanceUnit, ",
+            "  COALESCE(m.elevator_count, 0) AS elevatorCount, ",
+            "  COALESCE(w.fault_count, 0) AS faultCount, ",
+            "  CASE ",
+            "    WHEN m.elevator_count > 0 THEN ",
+            "      CONCAT(ROUND(COALESCE(w.fault_count, 0) * 100.0 / m.elevator_count, 2), '%') ",
+            "    ELSE '0.00%' ",
+            "  END AS faultRate ",
+            "FROM (",
+            "  SELECT ",
+            "    maintenance_unit, ",
+            "    COUNT(*) AS elevator_count ",
+            "  FROM elevator ",
+            "  WHERE maintenance_unit IS NOT NULL AND maintenance_unit != '' ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY maintenance_unit",
+            ") m ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "    maintenance_unit, ",
+            "    COUNT(*) AS fault_count ",
+            "  FROM work_order ",
+            "  WHERE status = 99 ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY maintenance_unit",
+            ") w ON m.maintenance_unit = w.maintenance_unit ",
+            "ORDER BY m.maintenance_unit",
+            "</script>"
+    })
+    List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
 }
