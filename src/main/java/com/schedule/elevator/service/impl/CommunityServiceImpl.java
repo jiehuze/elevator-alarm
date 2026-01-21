@@ -38,13 +38,13 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
     public IPage<Community> pageCommunities(Page<Community> page, Community searchDTO) {
 
         LambdaQueryWrapper<Community> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.hasText(searchDTO.getAddress()), Community::getAddress, searchDTO.getAddress())
-                .like(StringUtils.hasText(searchDTO.getProjectName()), Community::getProjectName, searchDTO.getProjectName())
-                .eq(StringUtils.hasText(searchDTO.getDistrict()), Community::getDistrict, searchDTO.getDistrict())
-                .like(StringUtils.hasText(searchDTO.getSafetyOfficerName()), Community::getSafetyOfficerName, searchDTO.getSafetyOfficerName())
-                .eq(StringUtils.hasText(searchDTO.getSafetyOfficerPhone()), Community::getSafetyOfficerPhone, searchDTO.getSafetyOfficerPhone())
+        queryWrapper.like(StringUtils.isNotBlank(searchDTO.getAddress()), Community::getAddress, searchDTO.getAddress())
+                .like(StringUtils.isNotBlank(searchDTO.getProjectName()), Community::getProjectName, searchDTO.getProjectName())
+                .eq(StringUtils.isNotBlank(searchDTO.getDistrict()), Community::getDistrict, searchDTO.getDistrict())
+                .like(StringUtils.isNotBlank(searchDTO.getSafetyOfficerName()), Community::getSafetyOfficerName, searchDTO.getSafetyOfficerName())
+                .eq(StringUtils.isNotBlank(searchDTO.getSafetyOfficerPhone()), Community::getSafetyOfficerPhone, searchDTO.getSafetyOfficerPhone())
                 .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
-                .eq(StringUtils.hasText(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
+                .eq(StringUtils.isNotBlank(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
 
         return this.page(page, queryWrapper);
     }

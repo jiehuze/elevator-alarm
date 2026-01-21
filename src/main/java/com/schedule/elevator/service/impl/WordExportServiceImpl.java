@@ -189,6 +189,9 @@ public class WordExportServiceImpl implements IWordExportService {
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
             List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
             List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRate(searchDTO);
+            List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
+            List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
+            List<ElevatorAgeStatisticsDTO> elevatorAgeStatistics = workOrderService.getElevatorAgeStatistics(searchDTO);
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
@@ -197,6 +200,10 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
             tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
             tableMap = TableData.buildTableData(tableMap, maintenanceUnitFaultRate, MaintenanceUnitFaultRateDTO.class, "MaintenanceUnitFaultRate");
+            tableMap = TableData.buildTableData(tableMap, usingUnitFaultRate, UsingUnitFaultRateDTO.class, "UsingUnitFaultRate");
+            tableMap = TableData.buildTableData(tableMap, elevatorBrandFaultRate, ElevatorBrandFaultRateDTO.class, "ElevatorBrandFaultRate");
+            tableMap = TableData.buildTableData(tableMap, elevatorAgeStatistics, ElevatorAgeStatisticsDTO.class, "ElevatorAgeStats");
+
 
 
             List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);

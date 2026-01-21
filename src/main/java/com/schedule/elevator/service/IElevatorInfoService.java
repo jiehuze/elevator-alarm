@@ -49,4 +49,7 @@ public interface IElevatorInfoService extends IService<ElevatorInfo> {
      * TRANSPORTATION("交通场所", "TRANSPORTATION"),
      */
     List<ProjectTypeCountDTO> getProjectTypeStats(SearchDTO searchDTO);
+
+    //统计电梯占比，top5的占比，小众品牌的占比
+    BrandElevatorStatisticsDTO getBrandElevatorStats(SearchDTO searchDTO);
 }

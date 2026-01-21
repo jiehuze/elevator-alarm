@@ -14,6 +14,7 @@ import com.schedule.elevator.service.IElevatorInfoService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,5 +171,28 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
     @Override
     public List<ProjectTypeCountDTO> getProjectTypeStats(SearchDTO searchDTO) {
         return elevatorInfoMapper.countElevatorsByProjectType(searchDTO);
+    }
+
+    @Override
+    public BrandElevatorStatisticsDTO getBrandElevatorStats(SearchDTO searchDTO) {
+        BrandElevatorStatisticsDTO statisticsDTO = new BrandElevatorStatisticsDTO();
+
+        List<BrandElevatorCountDTO> top5BrandElevatorCounts = elevatorInfoMapper.getTop5BrandElevatorCounts(searchDTO);
+        BrandMarketAnalysisDTO brandMarketAnalysis = elevatorInfoMapper.getBrandMarketAnalysis(searchDTO);
+
+        StringBuilder top5Brands = new StringBuilder();
+        BigDecimal totals = BigDecimal.ZERO;
+        for (BrandElevatorCountDTO brandElevatorCountDTO : top5BrandElevatorCounts) {
+            top5Brands = top5Brands.append(brandElevatorCountDTO.getBrandName());
+            totals = totals.add(new BigDecimal(brandElevatorCountDTO.getElevatorCount()));
+        }
+        statisticsDTO.setTop5Brands(top5Brands.toString());
+        statisticsDTO.setTotalBrands(brandMarketAnalysis.getTotalBrands());
+        statisticsDTO.setSmallBrandsCount(brandMarketAnalysis.getSmallBrandsCount());
+        statisticsDTO.setSmallBrandPercentage(brandMarketAnalysis.getSmallBrandPercentage());
+        statisticsDTO.setTotalBrandsAll(brandMarketAnalysis.getTotalBrandsAll());
+        statisticsDTO.setTop5Percentage(totals.divide(new BigDecimal(brandMarketAnalysis.getTotalBrandsAll()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+
+        return statisticsDTO;
     }
 }

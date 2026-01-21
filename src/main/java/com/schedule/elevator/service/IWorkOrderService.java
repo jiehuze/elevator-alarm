@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface IWorkOrderService extends IService<WorkOrder> {
     Page<WorkOrder> queryByConditionsPage(SearchDTO wrokOrderDTO);
+
     List<WorkOrder> queryByConditions(SearchDTO workOrderDTO);
 
     WorkOrder createWorkOrder(WorkOrder workOrder);
@@ -50,4 +51,10 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO);
 
     List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
+
+    List<UsingUnitFaultRateDTO> getUsingUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
+
+    List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
+
+    List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(@Param("searchDTO") SearchDTO searchDTO);
 }

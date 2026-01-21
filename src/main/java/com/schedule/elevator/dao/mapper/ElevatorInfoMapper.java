@@ -1,6 +1,8 @@
 package com.schedule.elevator.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.schedule.elevator.dto.BrandElevatorCountDTO;
+import com.schedule.elevator.dto.BrandMarketAnalysisDTO;
 import com.schedule.elevator.dto.ProjectTypeCountDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.ElevatorInfo;
@@ -78,4 +80,42 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
     })
     List<ProjectTypeCountDTO> countElevatorsByProjectType(@Param("searchDTO") SearchDTO searchDTO);
 
+    @Select({
+            "<script>",
+            "SELECT ",
+            "<![CDATA[",
+            "  COUNT(DISTINCT brand) AS totalBrands, ",
+            "  COUNT(CASE WHEN brand_counts.brand_count <= 10 THEN 1 END) AS smallBrandsCount, ",
+            "  COUNT(*) AS totalBrandsAll, ",
+            "  ROUND(COUNT(CASE WHEN brand_counts.brand_count <= 10 THEN 1 END) * 100.0 / COUNT(*), 2) AS smallBrandPercentage ",
+            "]]>",
+            "FROM (",
+            "  SELECT brand, COUNT(*) AS brand_count ",
+            "  FROM elevator ",
+            "  WHERE brand IS NOT NULL AND brand != '' ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY brand",
+            ") brand_counts",
+            "</script>"
+    })
+    BrandMarketAnalysisDTO getBrandMarketAnalysis(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  brand AS brandName, ",
+            "  COUNT(*) AS elevatorCount ",
+            "FROM elevator ",
+            "WHERE brand IS NOT NULL AND brand != '' ",
+            "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "    AND district = #{searchDTO.district}",
+            "  </if>",
+            "GROUP BY brand ",
+            "ORDER BY COUNT(*) DESC ",
+            "LIMIT 5",
+            "</script>"
+    })
+    List<BrandElevatorCountDTO> getTop5BrandElevatorCounts(@Param("searchDTO") SearchDTO searchDTO);
 }

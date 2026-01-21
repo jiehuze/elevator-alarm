@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.BrandElevatorStatisticsDTO;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.dto.SearchDTO;

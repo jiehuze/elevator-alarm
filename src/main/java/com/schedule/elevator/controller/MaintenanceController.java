@@ -94,12 +94,12 @@ public class MaintenanceController {
     }
 
     @GetMapping("/unit/{id}")
-    public BaseResponse getMaintenanceUnitById(@PathVariable Long id) {
+    public BaseResponse getMaintenanceUnitById(@PathVariable Long id, @ModelAttribute SearchDTO searchDTO) {
         MaintenanceUnit unit = maintenanceUnitService.getById(id);
         long elevatorCount = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, id));
         unit.setCount(elevatorCount);
 
-        List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(null, id);
+        List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(id, searchDTO);
 
         for (MaintenanceTeam team : teams) {
 

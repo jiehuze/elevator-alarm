@@ -17,9 +17,10 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         implements IMaintenanceTeamService {
 
     @Override
-    public List<MaintenanceTeam> getByTeamAndUnitId(String teamName, Long unitId) {
+    public List<MaintenanceTeam> getByTeamAndUnitId(Long unitId, SearchDTO searchDTO) {
         return this.list(new LambdaQueryWrapper<MaintenanceTeam>()
-                .eq(StringUtils.isNotBlank(teamName), MaintenanceTeam::getTeamName, teamName)
+                .eq(StringUtils.isNotBlank(searchDTO.getMaintenanceTeam()), MaintenanceTeam::getTeamName, searchDTO.getMaintenanceTeam())
+                .eq(searchDTO.getLevel() != null, MaintenanceTeam::getLevel, searchDTO.getLevel())
                 .eq(MaintenanceTeam::getMaintenanceUnitId, unitId));
     }
 

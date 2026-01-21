@@ -153,6 +153,30 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", faultRate, null);
     }
 
+    @GetMapping("/using-unit-fault-rate")
+    public BaseResponse getUsingUnitFaultRate(@ModelAttribute SearchDTO searchDTO) {
+        List<UsingUnitFaultRateDTO> faultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", faultRate, null);
+    }
+
+    @GetMapping("/brand-fault-rate")
+    public BaseResponse getBrandFaultRate(@ModelAttribute SearchDTO searchDTO) {
+        List<ElevatorBrandFaultRateDTO> faultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", faultRate, null);
+    }
+
+    @GetMapping("/elevator-age-stats")
+    public BaseResponse getElevatorAgeStats(@ModelAttribute SearchDTO searchDTO) {
+        List<ElevatorAgeStatisticsDTO> stats = workOrderService.getElevatorAgeStatistics(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", stats, null);
+    }
+
+    @GetMapping("/elevator-brand-stats")
+    public BaseResponse getElevatorBrandStats(@ModelAttribute SearchDTO searchDTO) {
+        BrandElevatorStatisticsDTO brandElevatorStats = elevatorInfoService.getBrandElevatorStats(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", brandElevatorStats, null);
+    }
+
 
     @Autowired
     private IWordExportService wordExportService;

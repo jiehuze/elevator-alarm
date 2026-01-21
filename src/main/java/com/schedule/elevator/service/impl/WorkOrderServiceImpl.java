@@ -428,4 +428,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(SearchDTO searchDTO) {
         return workOrderMapper.getMaintenanceUnitFaultRate(searchDTO);
     }
+
+    @Override
+    public List<UsingUnitFaultRateDTO> getUsingUnitFaultRate(SearchDTO searchDTO) {
+        return workOrderMapper.getUsingUnitFaultRate(searchDTO);
+    }
+
+    @Override
+    public List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(SearchDTO searchDTO) {
+        return workOrderMapper.getElevatorBrandFaultRate(searchDTO);
+    }
+
+    @Override
+    public List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(SearchDTO searchDTO) {
+        return workOrderMapper.getElevatorAgeStatistics(searchDTO);
+    }
 }

@@ -588,4 +588,162 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     })
     List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 按使用单位统计电梯数、故障数和故障率
+     *
+     * @param searchDTO 包含开始时间、结束时间和区县的搜索条件
+     * @return 使用单位统计数据列表
+     */
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  ROW_NUMBER() OVER (ORDER BY u.district, u.using_unit) AS idx, ",
+            "  u.using_unit AS usingUnit, ",
+            "  u.district AS district, ",
+            "  COALESCE(u.elevator_count, 0) AS elevatorCount, ",
+            "  COALESCE(w.fault_count, 0) AS faultCount, ",
+            "  CASE ",
+            "    WHEN u.elevator_count > 0 THEN ",
+            "      CONCAT(ROUND(COALESCE(w.fault_count, 0) * 100.0 / u.elevator_count, 2), '%') ",
+            "    ELSE '0.00%' ",
+            "  END AS faultRate ",
+            "FROM (",
+            "  SELECT ",
+            "    using_unit, ",
+            "    district, ",
+            "    COUNT(*) AS elevator_count ",
+            "  FROM elevator ",
+            "  WHERE using_unit IS NOT NULL AND using_unit != '' ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY using_unit, district",
+            ") u ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "    e.using_unit, ",
+            "    e.district, ",
+            "    COUNT(*) AS fault_count ",
+            "  FROM work_order wo ",
+            "  JOIN elevator e ON wo.rescue_code = e.rescue_code ",
+            "  WHERE wo.status = 99 ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND e.district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY e.using_unit, e.district",
+            ") w ON u.using_unit = w.using_unit AND u.district = w.district ",
+            "ORDER BY u.district, u.using_unit",
+            "</script>"
+    })
+    List<UsingUnitFaultRateDTO> getUsingUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 按电梯品牌统计电梯数、故障数和故障率
+     *
+     * @param searchDTO 包含开始时间、结束时间和区县的搜索条件
+     * @return 电梯品牌统计数据列表
+     */
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  ROW_NUMBER() OVER (ORDER BY b.brand_name) AS idx, ",
+            "  b.brand_name AS brand, ",
+            "  COALESCE(b.elevator_count, 0) AS elevatorCount, ",
+            "  COALESCE(w.fault_count, 0) AS faultCount, ",
+            "  CASE ",
+            "    WHEN b.elevator_count > 0 THEN ",
+            "      CONCAT(ROUND(COALESCE(w.fault_count, 0) * 100.0 / b.elevator_count, 2), '%') ",
+            "    ELSE '0.00%' ",
+            "  END AS faultRate ",
+            "FROM (",
+            "  SELECT ",
+            "    brand AS brand_name, ",
+            "    COUNT(*) AS elevator_count ",
+            "  FROM elevator ",
+            "  WHERE brand IS NOT NULL AND brand != '' ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY brand",
+            ") b ",
+            "LEFT JOIN (",
+            "  SELECT ",
+            "    e.brand, ",
+            "    COUNT(*) AS fault_count ",
+            "  FROM work_order wo ",
+            "  JOIN elevator e ON wo.rescue_code = e.rescue_code ",  // 通过救援码关联
+            "  WHERE wo.status = 99 ",  // 工单状态为终结
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND e.district = #{searchDTO.district}",
+            "    </if>",
+            "  GROUP BY e.brand",
+            ") w ON b.brand_name = w.brand ",
+            "ORDER BY b.brand_name",
+            "</script>"
+    })
+    List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
+
+    @Select({
+            "<script>",
+            "SELECT ",
+            "<![CDATA[",
+            "  CASE ",
+            "    WHEN e.use_years <= 5 THEN '5年以下（含5年）' ",
+            "    WHEN e.use_years <= 10 THEN '5-10年以下（含10年）' ",
+            "    WHEN e.use_years <= 15 THEN '10-15年以下（含15年）' ",
+            "    WHEN e.use_years > 15 THEN '15年以上' ",
+            "    ELSE '未知年限电梯' ",
+            "  END AS ageRange, ",
+            "]]>",
+            "  COUNT(DISTINCT e.rescue_code) AS elevatorCount, ",
+            "  COUNT(w.id) AS faultCount, ",
+            "  SUM(CASE WHEN w.order_type = 1 THEN 1 ELSE 0 END) AS trappedFaultCount, ",
+            "  SUM(CASE WHEN w.order_type = 2 THEN 1 ELSE 0 END) AS nonTrappedFaultCount, ",
+            "  SUM(CASE WHEN w.order_type IN (5, 6) THEN 1 ELSE 0 END) AS otherFaultCount, ",
+            "  CASE ",
+            "    WHEN COUNT(DISTINCT e.rescue_code) > 0 THEN ",
+            "      CONCAT(ROUND((COUNT(w.id) * 100.0 / COUNT(DISTINCT e.rescue_code)), 2), '%') ",
+            "    ELSE '0.00%' ",
+            "  END AS faultRate ",
+            "FROM ( ",
+            "  SELECT  ",
+            "    rescue_code, ",
+            "    district, ",
+            "    TIMESTAMPDIFF(YEAR, operation_start_date, CURDATE()) AS use_years ",
+            "  FROM elevator ",
+            "  WHERE operation_start_date IS NOT NULL ",
+            "    AND rescue_code IS NOT NULL ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            ") e ",
+            "LEFT JOIN work_order w  ",
+            "  ON e.rescue_code = w.rescue_code ",
+            "  AND w.status = 99 ",
+            "  AND w.order_type IN (1, 2, 5, 6) ",
+            "  <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "    AND w.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "  </if>",
+            "GROUP BY  ",
+            "<![CDATA[",
+            "  CASE ",
+            "    WHEN e.use_years <= 5 THEN '5年以下（含5年）' ",
+            "    WHEN e.use_years <= 10 THEN '5-10年以下（含10年）' ",
+            "    WHEN e.use_years <= 15 THEN '10-15年以下（含15年）' ",
+            "    WHEN e.use_years > 15 THEN '15年以上' ",
+            "    ELSE '未知年限电梯' ",
+            "  END ",
+            "]]>",
+            "ORDER BY  ",
+            "  MIN(e.use_years)",
+            "</script>"
+    })
+    List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(@Param("searchDTO") SearchDTO searchDTO);
+
 }
