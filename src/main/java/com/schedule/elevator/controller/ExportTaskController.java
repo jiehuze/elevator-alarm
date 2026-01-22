@@ -38,6 +38,8 @@ public class ExportTaskController {
         task.setQueryConditions(task.toString());
         if (task.getExportType() == 1) {
             exportTaskService.exportMonthlyReportAsync(task);
+        } else {
+            exportTaskService.exportYearReportAsync(task);
         }
         return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
     }

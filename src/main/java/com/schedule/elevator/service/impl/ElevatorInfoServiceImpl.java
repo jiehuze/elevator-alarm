@@ -182,8 +182,12 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
         StringBuilder top5Brands = new StringBuilder();
         BigDecimal totals = BigDecimal.ZERO;
-        for (BrandElevatorCountDTO brandElevatorCountDTO : top5BrandElevatorCounts) {
-            top5Brands = top5Brands.append(brandElevatorCountDTO.getBrandName());
+        for (int i = 0; i < top5BrandElevatorCounts.size(); i++) {
+            BrandElevatorCountDTO brandElevatorCountDTO = top5BrandElevatorCounts.get(i);
+            top5Brands.append(brandElevatorCountDTO.getBrandName());
+            if (i < top5BrandElevatorCounts.size() - 1) {
+                top5Brands.append(",");
+            }
             totals = totals.add(new BigDecimal(brandElevatorCountDTO.getElevatorCount()));
         }
         statisticsDTO.setTop5Brands(top5Brands.toString());
@@ -191,7 +195,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         statisticsDTO.setSmallBrandsCount(brandMarketAnalysis.getSmallBrandsCount());
         statisticsDTO.setSmallBrandPercentage(brandMarketAnalysis.getSmallBrandPercentage());
         statisticsDTO.setTotalBrandsAll(brandMarketAnalysis.getTotalBrandsAll());
-        statisticsDTO.setTop5Percentage(totals.divide(new BigDecimal(brandMarketAnalysis.getTotalBrandsAll()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        statisticsDTO.setTop5Percentage(totals.multiply(new BigDecimal(100)).divide(new BigDecimal(brandMarketAnalysis.getTotalBrandsAll()), 2, RoundingMode.HALF_UP));
 
         return statisticsDTO;
     }
