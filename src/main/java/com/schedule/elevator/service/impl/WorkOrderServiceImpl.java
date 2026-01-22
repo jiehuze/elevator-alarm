@@ -13,11 +13,14 @@ import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IWorkOrderService;
+import com.schedule.utils.DateUtils;
+import com.schedule.utils.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -259,7 +262,96 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO) {
-        return workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+        WorkOrderStatisticsDTO dto = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+        dto.setMonth(DateUtils.format(searchDTO.getCreateTimeStart(), DateUtils.DATE_PATTERN) + "~" + DateUtils.format(searchDTO.getCreateTimeEnd(), DateUtils.DATE_PATTERN));
+        return dto;
+    }
+
+    @Override
+    public List<WorkOrderStatisticsDTO> getWorkOrderStatsForMonth(SearchDTO searchDTO) {
+        //从一月到12月，并统计每个季度
+        ArrayList<WorkOrderStatisticsDTO> workOrderStatisticsDTOS = new ArrayList<>();
+        WorkOrderStatisticsDTO endYearDto = new WorkOrderStatisticsDTO();
+        endYearDto.setMonth("合计");
+
+        int year = searchDTO.getCreateTimeStart().getYear();
+        Map<Integer, LocalDateTime[]> ranges = DateUtils.getMonthlyAndQuarterlyRanges(year);
+        for (int i = 1; i <= 12; i++) {
+            LocalDateTime[] lt = ranges.get(i);
+            searchDTO.setCreateTimeStart(lt[0]);
+            searchDTO.setCreateTimeEnd(lt[1]);
+            WorkOrderStatisticsDTO result = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+            result.setMonth(i + "月");
+            workOrderStatisticsDTOS.add(result);
+
+            if (i == 3 || i == 6 || i == 9 || i == 12) {
+                LocalDateTime[] llt = ranges.get(12 + i / 3);
+                searchDTO.setCreateTimeStart(llt[0]);
+                searchDTO.setCreateTimeEnd(llt[1]);
+                WorkOrderStatisticsDTO lltResult = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+                if (i == 3) {
+                    lltResult.setMonth("一季度");
+                } else if (i == 6) {
+                    lltResult.setMonth("二季度");
+                } else if (i == 9) {
+                    lltResult.setMonth("三季度");
+                } else if (i == 12) {
+                    lltResult.setMonth("四季度");
+                }
+                workOrderStatisticsDTOS.add(lltResult);
+
+                endYearDto.setTotalEvents(util.addLongValues(endYearDto.getTotalEvents(), lltResult.getTotalEvents()));
+                endYearDto.setOtherEvents(util.addLongValues(endYearDto.getOtherEvents(), lltResult.getOtherEvents()));
+                endYearDto.setTrappedEvents(util.addLongValues(endYearDto.getTrappedEvents(), lltResult.getTrappedEvents()));
+                endYearDto.setNonTrappedEvents(util.addLongValues(endYearDto.getNonTrappedEvents(), lltResult.getNonTrappedEvents()));
+                endYearDto.setRescuedPeople(util.addLongValues(endYearDto.getRescuedPeople(), lltResult.getRescuedPeople()));
+
+                if (lltResult.getAvgArrivalTimeForTrapped() != 0) {
+                    if (endYearDto.getAvgArrivalTimeForTrapped() == 0) {
+                        endYearDto.setAvgArrivalTimeForTrapped(lltResult.getAvgArrivalTimeForTrapped());
+                    } else {
+                        endYearDto.setAvgArrivalTimeForTrapped(new BigDecimal(
+                                util.addDoubleValues(endYearDto.getAvgArrivalTimeForTrapped(), lltResult.getAvgArrivalTimeForTrapped()))
+                                .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP)
+                                .doubleValue());
+                    }
+                }
+                if (lltResult.getAvgArrivalTimeForNonTrapped() != 0) {
+                    if (endYearDto.getAvgArrivalTimeForNonTrapped() == 0) {
+                        endYearDto.setAvgArrivalTimeForNonTrapped(lltResult.getAvgArrivalTimeForNonTrapped());
+                    } else {
+                        endYearDto.setAvgArrivalTimeForNonTrapped(new BigDecimal(
+                                util.addDoubleValues(endYearDto.getAvgArrivalTimeForNonTrapped(), lltResult.getAvgArrivalTimeForNonTrapped()))
+                                .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP)
+                                .doubleValue());
+                    }
+                }
+                if (lltResult.getAvgRepairDuration() != 0) {
+                    if (endYearDto.getAvgRepairDuration() == 0) {
+                        endYearDto.setAvgRepairDuration(lltResult.getAvgRepairDuration());
+                    } else {
+                        endYearDto.setAvgRepairDuration(new BigDecimal(
+                                util.addDoubleValues(endYearDto.getAvgRepairDuration(), lltResult.getAvgRepairDuration()))
+                                .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP)
+                                .doubleValue());
+                    }
+                }
+                if (lltResult.getAvgRescueDuration() != 0) {
+                    if (endYearDto.getAvgRescueDuration() == 0) {
+                        endYearDto.setAvgRescueDuration(lltResult.getAvgRescueDuration());
+                    } else {
+                        endYearDto.setAvgRescueDuration(new BigDecimal(
+                                util.addDoubleValues(endYearDto.getAvgRescueDuration(), lltResult.getAvgRescueDuration()))
+                                .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP)
+                                .doubleValue());
+                    }
+                }
+            }
+        }
+
+        workOrderStatisticsDTOS.add(endYearDto);
+
+        return workOrderStatisticsDTOS;
     }
 
     @Override

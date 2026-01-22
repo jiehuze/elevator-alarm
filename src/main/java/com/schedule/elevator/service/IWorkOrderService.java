@@ -32,6 +32,8 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     WorkOrderStatisticsDTO getWorkOrderStatisticsByCondition(SearchDTO searchDTO);
 
+    List<WorkOrderStatisticsDTO> getWorkOrderStatsForMonth(SearchDTO searchDTO);
+
     List<TimeSlotStatsDTO> getFaultStatsByTimeSlot(SearchDTO searchDTO);
 
     List<TimeConsumptionStatsDTO> getTimeConsumptionStats(SearchDTO searchDTO);

@@ -25,6 +25,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM work_order " +
             "<where>" +
             "AND order_type IN (1, 2, 5, 6) " +
+            "AND status = 99 " +
             "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>" +
             "AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
             "</if>" +
@@ -54,6 +55,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  SUM(CASE WHEN order_type IN (5, 6) THEN 1 ELSE 0 END) AS other_count ",  // 其他（自行脱困、误报）
             "FROM work_order ",
             "WHERE 1 = 1 ",
+            "AND status = 99 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "</if>",
@@ -79,6 +81,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  COUNT(*) AS total",
             "FROM work_order ",
             "WHERE 1 = 1 ",
+            "AND status = 99 ",
             // 时间范围
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
@@ -93,8 +96,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<if test='searchDTO != null and searchDTO.projectType != null and searchDTO.projectType != \"\"'>",
             "  AND project_type = #{searchDTO.projectType}",
             "</if>",
-            // 只统计有效工单（排除逻辑删除等，若需要）
-            // "AND `delete` = 0",
             "</script>"
     })
     RescueLevelStatsDTO getRescueLevelStats(@Param("searchDTO") SearchDTO searchDTO);
@@ -108,6 +109,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM work_order ",
             "WHERE project_type IS NOT NULL ",
             "  AND project_type != '' ",
+            "AND status = 99 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "</if>",
@@ -155,6 +157,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<![CDATA[",
             "  time_to_arrive IS NOT NULL ",
             "  AND order_type IN (1, 2) ",
+            "  AND status = 99 ",
             "]]>",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
@@ -204,6 +207,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  FROM work_order ",
             "  WHERE time_to_arrive IS NOT NULL ",
             "    AND order_type IN (1, 2) ",
+            "    AND status = 99 ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",
@@ -239,6 +243,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM work_order ",
             "WHERE time_to_arrive IS NOT NULL ",
             "  AND order_type IN (1, 2) ",
+            "  AND status = 99 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "</if>",
@@ -281,6 +286,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  FROM work_order ",
             "  WHERE rescue_duration IS NOT NULL ",
             "    AND order_type = 1 ",
+            "    AND status = 99 ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",
@@ -337,6 +343,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<![CDATA[",
             "  rescue_duration IS NOT NULL ",
             "  AND order_type = 1 ",
+            "  AND status = 99 ",
             "]]>",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
@@ -358,6 +365,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM work_order ",
             "WHERE rescue_duration IS NOT NULL ",
             "  AND order_type = 1 ",  // 困人工单
+            "  AND status = 99 ",
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "</if>",
@@ -388,6 +396,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM work_order ",
             "WHERE time_to_arrive IS NOT NULL ",
             "  AND alarm_time IS NOT NULL ",
+            "  AND status = 99 ",
             "  AND time_to_arrive > 1800 ",  // 30分钟 = 1800秒
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND alarm_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
@@ -423,6 +432,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  SELECT rescue_code ",
             "  FROM work_order ",
             "  WHERE  rescue_code is not null AND rescue_code != ''",
+            "    AND status = 99 ",
             "    AND order_type NOT IN (5, 6) ",  // 排除自行脱困和误报工单
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
@@ -476,6 +486,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    SUM(COALESCE(injured_count, 0) + COALESCE(suspected_death_count, 0)) AS casualty_count ",
             "  FROM work_order ",
             "  WHERE order_type IN (1, 2, 5, 6) ",
+            "    AND status = 99 ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",
@@ -523,6 +534,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    SUM(COALESCE(injured_count, 0) + COALESCE(suspected_death_count, 0)) AS casualty_count ",
             "  FROM work_order ",
             "  WHERE order_type IN (1, 2, 5, 6) ",
+            "    AND status = 99 ",
             "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
             "    </if>",

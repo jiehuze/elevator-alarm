@@ -14,10 +14,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -135,7 +138,7 @@ public class DateUtils {
      * 计算两个时间点之间的时间差（秒）
      *
      * @param start 开始时间
-     * @param end 结束时间
+     * @param end   结束时间
      * @return 时间差（秒），如果结束时间早于开始时间则返回负数
      */
     public static long calculateTimeDifferenceInSeconds(LocalDateTime start, LocalDateTime end) {
@@ -144,4 +147,44 @@ public class DateUtils {
         }
         return java.time.Duration.between(start, end).getSeconds();
     }
+
+    /**
+     * 根据年份获取每个月及季度的第一天和最后一天时间
+     *
+     * @param year 年份
+     * @return Map<Integer, LocalDateTime [ ]> - key为标识(1-12表示月份，13-15表示季度)，value为[开始时间, 结束时间]数组
+     * 月份：1-12分别代表1月到12月
+     * 季度：13-15分别代表Q1-Q3 (按顺序：1月2月3月一季度，4月5月6月二季度，7月8月9月三季度，10月11月12月四季度)
+     */
+    public static Map<Integer, LocalDateTime[]> getMonthlyAndQuarterlyRanges(int year) {
+        Map<Integer, LocalDateTime[]> ranges = new HashMap<>();
+
+        // 按顺序添加每月时间范围：1月，2月，3月，一季度，4月，5月，6月，二季度，7月，8月，9月，三季度，10月，11月，12月，四季度
+        for (int month = 1; month <= 12; month++) {
+            // 获取当月第一天的开始时间 (00:00:00)
+            LocalDate firstDay = LocalDate.of(year, month, 1);
+            LocalDateTime startOfMonth = firstDay.atStartOfDay(); // 00:00:00
+
+            // 获取当月最后一天的结束时间 (23:59:59)
+            YearMonth yearMonth = YearMonth.of(year, month);
+            LocalDate lastDay = yearMonth.atEndOfMonth();
+            LocalDateTime endOfMonth = lastDay.atTime(23, 59, 59); // 23:59:59
+
+            ranges.put(month, new LocalDateTime[]{startOfMonth, endOfMonth});
+
+            // 在特定月份后添加对应季度
+            if (month == 3) { // 一季度（1-3月）在3月后添加
+                ranges.put(13, new LocalDateTime[]{ranges.get(1)[0], ranges.get(3)[1]});
+            } else if (month == 6) { // 二季度（4-6月）在6月后添加
+                ranges.put(14, new LocalDateTime[]{ranges.get(4)[0], ranges.get(6)[1]});
+            } else if (month == 9) { // 三季度（7-9月）在9月后添加
+                ranges.put(15, new LocalDateTime[]{ranges.get(7)[0], ranges.get(9)[1]});
+            } else if (month == 12) { // 四季度（10-12月）在12月后添加
+                ranges.put(16, new LocalDateTime[]{ranges.get(10)[0], ranges.get(12)[1]});
+            }
+        }
+
+        return ranges;
+    }
+
 }

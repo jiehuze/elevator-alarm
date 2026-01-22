@@ -2,11 +2,14 @@ package com.schedule.elevator.service.impl;
 
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.SysDistrict;
+import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.DocxPlaceholderReplaceUtil;
 import com.schedule.excel.TableData;
 import com.schedule.excel.WordExporter;
+import com.schedule.utils.DateUtils;
 import com.schedule.utils.FileReplace;
+import com.schedule.utils.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,9 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +205,7 @@ public class WordExportServiceImpl implements IWordExportService {
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
             List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
             List<ElevatorAgeStatisticsDTO> elevatorAgeStatistics = workOrderService.getElevatorAgeStatistics(searchDTO);
+            List<WorkOrderStatisticsDTO> monthAVGTIme = workOrderService.getWorkOrderStatsForMonth(searchDTO);
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
@@ -211,7 +217,7 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, usingUnitFaultRate, UsingUnitFaultRateDTO.class, "UsingUnitFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorBrandFaultRate, ElevatorBrandFaultRateDTO.class, "ElevatorBrandFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorAgeStatistics, ElevatorAgeStatisticsDTO.class, "ElevatorAgeStats");
-
+            tableMap = TableData.buildTableData(tableMap, monthAVGTIme, WorkOrderStatisticsDTO.class, "monthAVGTIme");
 
 
             List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);

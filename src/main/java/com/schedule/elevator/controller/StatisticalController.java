@@ -177,6 +177,12 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", brandElevatorStats, null);
     }
 
+    @GetMapping("/month-fault-stats")
+    public BaseResponse getMonthFaultStats(@ModelAttribute SearchDTO searchDTO) {
+        List<WorkOrderStatisticsDTO> workOrderStatsForMonth = workOrderService.getWorkOrderStatsForMonth(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", workOrderStatsForMonth, null);
+    }
+
 
     @Autowired
     private IWordExportService wordExportService;

@@ -80,6 +80,38 @@ public class util {
                 .toString();
     }
 
+    /**
+     * 安全地相加两个Long值
+     */
+    public static Long addLongValues(Long val1, Long val2) {
+        if (val1 == null && val2 == null) {
+            return 0L;
+        }
+        if (val1 == null) {
+            return val2;
+        }
+        if (val2 == null) {
+            return val1;
+        }
+        return val1 + val2;
+    }
+
+    /**
+     * 安全地相加两个Double值
+     */
+    public static Double addDoubleValues(Double val1, Double val2) {
+        if (val1 == null && val2 == null) {
+            return 0.0;
+        }
+        if (val1 == null) {
+            return val2;
+        }
+        if (val2 == null) {
+            return val1;
+        }
+        return val1 + val2;
+    }
+
     public static void main(String[] args) {
         String old = "remove,add";
         System.out.println("======== join: " + util.joinString(old, "add"));
