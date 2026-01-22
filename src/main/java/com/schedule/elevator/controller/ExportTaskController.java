@@ -54,8 +54,12 @@ public class ExportTaskController {
     @PostMapping("/exec-list")
     @Operation(summary = "导出列表")
     public BaseResponse exportInfoList(@RequestBody SearchDTO searchDTO) {
-        exportTaskService.exportInfoList(searchDTO);
-        return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
+        try {
+            exportTaskService.exportInfoList(searchDTO);
+            return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", null, null);
+        } catch (Exception e) {
+            return new BaseResponse(HttpStatus.NO_CONTENT.value(), "下载失败", null, null);
+        }
     }
 
     /************************************基础操作****************************************/

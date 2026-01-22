@@ -390,12 +390,13 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 }
 
                 System.out.println("list size:" + dtoList.toString());
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String fileName = "workorder-person-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
                 // 写入 Excel
-                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "维保信息", dtoList, MaintenancePersonnelExcel.class, "doc/maintenance_person.xlsx");
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "维保人信息", dtoList, MaintenancePersonnelExcel.class, "doc/maintenance_person.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
             } catch (Exception e) {
                 updateToFailed(exportTask.getId(), e.getMessage());
                 throw new RuntimeException(e);

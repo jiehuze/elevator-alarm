@@ -78,6 +78,19 @@ public class ElevatorInfoController {
     @PutMapping("/batchUpdate")
     public BaseResponse batchUpdate(@RequestBody List<ElevatorInfo> elevatorList) {
         for (ElevatorInfo elevator : elevatorList) {
+            if (elevator.getMaintenanceUnitExpired()) {
+                elevator.setMaintenanceUnit("");
+                elevator.setMaintenanceUnitId(0l);
+                elevator.setMaintenanceType("无");
+                elevator.setMaintenanceTeamId(0l);
+                elevator.setMaintenancePersonnelName("");
+                elevator.setMaintenancePersonnelId(0l);
+            }
+
+            if (elevator.getUsingUnitExpired()) {
+                elevator.setUsingUnit("");
+                elevator.setUsingUnitId(0l);
+            }
             elevatorInfoService.update(elevator,
                     new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevator.getId()));
         }

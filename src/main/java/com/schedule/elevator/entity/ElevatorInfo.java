@@ -103,6 +103,18 @@ public class ElevatorInfo {
     private String maintenancePersonnelName; // 维保人
 
     /**
+     * 维保单位是否脱保：0-否，1-是
+     */
+    @TableField("is_maintenance_unit_expired")
+    private Boolean maintenanceUnitExpired;
+
+    /**
+     * 使用单位是否脱保：0-否，1-是
+     */
+    @TableField("is_using_unit_expired")
+    private Boolean usingUnitExpired;
+
+    /**
      * 电梯产权单位
      */
     @TableField("property_owner")
