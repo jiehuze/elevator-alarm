@@ -183,6 +183,12 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", workOrderStatsForMonth, null);
     }
 
+    @GetMapping("/order-type-stats")
+    public BaseResponse getOrderTypeStats(@ModelAttribute SearchDTO searchDTO) {
+        List<OrderTypeStatisticsDTO> statistics = workOrderService.getOrderTypeStatistics(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", statistics, null);
+    }
+
 
     @Autowired
     private IWordExportService wordExportService;

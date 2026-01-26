@@ -535,4 +535,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(SearchDTO searchDTO) {
         return workOrderMapper.getElevatorAgeStatistics(searchDTO);
     }
+
+    @Override
+    public List<OrderTypeStatisticsDTO> getOrderTypeStatistics(SearchDTO searchDTO) {
+        return workOrderMapper.getOrderTypeStatistics(searchDTO);
+    }
 }

@@ -254,6 +254,16 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             replaceMap.put("progress" + index, value);
             index++;
         }
+
+        String arrivalTime = replaceMap.get("arrivalTime");
+        if (arrivalTime == null) {
+            replaceMap.put("arrivalTime", "无");
+        }
+        String completeTime = replaceMap.get("completeTime");
+        if (completeTime == null) {
+            replaceMap.put("completeTime", "无");
+        }
+
         for (int i = index; i < WorkOrderStatusEnum.values().length; i++) {
             replaceMap.put("progress" + i, "");
         }

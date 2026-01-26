@@ -758,4 +758,36 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     })
     List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(@Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 按工单类型统计各类工单的数量及占比
+     * @param searchDTO 查询条件，包括开始时间、结束时间和区县
+     * @return 工单类型统计结果列表
+     */
+    @Select({
+            "<script>",
+            "SELECT ",
+            "  order_type, ",
+            "  COUNT(*) AS typeCount, ",
+            "  ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM work_order WHERE status = 99 ",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "  ), 2) AS percentage ",
+            "FROM work_order ",
+            "WHERE status = 99 ",
+            "  <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "    AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "    AND district = #{searchDTO.district}",
+            "  </if>",
+            "GROUP BY order_type ",
+            "ORDER BY order_type",
+            "</script>"
+    })
+    List<OrderTypeStatisticsDTO> getOrderTypeStatistics(@Param("searchDTO") SearchDTO searchDTO);
+
 }

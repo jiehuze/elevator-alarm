@@ -59,4 +59,6 @@ public interface IWorkOrderService extends IService<WorkOrder> {
     List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
     List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(@Param("searchDTO") SearchDTO searchDTO);
+
+    List<OrderTypeStatisticsDTO> getOrderTypeStatistics(@Param("searchDTO") SearchDTO searchDTO);
 }

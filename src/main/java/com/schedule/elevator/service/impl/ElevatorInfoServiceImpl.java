@@ -56,6 +56,19 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.like(elevatorInfoDTO.getMaintenancePersonnelId() != null, ElevatorInfo::getMaintenancePersonnelId, elevatorInfoDTO.getMaintenancePersonnelId());
         queryWrapper.eq(elevatorInfoDTO.getCommunityId() != null, ElevatorInfo::getCommunityId, elevatorInfoDTO.getCommunityId());
 
+        if (elevatorInfoDTO.getStartOperationDateStart() != null && elevatorInfoDTO.getStartOperationDateEnd() != null) {
+            queryWrapper.between(ElevatorInfo::getOperationStartDate, elevatorInfoDTO.getStartOperationDateStart(), elevatorInfoDTO.getStartOperationDateEnd());
+        }
+
+        // 计算电梯运行时间到现在的年限，在最大和最小年限之间的数据，包含最大和最小
+        if (elevatorInfoDTO.getServiceLifeMin() != null && elevatorInfoDTO.getServiceLifeMax() != null) {
+            // 使用数据库函数计算运行年限（从运营开始日期到当前日期）
+            queryWrapper.apply("TIMESTAMPDIFF(YEAR, operation_start_date, CURDATE()) BETWEEN {0} AND {1}",
+                    elevatorInfoDTO.getServiceLifeMin(),
+                    elevatorInfoDTO.getServiceLifeMax());
+        }
+
+
         return queryWrapper;
     }
 

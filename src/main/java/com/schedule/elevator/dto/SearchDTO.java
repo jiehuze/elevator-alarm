@@ -112,6 +112,18 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("报警结束时间")
     private LocalDateTime alarmTimeEnd;
 
+    @ApiModelProperty("开始运行时间")
+    private LocalDateTime startOperationDateStart;
+
+    @ApiModelProperty("结束运行时间")
+    private LocalDateTime startOperationDateEnd;
+
+    @ApiModelProperty("运行年限最小")
+    private Integer serviceLifeMin;
+
+    @ApiModelProperty("运行年限最大")
+    private Integer serviceLifeMax;
+
     @ApiModelProperty("创建开始时间")
     private LocalDateTime createTimeStart;
 
