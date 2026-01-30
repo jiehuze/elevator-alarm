@@ -49,6 +49,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getProjectName()), ElevatorInfo::getProjectName, elevatorInfoDTO.getProjectName());
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getRescueCode()), ElevatorInfo::getRescueCode, elevatorInfoDTO.getRescueCode());
         queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getMaintenanceUnit()), ElevatorInfo::getMaintenanceUnit, elevatorInfoDTO.getMaintenanceUnit());
+        queryWrapper.like(StringUtils.isNotBlank(elevatorInfoDTO.getRegisterCode()), ElevatorInfo::getRegisterCode, elevatorInfoDTO.getRegisterCode());
         queryWrapper.eq(elevatorInfoDTO.getMaintenanceUnitId() != null, ElevatorInfo::getMaintenanceUnitId, elevatorInfoDTO.getMaintenanceUnitId());
         queryWrapper.eq(elevatorInfoDTO.getUsageStatus() != null, ElevatorInfo::getUsageStatus, elevatorInfoDTO.getUsageStatus());
         queryWrapper.eq(elevatorInfoDTO.getUsingUnitId() != null, ElevatorInfo::getUsingUnitId, elevatorInfoDTO.getUsingUnitId());
