@@ -15,11 +15,8 @@ public class PropertyInfo {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 使用单位唯一标识Code（如统一社会信用代码、系统分配编码等）
-     */
     @TableField("unit_code")
-    private String unitCode; //使用单位唯一标识Code
+    private String unitCode; //使用单位唯一标识Code（如统一社会信用代码、系统分配编码等）
 
     @TableField("using_unit")
     private String usingUnit; //使用单位
@@ -32,6 +29,9 @@ public class PropertyInfo {
 
     @TableField(exist = false)
     private Long count;  // 计数属性，不映射到数据库
+
+    @TableField(exist = false)
+    private Long safetyOfficerCount;  // 计数属性，安全员数量
 
     @TableField("created_at")
     private LocalDateTime createdAt;

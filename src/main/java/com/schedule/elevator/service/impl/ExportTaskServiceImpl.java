@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ExportTaskMapper;
 import com.schedule.elevator.dto.ExportTaskDTO;
 import com.schedule.elevator.dto.ParamDTO;
+import com.schedule.elevator.dto.SafetyOfficerDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.ExportTypeEnum;
@@ -56,6 +57,9 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
     @Autowired
     private ICommunityService communityService;
+
+    @Autowired
+    private ISafetyOfficerService safetyOfficerService;
 
     @Autowired
     private IMaintenanceUnitService maintenanceUnitService;
@@ -347,12 +351,13 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 List<ElevatorImportTemplateExcel> dtoList = new ArrayList<>();
                 for (ElevatorInfo info : list) {
                     Community community = communityService.getById(info.getCommunityId());
+                    SafetyOfficer safetyOfficer = safetyOfficerService.getById(info.getSafetyOfficerId());
                     PropertyInfo propertyInfo = propertyInfoService.getById(info.getUsingUnitId());
                     MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(info.getMaintenanceUnitId());
                     MaintenanceTeam maintenanceTeam = maintenanceTeamService.getById(info.getMaintenanceTeamId());
                     MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
 
-                    ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
+                    ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, safetyOfficer, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
 
                     dtoList.add(dto);
                 }
@@ -406,6 +411,33 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 FileUtil.ensureDirectoryExists(filePath);
                 // 写入 Excel
                 ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "维保人信息", dtoList, MaintenancePersonnelExcel.class, "doc/maintenance_person.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.SAFETY_OFFICER_LIST.getCode()) { //维保人员列表
+            try {
+                ArrayList<SafetyOfficerDTO> dtoList = new ArrayList<>();
+                List<SafetyOfficer> safetyOfficers = safetyOfficerService.queryByConditions(searchDTO);
+                for (SafetyOfficer safetyOfficer : safetyOfficers) {
+                    SafetyOfficerDTO safetyOfficerDTO = new SafetyOfficerDTO();
+                    safetyOfficerDTO.setSafetyOfficerName(safetyOfficer.getSafetyOfficerName());
+                    safetyOfficerDTO.setSafetyOfficerPhone(safetyOfficer.getSafetyOfficerPhone());
+                    safetyOfficerDTO.setUsingUnit(safetyOfficer.getUsingUnit());
+                    safetyOfficerDTO.setStatus(safetyOfficer.getStatus() == 1 ? "在职" : "离职");
+//                    safetyOfficerDTO.setProjectName(safetyOfficer.getProjectName());
+
+                    dtoList.add(safetyOfficerDTO);
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+                String fileName = "safety-officer-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "安全员信息", dtoList, SafetyOfficerDTO.class, "doc/safety_officer.xlsx");
                 updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
             } catch (Exception e) {
                 updateToFailed(exportTask.getId(), e.getMessage());

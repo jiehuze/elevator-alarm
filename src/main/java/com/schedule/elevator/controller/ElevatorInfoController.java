@@ -49,6 +49,9 @@ public class ElevatorInfoController {
     @Autowired
     private ICommunityService communityService;
 
+    @Autowired
+    private ISafetyOfficerService safetyOfficerService;
+
 
     @PostMapping("/add")
     public BaseResponse create(@RequestBody ElevatorInfo elevator) {
@@ -128,12 +131,13 @@ public class ElevatorInfoController {
         List<ElevatorImportTemplateExcel> dtoList = new ArrayList<>();
         for (ElevatorInfo info : list) {
             Community community = communityService.getById(info.getCommunityId());
+            SafetyOfficer safetyOfficer = safetyOfficerService.getById(info.getSafetyOfficerId());
             PropertyInfo propertyInfo = propertyInfoService.getById(info.getUsingUnitId());
             MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(info.getMaintenanceUnitId());
             MaintenanceTeam maintenanceTeam = maintenanceTeamService.getById(info.getMaintenanceTeamId());
             MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
 
-            ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
+            ElevatorImportTemplateExcel dto = ElevatorImportExcelConverter.toDTO(info, community, safetyOfficer, propertyInfo, maintenanceUnit, maintenanceTeam, maintenancePersonnel);
 
             dtoList.add(dto);
         }
@@ -169,8 +173,15 @@ public class ElevatorInfoController {
                     PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
                     long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
 
+                    SafetyOfficer safetyOfficerEntity = ElevatorImportExcelConverter.toSafetyOfficerEntity(dto);
+                    safetyOfficerEntity.setUsingUnitId(UsingUnitId);
+                    safetyOfficerEntity.setUsingUnit(propertyEntity.getUsingUnit());
+                    long safetyOfficerId = safetyOfficerService.getOrCreateSafetyOfficerId(safetyOfficerEntity);
+
                     Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
                     communityEntity.setUsingUnitId(UsingUnitId);
+                    communityEntity.setSafetyOfficerId(safetyOfficerId);
+                    communityEntity.setSafetyOfficerName(safetyOfficerEntity.getSafetyOfficerName());
                     long communityId = communityService.getOrCreateCommunityId(communityEntity);
 
                     //读取维保信息，并写入
@@ -191,9 +202,9 @@ public class ElevatorInfoController {
                     elevatorInfo.setMaintenancePersonnelId(maintenancePersonnelId);
                     elevatorInfo.setCommunityId(communityId);
                     elevatorInfo.setUsingUnitId(UsingUnitId);
+                    elevatorInfo.setSafetyOfficerId(safetyOfficerId);
 
                     elevatorInfoService.createElevatorInfo(elevatorInfo);
-//                    elevatorInfoService.saveOrUpdate(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode()));
                 }
             }
 

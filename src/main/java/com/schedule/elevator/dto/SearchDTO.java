@@ -1,5 +1,6 @@
 package com.schedule.elevator.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -57,6 +58,12 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
 
     @ApiModelProperty("使用单位ID")
     private Long usingUnitId;
+
+    @ApiModelProperty("安全员")
+    private String safetyOfficerName;
+
+    @ApiModelProperty("安全员电话")
+    private String safetyOfficerPhone;
 
     @ApiModelProperty("工单状态")
     private Integer status;  // 工单状态

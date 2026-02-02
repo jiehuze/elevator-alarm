@@ -64,9 +64,7 @@ public class ElevatorImportExcelConverter {
                 .setRealEstateBrand(dto.getRealEstateBrand())
                 .setProvince(dto.getProvince())
                 .setAddress(dto.getAddress())
-                .setUsingUnit(dto.getUsingUnit())
-                .setSafetyOfficerName(dto.getSafetyOfficerName())
-                .setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
+                .setUsingUnit(dto.getUsingUnit());
 
         if (StringUtils.isNotBlank(dto.getProjectType()) && ProjectTypeEnum.getByDescription(dto.getProjectType()) != null) {
             community.setProjectType(ProjectTypeEnum.getByDescription(dto.getProjectType()).getCode());
@@ -120,11 +118,25 @@ public class ElevatorImportExcelConverter {
         return entity;
     }
 
+    public static SafetyOfficer toSafetyOfficerEntity(ElevatorImportTemplateExcel dto) {
+        if (dto == null) return null;
+
+        SafetyOfficer entity = new SafetyOfficer();
+
+        entity.setSafetyOfficerName(dto.getSafetyOfficerName());
+        entity.setSafetyOfficerPhone(dto.getSafetyOfficerPhone());
+        entity.setUsingUnit(dto.getUsingUnit());
+        entity.setStatus(1);
+
+        return entity;
+    }
+
     /**
      * 将 Entity 转换为 DTO（用于导出或返回前端）
      */
     public static ElevatorImportTemplateExcel toDTO(ElevatorInfo entity,
                                                     Community community,
+                                                    SafetyOfficer safetyOfficer,
                                                     PropertyInfo propertyInfo,
                                                     MaintenanceUnit maintenanceUnit,
                                                     MaintenanceTeam maintenanceTeam,
@@ -168,9 +180,13 @@ public class ElevatorImportExcelConverter {
         if (community != null) {
             dto.setRealEstateBrand(community.getRealEstateBrand());
             dto.setProjectType(ProjectTypeEnum.getByCode(community.getProjectType()).getDescription());
-            dto.setSafetyOfficerName(community.getSafetyOfficerName());
-            dto.setSafetyOfficerPhone(community.getSafetyOfficerPhone());
         }
+
+        if (safetyOfficer != null) {
+            dto.setSafetyOfficerName(safetyOfficer.getSafetyOfficerName());
+            dto.setSafetyOfficerPhone(safetyOfficer.getSafetyOfficerPhone());
+        }
+
         if (maintenanceUnit != null) {
             dto.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
             dto.setMaintenanceUnitManager(maintenanceUnit.getMaintenanceUnitManager());

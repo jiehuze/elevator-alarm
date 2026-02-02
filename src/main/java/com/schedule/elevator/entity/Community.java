@@ -47,8 +47,8 @@ public class Community implements Serializable {
     @TableField("safety_officer_name")
     private String safetyOfficerName; //物业安全负责人
 
-    @TableField("safety_officer_phone")
-    private String safetyOfficerPhone; //物业安全负责人手机
+    @TableField("safety_officer_id")
+    private Long safetyOfficerId; //物业安全员ID
 
     @TableField("using_unit")
     private String usingUnit; //使用单位

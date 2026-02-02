@@ -223,6 +223,12 @@ public class ElevatorInfo {
     private Long usingUnitId;
 
     /**
+     * 安全员ID
+     */
+    @TableField("safety_officer_id")
+    private Long safetyOfficerId;
+
+    /**
      * 记录创建时间
      */
     @TableField("created_at")

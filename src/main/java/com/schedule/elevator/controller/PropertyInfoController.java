@@ -1,12 +1,15 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.PropertyInfoDTO;
 import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.entity.SafetyOfficer;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IPropertyInfoService;
+import com.schedule.elevator.service.ISafetyOfficerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,9 @@ public class PropertyInfoController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    private ISafetyOfficerService safetyOfficerService;
 
     /**
      * 根据 ID 查询
@@ -50,6 +56,7 @@ public class PropertyInfoController {
                 ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
                 elevatorInfoDTO.setUsingUnitId(info.getId());
                 info.setCount(elevatorInfoService.count(elevatorInfoDTO));
+                info.setSafetyOfficerCount(safetyOfficerService.count(new LambdaQueryWrapper<SafetyOfficer>().eq(SafetyOfficer::getUsingUnitId, info.getId())));
             }
         }
 
