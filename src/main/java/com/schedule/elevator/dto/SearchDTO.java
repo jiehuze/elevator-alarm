@@ -59,6 +59,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("使用单位ID")
     private Long usingUnitId;
 
+    @ApiModelProperty("安全员id")
+    private String safetyOfficerId;
+
     @ApiModelProperty("安全员")
     private String safetyOfficerName;
 

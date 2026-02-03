@@ -93,6 +93,7 @@ public class ElevatorInfoController {
             if (elevator.getUsingUnitExpired()) {
                 elevator.setUsingUnit("");
                 elevator.setUsingUnitId(0l);
+                elevator.setSafetyOfficerId(0l);
             }
             elevatorInfoService.update(elevator,
                     new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevator.getId()));

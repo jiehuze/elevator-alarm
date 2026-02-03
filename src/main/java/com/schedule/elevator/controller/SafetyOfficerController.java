@@ -53,6 +53,11 @@ public class SafetyOfficerController {
 
     @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getSafetyOfficerId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "该安全员已绑定电梯，请先解除绑定", null, null);
+        }
+
         boolean delete = safetyOfficerService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", delete, null);
     }

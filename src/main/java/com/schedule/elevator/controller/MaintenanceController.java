@@ -272,6 +272,10 @@ public class MaintenanceController {
      */
     @DeleteMapping("/person/delete/{id}")
     public BaseResponse deletePerson(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该人员有电梯正在维保中，请先解除维保关系", null, null);
+        }
         maintenancePersonnelService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }
