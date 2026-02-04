@@ -166,47 +166,48 @@ public class ElevatorInfoController {
             for (ElevatorImportTemplateExcel dto : dtoList) {
                 //读取电梯信息，并写入
                 ElevatorInfo elevatorInfo = ElevatorImportExcelConverter.toElevatorEntity(dto);
-                if (elevatorInfo != null &&
-                        StringUtils.isNotBlank(elevatorInfo.getElevatorNo()) &&
-                        !"电梯编号".equals(elevatorInfo.getElevatorNo().trim())) {
-
-                    //读取使用小区信息，并写入
-                    PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
-                    long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
-
-                    SafetyOfficer safetyOfficerEntity = ElevatorImportExcelConverter.toSafetyOfficerEntity(dto);
-                    safetyOfficerEntity.setUsingUnitId(UsingUnitId);
-                    safetyOfficerEntity.setUsingUnit(propertyEntity.getUsingUnit());
-                    long safetyOfficerId = safetyOfficerService.getOrCreateSafetyOfficerId(safetyOfficerEntity);
-
-                    Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
-                    communityEntity.setUsingUnitId(UsingUnitId);
-                    communityEntity.setSafetyOfficerId(safetyOfficerId);
-                    communityEntity.setSafetyOfficerName(safetyOfficerEntity.getSafetyOfficerName());
-                    long communityId = communityService.getOrCreateCommunityId(communityEntity);
-
-                    //读取维保信息，并写入
-                    MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
-                    long maintenanceUnitId = maintenanceUnitService.getOrCreateMaintenanceUnitId(maintenanceEntity.getMaintenanceUnit());
-
-                    //读取维保团队信息，并写入
-                    maintenanceEntity.getMaintenanceTeam().setMaintenanceUnitId(maintenanceUnitId);
-                    long maintenanceTeamId = maintenanceTeamService.getOrCreateMaintenanceTeamId(maintenanceEntity.getMaintenanceTeam());
-
-                    //读取维保人员信息，并写入
-                    maintenanceEntity.getMaintenancePersonnel().setMaintenanceUnitId(maintenanceUnitId);
-                    maintenanceEntity.getMaintenancePersonnel().setMaintenanceTeamId(maintenanceTeamId);
-                    long maintenancePersonnelId = maintenancePersonnelService.getOrCreatePersonnelId(maintenanceEntity.getMaintenancePersonnel());
-
-                    elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
-                    elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
-                    elevatorInfo.setMaintenancePersonnelId(maintenancePersonnelId);
-                    elevatorInfo.setCommunityId(communityId);
-                    elevatorInfo.setUsingUnitId(UsingUnitId);
-                    elevatorInfo.setSafetyOfficerId(safetyOfficerId);
-
-                    elevatorInfoService.createElevatorInfo(elevatorInfo);
+                if (elevatorInfo != null ||
+                        StringUtils.isBlank(elevatorInfo.getElevatorNo()) ||
+                        StringUtils.isBlank(elevatorInfo.getRescueCode())) {
+                    return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯编码或者救援码不能为空，请完善", null, null);
                 }
+
+                //读取使用小区信息，并写入
+                PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
+                long UsingUnitId = propertyInfoService.getOrCreatePropertyId(propertyEntity);
+
+                SafetyOfficer safetyOfficerEntity = ElevatorImportExcelConverter.toSafetyOfficerEntity(dto);
+                safetyOfficerEntity.setUsingUnitId(UsingUnitId);
+                safetyOfficerEntity.setUsingUnit(propertyEntity.getUsingUnit());
+                long safetyOfficerId = safetyOfficerService.getOrCreateSafetyOfficerId(safetyOfficerEntity);
+
+                Community communityEntity = ElevatorImportExcelConverter.toCommunityEntity(dto);
+                communityEntity.setUsingUnitId(UsingUnitId);
+                communityEntity.setSafetyOfficerId(safetyOfficerId);
+                communityEntity.setSafetyOfficerName(safetyOfficerEntity.getSafetyOfficerName());
+                long communityId = communityService.getOrCreateCommunityId(communityEntity);
+
+                //读取维保信息，并写入
+                MaintenanceDTO maintenanceEntity = ElevatorImportExcelConverter.toMaintenanceEntity(dto);
+                long maintenanceUnitId = maintenanceUnitService.getOrCreateMaintenanceUnitId(maintenanceEntity.getMaintenanceUnit());
+
+                //读取维保团队信息，并写入
+                maintenanceEntity.getMaintenanceTeam().setMaintenanceUnitId(maintenanceUnitId);
+                long maintenanceTeamId = maintenanceTeamService.getOrCreateMaintenanceTeamId(maintenanceEntity.getMaintenanceTeam());
+
+                //读取维保人员信息，并写入
+                maintenanceEntity.getMaintenancePersonnel().setMaintenanceUnitId(maintenanceUnitId);
+                maintenanceEntity.getMaintenancePersonnel().setMaintenanceTeamId(maintenanceTeamId);
+                long maintenancePersonnelId = maintenancePersonnelService.getOrCreatePersonnelId(maintenanceEntity.getMaintenancePersonnel());
+
+                elevatorInfo.setMaintenanceUnitId(maintenanceUnitId);
+                elevatorInfo.setMaintenanceTeamId(maintenanceTeamId);
+                elevatorInfo.setMaintenancePersonnelId(maintenancePersonnelId);
+                elevatorInfo.setCommunityId(communityId);
+                elevatorInfo.setUsingUnitId(UsingUnitId);
+                elevatorInfo.setSafetyOfficerId(safetyOfficerId);
+
+                elevatorInfoService.createElevatorInfo(elevatorInfo);
             }
 
             return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);

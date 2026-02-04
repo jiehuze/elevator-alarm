@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.entity.Community;
+import com.schedule.elevator.entity.SafetyOfficer;
 import com.schedule.elevator.service.ICommunityService;
 import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.ISafetyOfficerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,9 @@ public class CommunityController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    private ISafetyOfficerService safetyOfficerService;
 
     /**
      * 添加社区信息
@@ -56,6 +61,8 @@ public class CommunityController {
     @GetMapping("/{id}")
     public BaseResponse get(@PathVariable Long id) {
         Community community = communityService.getById(id);
+        SafetyOfficer safetyOfficer = safetyOfficerService.getById(community.getSafetyOfficerId());
+        community.setSafetyOfficerPhone(safetyOfficer.getSafetyOfficerPhone());
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", community, null);
     }
 

@@ -53,6 +53,7 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         queryWrapper.like(StringUtils.isNotBlank(mt.getTeamName()), MaintenanceTeam::getTeamName, mt.getTeamName());
         queryWrapper.like(StringUtils.isNotBlank(mt.getLeaderName()), MaintenanceTeam::getLeaderName, mt.getLeaderName());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getLeaderPhone()), MaintenanceTeam::getLeaderPhone, mt.getLeaderPhone());
+        queryWrapper.eq(mt.getLevel() != null, MaintenanceTeam::getLevel, mt.getLevel());
         return this.page(page, queryWrapper);
     }
 

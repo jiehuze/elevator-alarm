@@ -47,6 +47,9 @@ public class Community implements Serializable {
     @TableField("safety_officer_name")
     private String safetyOfficerName; //物业安全负责人
 
+    @TableField(exist = false)
+    private String safetyOfficerPhone;
+
     @TableField("safety_officer_id")
     private Long safetyOfficerId; //物业安全员ID
 
