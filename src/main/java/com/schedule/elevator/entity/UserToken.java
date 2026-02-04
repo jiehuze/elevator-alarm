@@ -15,11 +15,11 @@ public class UserToken {
 
     private Long userId; // 存储用户 ID
 
-    private String username;
+//    private String username;
 
-    private String employeeId;           // 报警员工id
+//    private String employeeId;           // 报警员工id
 
-    private String roles; // 存储用户角色
+//    private String roles; // 存储用户角色
 
     private String token; // 存储 JWT 的 jti（唯一ID）
 

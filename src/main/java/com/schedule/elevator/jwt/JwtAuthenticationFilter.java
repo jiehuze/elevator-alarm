@@ -3,12 +3,14 @@ package com.schedule.elevator.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.service.IUserTokenService;
+import com.schedule.utils.HttpUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.http.HttpUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -38,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 配置无需认证的路径
     private static final List<String> WHITE_LIST = Arrays.asList(
             "/elevator/sys-user/login",
-            "/elevator/**",
+//            "/elevator/**",
             "/actuator/health"
     );
 
@@ -62,10 +65,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 非白名单路径，尝试解析 Token
         String token = getTokenFromRequest(request);
+        System.out.println("请求路径：" + requestURI);
+        System.out.println("请求method：" + request.getMethod());
 
         if (!StringUtils.hasText(token) || !userTokenService.isTokenValidForUser(null, token)) {
             System.out.println("无效的token：" + token);
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "无效的token");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "登录已过期，请重新登录！");
             return;
         }
 
@@ -92,7 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        response.setStatus(status);
+        response.setStatus(200);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 

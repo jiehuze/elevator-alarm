@@ -3,6 +3,7 @@ package com.schedule.elevator.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.SysUserDTO;
+import com.schedule.elevator.dto.UserTokenDTO;
 import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.entity.UserToken;
 import com.schedule.elevator.service.ISysUserService;
@@ -87,11 +88,16 @@ public class SysUserController {
         }
         //生成token
         UserToken userToken = userTokenService.createToken(auth.getId());
-        userToken.setRoles(auth.getRoles());
-        userToken.setEmployeeId(auth.getEmployeeId());
-        userToken.setUsername(auth.getUsername());
+        UserTokenDTO userTokenDTO = new UserTokenDTO();
+        userTokenDTO.setUserId(userToken.getUserId());
+        userTokenDTO.setToken(userToken.getToken());
+        userTokenDTO.setExpiresAt(userToken.getExpiresAt());
+        userTokenDTO.setStatus(userToken.getStatus());
+        userTokenDTO.setRoles(auth.getRoles());
+        userTokenDTO.setEmployeeId(auth.getEmployeeId());
+        userTokenDTO.setUsername(auth.getUsername());
 
-        return new BaseResponse(HttpStatus.OK.value(), "登录成功", userToken, null);
+        return new BaseResponse(HttpStatus.OK.value(), "登录成功", userTokenDTO, null);
     }
 
     @GetMapping("/logout")
