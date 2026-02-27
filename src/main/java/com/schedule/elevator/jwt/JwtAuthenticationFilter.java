@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean isWhiteListed = WHITE_LIST.stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
 
-        if (isWhiteListed) {
+        if (isWhiteListed || request.getMethod().equals("OPTIONS")) {
             System.out.println("白名单路径：" + requestURI);
             // 白名单路径，直接放行，不设置 Authentication
             filterChain.doFilter(request, response);
@@ -74,16 +74,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (StringUtils.hasText(token) && userTokenService.validateToken(token)) {
-            // Token 有效，设置 Authentication 到 SecurityContext
-            Claims claims = userTokenService.parseClaims(token); // 你需要在 service 中提供这个方法
-            String userId = claims.getSubject();
-
-            // 创建 Authentication 对象（可以包含用户信息）
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, null);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+//        if (StringUtils.hasText(token) && userTokenService.validateToken(token)) {
+//            // Token 有效，设置 Authentication 到 SecurityContext
+//            Claims claims = userTokenService.parseClaims(token); // 你需要在 service 中提供这个方法
+//            String userId = claims.getSubject();
+//
+//            // 创建 Authentication 对象（可以包含用户信息）
+//            UsernamePasswordAuthenticationToken authentication =
+//                    new UsernamePasswordAuthenticationToken(userId, null, null);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//        }
 
         filterChain.doFilter(request, response);
     }
