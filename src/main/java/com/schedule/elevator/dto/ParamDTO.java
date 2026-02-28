@@ -15,4 +15,6 @@ public class ParamDTO {
     private String reportPath;
     @Value("${elevator.export.path}")
     private String exportPath;
+    @Value("${elevator.maintenance.path}")
+    private String maintenancePath;
 }

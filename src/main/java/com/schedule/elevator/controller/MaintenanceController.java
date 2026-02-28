@@ -1,6 +1,7 @@
 package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.*;
@@ -20,10 +21,18 @@ import com.schedule.utils.ExcelUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +56,9 @@ public class MaintenanceController {
 
     @Autowired
     private IElevatorInfoService elevatorInfoService;
+
     @Autowired
-    private MaintenanceUnitServiceImpl maintenanceUnitServiceImpl;
+    private ParamDTO paramDTO;
 
     @PostMapping("/add")
     public BaseResponse add(@RequestBody MaintenanceUnit maintenance) {
@@ -320,6 +330,65 @@ public class MaintenanceController {
         // 写入 Excel
         ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "维保信息", dtoList, MaintenanceUnitExcel.class, "doc/maintenance_unit.xlsx");
     }
+
+    @PostMapping("/upload")
+    public BaseResponse uploadFile(@RequestParam("file") MultipartFile file,
+                                   @RequestParam("maintenanceUnitId") Long maintenanceUnitId) {
+        try {
+            // 检查文件是否为空
+            if (file.isEmpty()) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "上传文件不能为空", null, null);
+            }
+
+            // 构造目标目录路径
+//            String uploadDir = "/app/elevator/maintenance/" + maintenanceUnitId;
+            Path dirPath = Paths.get(paramDTO.getRootPath() + paramDTO.getMaintenancePath(), maintenanceUnitId.toString()); // 自动处理分隔符
+
+            try {
+                Files.createDirectories(dirPath);
+            } catch (IOException e) {
+                throw new RuntimeException("创建目录失败: " + dirPath.toString(), e);
+            }
+
+            // 构造目标文件路径
+            // 1. 获取原始文件名，并做安全处理
+            String originalFilename = file.getOriginalFilename();
+            if (!StringUtils.hasText(originalFilename)) {
+                throw new IllegalArgumentException("文件名不能为空");
+            }
+
+            // 安全校验：禁止路径穿越和非法字符
+            if (originalFilename.contains("..") || originalFilename.contains("/")) {
+                throw new IllegalArgumentException("文件名不能包含 '..' 或 '/'");
+            }
+            // 可选：限制扩展名
+            String lowerName = originalFilename.toLowerCase();
+            if (!lowerName.matches("^.+\\.(png|jpg|jpeg|gif|pdf|mp4|mov)$")) {
+                throw new IllegalArgumentException("仅支持图片、PDF、视频文件");
+            }
+
+            String fileUrl = paramDTO.getMaintenancePath() + maintenanceUnitId + "/" + originalFilename;
+
+            // 2. 构建完整物理路径
+            Path targetPath = dirPath.resolve(originalFilename);
+
+            // 3. 保存文件（覆盖同名文件）
+            try {
+                Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException("文件写入失败: " + targetPath, e);
+            }
+
+            MaintenanceUnit maintenanceUnit = new MaintenanceUnit().setId(maintenanceUnitId).setMaintenanceUnitCodeUrl(fileUrl);
+            maintenanceUnitService.update(maintenanceUnit, new LambdaUpdateWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, maintenanceUnitId));
+
+            return new BaseResponse(HttpStatus.OK.value(), "文件上传成功", targetPath.toString(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "文件上传失败: " + e.getMessage(), null, null);
+        }
+    }
+
 
 //    @PostMapping("/import")
 //    public BaseResponse importElevators(@RequestParam("file") MultipartFile file) {

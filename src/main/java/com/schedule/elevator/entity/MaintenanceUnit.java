@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
  * 维保单位信息
  */
 @Data
+@Accessors(chain = true)
 @TableName("maintenance_unit")
 public class MaintenanceUnit implements Serializable {
 
@@ -45,6 +47,9 @@ public class MaintenanceUnit implements Serializable {
 
     @TableField("maintenance_unit_code")
     private String maintenanceUnitCode; // 维保单位编码（营业执照）
+
+    @TableField("maintenance_unit_code_url")
+    private String maintenanceUnitCodeUrl; // 维保单位编码（营业执照）照片
 
     @TableField("level")
     private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位

@@ -229,6 +229,12 @@ public class ElevatorInfo {
     private Long safetyOfficerId;
 
     /**
+     * 视频通道编码
+     */
+    @TableField("video_channel_code")
+    private String videoChannelCode;
+
+    /**
      * 记录创建时间
      */
     @TableField("created_at")
