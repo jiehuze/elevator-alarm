@@ -332,57 +332,77 @@ public class MaintenanceController {
     }
 
     @PostMapping("/upload")
-    public BaseResponse uploadFile(@RequestParam("file") MultipartFile file,
-                                   @RequestParam("maintenanceUnitId") Long maintenanceUnitId) {
+    public BaseResponse uploadFile(@RequestParam("files") MultipartFile[] files,
+                                   @RequestParam("type") Integer type,
+                                   @RequestParam("maintenanceUnitId") Long maintenanceUnitId,
+                                   @RequestParam("maintenanceUnitCode") String maintenanceUnitCode) {
         try {
-            // 检查文件是否为空
-            if (file.isEmpty()) {
-                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "上传文件不能为空", null, null);
+            if (files == null || files.length == 0) {
+                throw new IllegalArgumentException("至少上传一个文件");
             }
 
             // 构造目标目录路径
 //            String uploadDir = "/app/elevator/maintenance/" + maintenanceUnitId;
             Path dirPath = Paths.get(paramDTO.getRootPath() + paramDTO.getMaintenancePath(), maintenanceUnitId.toString()); // 自动处理分隔符
+            //创建目录
+            Files.createDirectories(dirPath);
 
-            try {
-                Files.createDirectories(dirPath);
-            } catch (IOException e) {
-                throw new RuntimeException("创建目录失败: " + dirPath.toString(), e);
-            }
+            StringBuilder fileNames = null;
+            System.out.println("---------file list size: " + files.length);
+            for (MultipartFile file : files) {
+                if (file.isEmpty()) continue;
+                // 构造目标文件路径
+                // 1. 获取原始文件名，并做安全处理
+                String originalFilename = file.getOriginalFilename();
+                System.out.println("file name: " + file.getOriginalFilename());
+                if (!StringUtils.hasText(originalFilename)) {
+                    throw new IllegalArgumentException("文件名不能为空");
+                }
 
-            // 构造目标文件路径
-            // 1. 获取原始文件名，并做安全处理
-            String originalFilename = file.getOriginalFilename();
-            if (!StringUtils.hasText(originalFilename)) {
-                throw new IllegalArgumentException("文件名不能为空");
-            }
+                // 安全校验：禁止路径穿越和非法字符
+                if (originalFilename.contains("..") || originalFilename.contains("/")) {
+                    throw new IllegalArgumentException("文件名不能包含 '..' 或 '/'");
+                }
+                // 可选：限制扩展名
+//                String lowerName = originalFilename.toLowerCase();
+//                if (!lowerName.matches("^.+\\.(png|jpg|jpeg|gif|pdf|mp4|mov)$")) {
+//                    throw new IllegalArgumentException("仅支持图片、PDF、视频文件");
+//                }
 
-            // 安全校验：禁止路径穿越和非法字符
-            if (originalFilename.contains("..") || originalFilename.contains("/")) {
-                throw new IllegalArgumentException("文件名不能包含 '..' 或 '/'");
-            }
-            // 可选：限制扩展名
-            String lowerName = originalFilename.toLowerCase();
-            if (!lowerName.matches("^.+\\.(png|jpg|jpeg|gif|pdf|mp4|mov)$")) {
-                throw new IllegalArgumentException("仅支持图片、PDF、视频文件");
-            }
+                String fileUrl = paramDTO.getMaintenancePath() + maintenanceUnitId + "/" + originalFilename;
 
-            String fileUrl = paramDTO.getMaintenancePath() + maintenanceUnitId + "/" + originalFilename;
+                // 2. 构建完整物理路径
+                Path targetPath = dirPath.resolve(originalFilename);
 
-            // 2. 构建完整物理路径
-            Path targetPath = dirPath.resolve(originalFilename);
-
-            // 3. 保存文件（覆盖同名文件）
-            try {
+                // 3. 保存文件（覆盖同名文件）
                 Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException("文件写入失败: " + targetPath, e);
+
+                if (fileNames == null) {
+                    fileNames = new StringBuilder(fileUrl);
+                } else {
+                    fileNames.append(",").append(fileUrl);
+                }
             }
 
-            MaintenanceUnit maintenanceUnit = new MaintenanceUnit().setId(maintenanceUnitId).setMaintenanceUnitCodeUrl(fileUrl);
+            MaintenanceUnit maintenanceUnit = new MaintenanceUnit().setId(maintenanceUnitId);
+            switch (type) {
+                case 1:
+                    maintenanceUnit.setMaintenanceUnitCode(maintenanceUnitCode)
+                            .setMaintenanceUnitCodeUrl(fileNames.toString());
+                    break;
+                case 2:
+                    maintenanceUnit.setMaintenanceUnitManagerPhone(fileNames.toString());
+                    break;
+                case 3:
+                    maintenanceUnit.setMaintenanceUnitPhone(fileNames.toString());
+                    break;
+                default:
+                    return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "上传文件类型错误", null, null);
+            }
+
             maintenanceUnitService.update(maintenanceUnit, new LambdaUpdateWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, maintenanceUnitId));
 
-            return new BaseResponse(HttpStatus.OK.value(), "文件上传成功", targetPath.toString(), null);
+            return new BaseResponse(HttpStatus.OK.value(), "文件上传成功", fileNames.toString(), null);
         } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "文件上传失败: " + e.getMessage(), null, null);
