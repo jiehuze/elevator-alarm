@@ -2,6 +2,7 @@ package com.schedule.excel;
 
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.ProjectTypeEnum;
+import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 
 import java.time.LocalDateTime;
@@ -48,5 +49,39 @@ public class WorkOrderExcelConverter {
         dto.setCloseTime(closeTime);
 
         return dto;
+    }
+
+    public static WorkOrder toEntity(WorkOrderExcel dto) {
+        if (dto == null) return null;
+        WorkOrder entity = new WorkOrder();
+        entity.setOrderNo(dto.getOrderNo());
+        entity.setStatus(WorkOrderStatusEnum.CLOSED.getCode());
+        System.out.println("----------------workorder: " + dto.getOrderType());
+        entity.setOrderType(WorkOrderTypeEnum.getByDescription(dto.getOrderType()).getCode());
+        entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getLocation()).getCode());
+        entity.setRegisterCode(dto.getRegisterCode());
+        entity.setRescueCode(dto.getRescueCode());
+        entity.setUsingUnit(dto.getUsingUnit());
+        entity.setMaintenanceUnit(dto.getMaintenanceUnit());
+        entity.setProjectName(dto.getProjectName());
+        entity.setElevatorName(dto.getElevatorName());
+        entity.setDistrict(dto.getDistrict());
+        entity.setFailureReason(dto.getFaultReason());
+        if (dto.getIsMedicalRescueStarted() != null) {
+            entity.setMedicalRescueStarted(dto.getIsMedicalRescueStarted().equals("是"));
+        }
+        if (dto.getIsMajorIncidentReported() != null) {
+            entity.setMajorIncident(dto.getIsMajorIncidentReported().equals("是"));
+        }
+        entity.setTrappedCount(dto.getTrappedCount());
+        entity.setInjuredCount(dto.getInjuredCount());
+        entity.setSuspectedDeathCount(dto.getSuspectedDeathCount());
+        entity.setAlarmPersonName(dto.getAlarmPersonName());
+        entity.setAlarmPersonPhone(dto.getAlarmPersonPhone());
+        entity.setMaintenancePersonnelName(dto.getMaintenancePersonnelName());
+        entity.setMaintenancePersonnelPhone(dto.getMaintenancePersonnelPhone());
+        entity.setCreateTime(dto.getAlarmTime());
+        entity.setUpdateTime(LocalDateTime.now());
+        return entity;
     }
 }

@@ -1,10 +1,12 @@
 package com.schedule.elevator.service.impl;
 
 import com.schedule.elevator.dto.MediaTokenData;
+import com.schedule.elevator.dto.ParamDTO;
 import com.schedule.elevator.service.IMediaPlayService;
 import com.schedule.utils.ApiResponseParser;
 import jakarta.annotation.PostConstruct;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +18,12 @@ import java.util.regex.Pattern;
 
 @Service
 public class MediaPlayServiceImpl implements IMediaPlayService {
-    private static final String SERVER_URL = "http:/121.26.230.218:18880";
+    //    private static final String SERVER_URL = "http:/127.0.0.1:18880";
     private static final OkHttpClient CLIENT = new OkHttpClient();
     private static MediaTokenData TOKEN_DATA = null;
+
+    @Autowired
+    private ParamDTO paramDTO;
 
     // 正则匹配data中的code=后字符串
     private static final Pattern CODE_PATTERN = Pattern.compile("code=([a-zA-Z0-9]+)");
@@ -35,7 +40,7 @@ public class MediaPlayServiceImpl implements IMediaPlayService {
     /**
      * 定时任务：每10分钟执行一次 getCode 方法
      */
-    @Scheduled(fixedRate = 600000) // 600000毫秒 = 10分钟
+    @Scheduled(fixedRate = 14400000) // 14400000毫秒 = 4小时
     public void scheduledGetCode() {
         System.out.println("定时任务执行：开始调用 getCode 方法");
         TOKEN_DATA = refreshToken(TOKEN_DATA.getAccessToken(), TOKEN_DATA.getRefreshToken());
@@ -69,7 +74,7 @@ public class MediaPlayServiceImpl implements IMediaPlayService {
     @Override
     public String getCode() {
         // 1. 构建URL参数
-        HttpUrl url = HttpUrl.parse(SERVER_URL + "/admin-api/system/oauth2/authorize-sf")
+        HttpUrl url = HttpUrl.parse(paramDTO.getMediaUrl() + "/admin-api/system/oauth2/authorize-sf")
                 .newBuilder()
                 .addQueryParameter("response_type", "code")
                 .addQueryParameter("client_id", "test1")
@@ -119,7 +124,7 @@ public class MediaPlayServiceImpl implements IMediaPlayService {
 
         // 3. 构建POST请求（匹配Postman的header和url）
         Request request = new Request.Builder()
-                .url(SERVER_URL + "/admin-api/system/oauth2/token")
+                .url(paramDTO.getMediaUrl() + "/admin-api/system/oauth2/token")
                 .addHeader("tenant-id", "1") // Postman中配置的header
                 .post(requestBody)
                 .build();
@@ -157,7 +162,7 @@ public class MediaPlayServiceImpl implements IMediaPlayService {
 
         // 3. 构建POST请求（匹配Postman的header和url）
         Request request = new Request.Builder()
-                .url(SERVER_URL + "/admin-api/system/oauth2/token")
+                .url(paramDTO.getMediaUrl() + "/admin-api/system/oauth2/token")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("tenant-id", "1") // Postman中配置的header
                 .post(requestBody)
@@ -188,7 +193,7 @@ public class MediaPlayServiceImpl implements IMediaPlayService {
 
         // 2. 构建请求（携带Token和tenant-id头）
         Request request = new Request.Builder()
-                .url(SERVER_URL + "/admin-api/platform/play/start/" + videoId)
+                .url(paramDTO.getMediaUrl() + "/admin-api/platform/play/start/" + videoId)
                 // 核心请求头：Token认证（Bearer + 空格 + access_token）
                 .addHeader("Authorization", "Bearer " + TOKEN_DATA.getAccessToken())
                 // 固定头：tenant-id

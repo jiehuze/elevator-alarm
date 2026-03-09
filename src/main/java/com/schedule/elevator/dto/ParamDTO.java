@@ -17,4 +17,6 @@ public class ParamDTO {
     private String exportPath;
     @Value("${elevator.maintenance.path}")
     private String maintenancePath;
+    @Value("${elevator.media.url}")
+    private String mediaUrl;
 }

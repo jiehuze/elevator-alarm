@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.schedule.utils.ExcelUtil.isExcelFile;
 
 @RestController
 @RequestMapping("/work-order")
@@ -302,6 +305,35 @@ public class WorkOrderController {
 
         // 写入 Excel
         ExcelUtil.exportExcelToTargetWithTemplate(response, fileName, "历史工单", dtoList, WorkOrderExcel.class, "doc/workorder.xlsx");
+    }
+
+    @PostMapping("/import")
+    public BaseResponse importElevators(@RequestParam("file") MultipartFile file) {
+        try {
+            // 1. 校验是否为 Excel 文件（可选）
+            if (!isExcelFile(file)) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "请上传 .xls 或 .xlsx 文件", null, null);
+            }
+            // 2. 导入解析
+            List<WorkOrderExcel> dtoList = ExcelUtil.importExcel(file, 1, WorkOrderExcel.class);
+            if (dtoList.isEmpty()) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "没有数据可导入", null, null);
+            }
+            System.out.println("dtoList:" + dtoList.toString());
+            ArrayList<WorkOrder> workOrders = new ArrayList<>();
+
+            for (WorkOrderExcel excel : dtoList) {
+                WorkOrder workOrder = WorkOrderExcelConverter.toEntity(excel);
+                workOrders.add(workOrder);
+            }
+
+            workOrderService.saveBatch(workOrders);
+
+            return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);
+        } catch (Exception e) {
+            System.out.println("Excel 导入失败:" + e);
+            return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "导入失败: " + e.getMessage(), null, null);
+        }
     }
 
     @GetMapping("/export/{id}")

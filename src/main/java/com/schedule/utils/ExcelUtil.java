@@ -184,7 +184,7 @@ public class ExcelUtil {
     /**
      * Excel导出
      *
-     * @param output  response
+     * @param output    response
      * @param fileName  文件名
      * @param sheetName sheetName
      * @param list      数据List
@@ -291,6 +291,20 @@ public class ExcelUtil {
             return EasyExcel.read(inputStream)
                     .head(pojoClass)
                     .headRowNumber(2)
+                    .sheet()
+                    .doReadSync();
+        }
+    }
+
+    public static <T> List<T> importExcel(MultipartFile file, Integer headRowNumber, Class<T> pojoClass) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("文件不能为空");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            return EasyExcel.read(inputStream)
+                    .head(pojoClass)
+                    .headRowNumber(headRowNumber)
                     .sheet()
                     .doReadSync();
         }

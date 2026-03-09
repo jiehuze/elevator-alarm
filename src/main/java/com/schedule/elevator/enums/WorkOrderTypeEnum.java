@@ -21,6 +21,18 @@ public enum WorkOrderTypeEnum {
     private final String description;
 
     /**
+     * 根据描述获取枚举
+     */
+    public static WorkOrderTypeEnum getByDescription(String description) {
+        for (WorkOrderTypeEnum type : values()) {
+            if (type.getDescription().equals(description)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 根据编码获取枚举
      */
     public static WorkOrderTypeEnum getByCode(Integer code) {
