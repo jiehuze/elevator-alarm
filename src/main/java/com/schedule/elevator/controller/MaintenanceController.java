@@ -197,6 +197,9 @@ public class MaintenanceController {
         IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
         for (MaintenanceTeam team : maintenanceTeams.getRecords()) {
             MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
+            if (maintenanceUnit == null) {
+                continue;
+            }
             team.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
             MaintenancePersonnel maintenancePersonnel = new MaintenancePersonnel();
             maintenancePersonnel.setMaintenanceTeamId(team.getId());

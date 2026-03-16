@@ -76,6 +76,7 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
     @Override
     public IPage<ElevatorInfo> pageElevators(Page<ElevatorInfo> page, SearchDTO elevatorInfoDTO) {
+        System.out.println("ele-----------: " + elevatorInfoDTO);
         LambdaQueryWrapper<ElevatorInfo> queryWrapper = buildQueryWrapper(elevatorInfoDTO);
         queryWrapper.orderByAsc(ElevatorInfo::getRescueCode);
         return this.page(page, queryWrapper);

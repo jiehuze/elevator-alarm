@@ -12,7 +12,8 @@
         HOSPITAL("医院", "HOSPITAL"),
         SCHOOL("学校", "SCHOOL"),
         TRANSPORTATION("交通场所", "TRANSPORTATION"),
-        CULTURAL_ENTERTAINMENT("文体娱乐馆", "CULTURAL"),
+//        CULTURAL_ENTERTAINMENT("文体娱乐馆", "CULTURAL"),
+        CULTURAL_ENTERTAINMENT1("文体娱场馆", "CULTURAL"),
         OTHER_PLACE("其他", "OTHER");
 
         private final String description;

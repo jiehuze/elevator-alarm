@@ -1,6 +1,7 @@
 package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
@@ -9,6 +10,7 @@ import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.RescueLevelEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
+import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.WorkOrderExcel;
 import com.schedule.excel.WorkOrderExcelConverter;
@@ -323,11 +325,45 @@ public class WorkOrderController {
             ArrayList<WorkOrder> workOrders = new ArrayList<>();
 
             for (WorkOrderExcel excel : dtoList) {
+                System.out.println("--------execl:" + excel);
                 WorkOrder workOrder = WorkOrderExcelConverter.toEntity(excel);
+                if (excel.getElevatorName() == null) {
+                    ElevatorInfo elevatorInfo = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRescueCode(excel.getRescueCode()));
+                    if (elevatorInfo == null)
+                        continue;
+                    workOrder.setElevatorName(elevatorInfo.getElevatorName());
+                    workOrder.setDistrict(elevatorInfo.getDistrict());
+                }
+                System.out.println("--------workOrder:" + workOrder);
                 workOrders.add(workOrder);
+                WorkOrder workOrderByOrderNo = workOrderService.getWorkOrderByOrderNo(workOrder.getOrderNo());
+                if (workOrderByOrderNo == null) {
+                    workOrderService.save(workOrder);
+                } else {
+                    workOrderService.update(workOrder, new LambdaUpdateWrapper<WorkOrder>().eq(WorkOrder::getOrderNo, workOrder.getOrderNo()));
+                }
+                //更新工单记录, 0:创建工单，1:派单，2:救援人员响应成功，3:回拨安抚，4救援人员到达现场，5:救援人员救援完成，6:救援回访，7：维修回访，8:维修完成，99:结案
+                ArrayList<WorkOrderProgress> list = new ArrayList<>();
+                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(0).setProgress("创建工单").setResult("成功").setCreateTime(workOrder.getCreateTime())); //创建工单
+                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(1).setProgress("派单").setResult("成功").setCreateTime(excel.getDispatchTime())); //派单
+                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(4).setProgress("到达现场").setResult("成功").setCreateTime(excel.getArrivalTime())); //到达现场时间
+
+                if (workOrder.getOrderType().equals(WorkOrderTypeEnum.FAULT.getCode())) {
+                    String result = workOrder.getFailureReason();
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修完成").setResult("成功").setStatus(8).setCreateTime(excel.getRescueTime())); //救援人员救援完成
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修回访").setResult("成功").setStatus(7).setCreateTime(excel.getFollowUpTime()).setRemark(result)); //回访时间
+                }
+                if (workOrder.getOrderType().equals(WorkOrderTypeEnum.TRAPPED_PEOPLE.getCode())) {
+                    String result = "被困人数" + workOrder.getTrappedCount() + "人，" + "受伤人数" + workOrder.getInjuredCount() + "人，" + "疑似死亡人数" + workOrder.getSuspectedDeathCount() + "人";
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("救援完成").setResult("成功").setStatus(5).setCreateTime(excel.getRescueTime()).setRemark(result)); //救援人员救援完成
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(6).setProgress("救援回访").setResult("成功").setCreateTime(excel.getFollowUpTime())); //回访时间
+                }
+                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(99).setResult("成功").setProgress("结案").setCreateTime(excel.getCloseTime())); //结案
+
+                workOrderProgressService.saveOrUpdateBatch(list);
             }
 
-            workOrderService.saveBatch(workOrders);
+//            workOrderService.saveBatch(workOrders);
 
             return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);
         } catch (Exception e) {

@@ -57,7 +57,15 @@ public class WorkOrderExcelConverter {
         entity.setOrderNo(dto.getOrderNo());
         entity.setStatus(WorkOrderStatusEnum.CLOSED.getCode());
         System.out.println("----------------workorder: " + dto.getOrderType());
-        entity.setOrderType(WorkOrderTypeEnum.getByDescription(dto.getOrderType()).getCode());
+        String orderTypeDesc = dto.getOrderType();
+        if (orderTypeDesc != null && orderTypeDesc.contains("工单")) {
+            orderTypeDesc = orderTypeDesc.replace("工单", "");
+        }
+        entity.setOrderType(WorkOrderTypeEnum.getByDescription(orderTypeDesc).getCode());
+        if (dto.getOrderSubType() != null && dto.getOrderSubType().contains("无") == false) {
+            entity.setOrderType(WorkOrderTypeEnum.getByDescription(dto.getOrderSubType()).getCode());
+        }
+
         entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getLocation()).getCode());
         entity.setRegisterCode(dto.getRegisterCode());
         entity.setRescueCode(dto.getRescueCode());

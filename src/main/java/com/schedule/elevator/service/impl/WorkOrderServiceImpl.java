@@ -51,8 +51,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.eq(dto.getMajorIncident() != null, WorkOrder::getMajorIncident, dto.getMajorIncident());
 
         // 时间范围
-        query.ge(dto.getAlarmTimeStart() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeStart());
-        query.le(dto.getAlarmTimeEnd() != null, WorkOrder::getAlarmTime, dto.getAlarmTimeEnd());
+        query.ge(dto.getAlarmTimeStart() != null, WorkOrder::getCreateTime, dto.getAlarmTimeStart());
+        query.le(dto.getAlarmTimeEnd() != null, WorkOrder::getCreateTime, dto.getAlarmTimeEnd());
         query.ge(dto.getCreateTimeStart() != null, WorkOrder::getCreateTime, dto.getCreateTimeStart());
         query.le(dto.getCreateTimeEnd() != null, WorkOrder::getCreateTime, dto.getCreateTimeEnd());
         query.ne(dto.getUnfinished() != null, WorkOrder::getStatus, 99);
