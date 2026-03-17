@@ -155,6 +155,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("无维保组")
     private Boolean noMaintenanceTeam;
 
+    @ApiModelProperty("关键词")
+    private String keyword;
+
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;
 
