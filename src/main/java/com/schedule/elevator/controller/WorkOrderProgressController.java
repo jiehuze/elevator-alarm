@@ -59,6 +59,9 @@ public class WorkOrderProgressController {
             progressService.update(progress, new LambdaQueryWrapper<WorkOrderProgress>().eq(WorkOrderProgress::getId, progress.getId()));
 
             //派单时间，计算用时
+            if (progress.getStatus().equals(WorkOrderStatusEnum.CREATED.getCode()) && progress.getIsSuccess() == 1) {
+                workOrder.setCreateTime(progress.getCreateTime());
+            }
             if (progress.getStatus().equals(WorkOrderStatusEnum.DISPATCHED.getCode()) && progress.getIsSuccess() == 1) {
                 dispatchTime = progress.getCreateTime();
             }

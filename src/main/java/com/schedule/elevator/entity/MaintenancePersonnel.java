@@ -2,6 +2,7 @@ package com.schedule.elevator.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * 维保人员信息表
  */
 @Data
+@Accessors(chain = true)
 @TableName("maintenance_personnel")
 public class MaintenancePersonnel {
 

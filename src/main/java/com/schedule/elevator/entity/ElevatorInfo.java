@@ -102,6 +102,9 @@ public class ElevatorInfo {
     @TableField("maintenance_personnel_name")
     private String maintenancePersonnelName; // 维保人
 
+    @TableField(exist = false)
+    private String maintenancePersonnelPhone; // 维保人
+
     /**
      * 维保单位是否脱保：0-否，1-是
      */

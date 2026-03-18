@@ -24,6 +24,9 @@ public class ElevatorImportExcelConverter {
         entity.setElevatorNo(dto.getElevatorNo());
         entity.setElevatorName(dto.getElevatorName());
         entity.setElevatorType(dto.getElevatorType());
+        if (dto.getUsageStatus() == null) {
+            return null;
+        }
         entity.setUsageStatus(ElevatorUsageStatusEnum.getByDescription(dto.getUsageStatus()).getCode());
         entity.setNextInspectionDate(parseDate(dto.getNextInspectionDate()));
         entity.setBrand(dto.getBrand());
@@ -179,7 +182,9 @@ public class ElevatorImportExcelConverter {
 
         if (community != null) {
             dto.setRealEstateBrand(community.getRealEstateBrand());
-            dto.setProjectType(ProjectTypeEnum.getByCode(community.getProjectType()).getDescription());
+            if (ProjectTypeEnum.getByCode(community.getProjectType()) != null) {
+                dto.setProjectType(ProjectTypeEnum.getByCode(community.getProjectType()).getDescription());
+            }
         }
 
         if (safetyOfficer != null) {

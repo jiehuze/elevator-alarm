@@ -61,6 +61,9 @@ public class MaintenanceUnit implements Serializable {
     private Long count;  // 计数属性，不映射到数据库
 
     @TableField(exist = false)
+    private Long personCount;  // 计数属性，不映射到数据库
+
+    @TableField(exist = false)
     private List<MaintenanceTeam> teams;
 
     private LocalDateTime createTime;

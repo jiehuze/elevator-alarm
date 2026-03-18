@@ -114,6 +114,12 @@ public class ElevatorInfoController {
             @ModelAttribute SearchDTO elevatorInfoDTO) {
         Page<ElevatorInfo> page = new Page<>(current, size);
         IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, elevatorInfoDTO);
+        for (ElevatorInfo info : result.getRecords()) {
+            if (info.getMaintenancePersonnelId() != null) {
+                MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
+                info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+            }
+        }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
@@ -124,6 +130,10 @@ public class ElevatorInfoController {
             @ModelAttribute SearchDTO elevatorInfoDTO) {
         Page<ElevatorInfo> page = new Page<>(current, size);
         IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, elevatorInfoDTO);
+        for (ElevatorInfo info : result.getRecords()) {
+            MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
+            info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+        }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
 
@@ -171,13 +181,23 @@ public class ElevatorInfoController {
                 //读取电梯信息，并写入
                 ElevatorInfo elevatorInfo = ElevatorImportExcelConverter.toElevatorEntity(dto);
                 System.out.println("elevatorInfo: " + elevatorInfo.toString());
-                if (elevatorInfo == null ||
-                        StringUtils.isBlank(elevatorInfo.getElevatorNo()) ||
+                if (elevatorInfo == null) {
+                    return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯使用状态错误", dto, null);
+                }
+
+                if (StringUtils.isBlank(elevatorInfo.getElevatorNo()) ||
                         StringUtils.isBlank(elevatorInfo.getRescueCode())) {
                     System.out.println("elevatorInfo  no: " + elevatorInfo.getElevatorNo());
                     System.out.println("elevatorInfo  rescueCode: " + elevatorInfo.getRescueCode());
-                    return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯编码或者救援码不能为空，请完善", null, null);
+                    return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯编码或者救援码不能为空，请完善", dto, null);
                 }
+                ElevatorInfo ele = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRegisterCode(elevatorInfo.getRegisterCode()));
+                if (ele != null) {
+                    if (!ele.getRescueCode().equals(elevatorInfo.getRescueCode())) {
+                        return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该电梯已存在,救援码不一致", dto, null);
+                    }
+                }
+
 
                 //读取使用小区信息，并写入
                 PropertyInfo propertyEntity = ElevatorImportExcelConverter.toPropertyEntity(dto);
@@ -215,7 +235,13 @@ public class ElevatorInfoController {
                 elevatorInfo.setUsingUnitId(UsingUnitId);
                 elevatorInfo.setSafetyOfficerId(safetyOfficerId);
 
-                elevatorInfoService.createElevatorInfo(elevatorInfo);
+                try {
+                    elevatorInfoService.createElevatorInfo(elevatorInfo);
+                } catch (Exception e) {
+                    System.out.println("创建电梯信息失败:" + e.getMessage());
+                    return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "创建电梯信息失败：" + e.getMessage(), dto, e.getMessage());
+                }
             }
 
             return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);

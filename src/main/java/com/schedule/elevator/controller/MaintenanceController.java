@@ -95,8 +95,10 @@ public class MaintenanceController {
             for (MaintenanceUnit info : result.getRecords()) {
                 ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
                 elevatorInfoDTO.setMaintenanceUnitId(info.getId());
-
                 info.setCount(elevatorInfoService.count(elevatorInfoDTO));
+
+                long count = maintenancePersonnelService.count(new MaintenancePersonnel().setMaintenanceUnitId(info.getId()));
+                info.setPersonCount(count);
             }
         }
 

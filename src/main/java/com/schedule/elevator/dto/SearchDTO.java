@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -146,6 +147,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("未完成")
     private Boolean unfinished;
 
+    @ApiModelProperty("未绑定人员")
+    private Boolean unbound;
+
     @ApiModelProperty("时间排序")
     private String timeOrder;
 
@@ -157,6 +161,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
 
     @ApiModelProperty("关键词")
     private String keyword;
+
+    @ApiModelProperty("ids")
+    private List<Integer> elevatorIds;
 
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;
