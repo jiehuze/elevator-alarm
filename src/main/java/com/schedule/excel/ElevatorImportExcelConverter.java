@@ -24,10 +24,14 @@ public class ElevatorImportExcelConverter {
         entity.setElevatorNo(dto.getElevatorNo());
         entity.setElevatorName(dto.getElevatorName());
         entity.setElevatorType(dto.getElevatorType());
-        if (dto.getUsageStatus() == null) {
-            return null;
+        if (dto.getUsageStatus() == null || dto.getUsageStatus().trim().isEmpty()) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用状态不能为空");
         }
-        entity.setUsageStatus(ElevatorUsageStatusEnum.getByDescription(dto.getUsageStatus()).getCode());
+        ElevatorUsageStatusEnum usageStatus = ElevatorUsageStatusEnum.getByDescription(dto.getUsageStatus().trim());
+        if (usageStatus == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的使用状态：" + dto.getUsageStatus() + "，有效值为：在用、停用、注销");
+        }
+        entity.setUsageStatus(usageStatus.getCode());
         entity.setNextInspectionDate(parseDate(dto.getNextInspectionDate()));
         entity.setBrand(dto.getBrand());
         entity.setModel(dto.getModel());
@@ -50,15 +54,22 @@ public class ElevatorImportExcelConverter {
         entity.setUsingUnit(dto.getUsingUnit());
         entity.setMaintenanceUnit(dto.getMaintenanceUnit());
 
-        if (StringUtils.isNotBlank(dto.getProjectType()) && ProjectTypeEnum.getByDescription(dto.getProjectType()) != null) {
-            entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getProjectType()).getCode());
+        if (StringUtils.isNotBlank(dto.getProjectType())) {
+            ProjectTypeEnum projectType = ProjectTypeEnum.getByDescription(dto.getProjectType().trim());
+            if (projectType == null) {
+                throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的项目类型：" + dto.getProjectType() +
+                        "，有效值为：住宅区、办公楼、商业区、宾馆饭店、医院、学校、交通场所、文体娱场馆、其他");
+            }
+            entity.setProjectType(projectType.getCode());
         }
 
         return entity;
     }
 
     public static Community toCommunityEntity(ElevatorImportTemplateExcel dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            throw new IllegalArgumentException("导入数据不能为空");
+        }
         Community community = new Community();
 
         community.setProjectName(dto.getProjectName())

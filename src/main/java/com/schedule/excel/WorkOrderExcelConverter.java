@@ -52,21 +52,49 @@ public class WorkOrderExcelConverter {
     }
 
     public static WorkOrder toEntity(WorkOrderExcel dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            throw new IllegalArgumentException("工单 Excel 数据不能为空");
+        }
         WorkOrder entity = new WorkOrder();
         entity.setOrderNo(dto.getOrderNo());
         entity.setStatus(WorkOrderStatusEnum.CLOSED.getCode());
         System.out.println("----------------workorder: " + dto.getOrderType());
+        // 处理工单类型
         String orderTypeDesc = dto.getOrderType();
+        if (orderTypeDesc == null || orderTypeDesc.trim().isEmpty()) {
+            throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，工单类型不能为空");
+        }
         if (orderTypeDesc != null && orderTypeDesc.contains("工单")) {
             orderTypeDesc = orderTypeDesc.replace("工单", "");
         }
-        entity.setOrderType(WorkOrderTypeEnum.getByDescription(orderTypeDesc).getCode());
-        if (dto.getOrderSubType() != null && dto.getOrderSubType().contains("无") == false) {
-            entity.setOrderType(WorkOrderTypeEnum.getByDescription(dto.getOrderSubType()).getCode());
+        WorkOrderTypeEnum orderType = WorkOrderTypeEnum.getByDescription(orderTypeDesc.trim());
+        if (orderType == null) {
+            throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，无效的工单类型：" + dto.getOrderType() +
+                    "，有效值为：困人、故障、投诉、咨询、自行脱困、误报");
+        }
+        entity.setOrderType(orderType.getCode());
+
+        // 处理工单子类型（如果有）
+        if (dto.getOrderSubType() != null && !dto.getOrderSubType().trim().equals("无")) {
+            WorkOrderTypeEnum subType = WorkOrderTypeEnum.getByDescription(dto.getOrderSubType().trim());
+            if (subType == null) {
+                throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，无效的工单子类型：" + dto.getOrderSubType() +
+                        "，有效值为：困人、故障、投诉、咨询、自行脱困、误报");
+            }
+            entity.setOrderType(subType.getCode());
         }
 
-        entity.setProjectType(ProjectTypeEnum.getByDescription(dto.getLocation()).getCode());
+        // 处理项目类型
+        if (dto.getLocation() == null || dto.getLocation().trim().isEmpty()) {
+            throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，项目位置类型不能为空");
+        }
+        ProjectTypeEnum projectType = ProjectTypeEnum.getByDescription(dto.getLocation().trim());
+        if (projectType == null) {
+            throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，无效的项目类型：" + dto.getLocation() +
+                    "，有效值为：住宅区、办公楼、商业区、宾馆饭店、医院、学校、交通场所、文体娱场馆、其他");
+        }
+        entity.setProjectType(projectType.getCode());
+
         entity.setRegisterCode(dto.getRegisterCode());
         entity.setRescueCode(dto.getRescueCode());
         entity.setUsingUnit(dto.getUsingUnit());
