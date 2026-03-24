@@ -178,12 +178,14 @@ public class ElevatorInfoController {
 //            System.out.println("dtoList:" + dtoList.toString());
 
             for (ElevatorImportTemplateExcel dto : dtoList) {
+                System.out.println("execl: " + dto);
                 //读取电梯信息，并写入
                 ElevatorInfo elevatorInfo = ElevatorImportExcelConverter.toElevatorEntity(dto);
-                System.out.println("elevatorInfo: " + elevatorInfo.toString());
                 if (elevatorInfo == null) {
                     return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯使用状态错误", dto, null);
                 }
+                System.out.println("elevatorInfo: " + elevatorInfo.toString());
+
 
                 if (StringUtils.isBlank(elevatorInfo.getElevatorNo()) ||
                         StringUtils.isBlank(elevatorInfo.getRescueCode())) {
