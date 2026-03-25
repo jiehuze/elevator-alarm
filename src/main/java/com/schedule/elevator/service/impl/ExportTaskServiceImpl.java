@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ExportTaskMapper;
-import com.schedule.elevator.dto.ExportTaskDTO;
-import com.schedule.elevator.dto.ParamDTO;
-import com.schedule.elevator.dto.SafetyOfficerDTO;
-import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.ExportTypeEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
@@ -377,10 +374,15 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             }
         } else if (searchDTO.getExportType() == ExportTypeEnum.MAINTENANCE_UNIT_LIST.getCode()) { //维保单位列表
             try {
-                // 设置响应头
-//                String fileName = URLEncoder.encode("维保单位信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-
                 List<MaintenanceUnit> dtoList = maintenanceUnitService.listByQuery(searchDTO);
+
+                for (MaintenanceUnit info : dtoList) {
+                    ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
+                    elevatorInfoDTO.setMaintenanceUnitId(info.getId());
+                    info.setCount(elevatorInfoService.count(elevatorInfoDTO));
+                    long count = maintenancePersonnelService.count(new MaintenancePersonnel().setMaintenanceUnitId(info.getId()));
+                    info.setPersonCount(count);
+                }
                 System.out.println("list size:" + dtoList.toString());
 
                 String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
@@ -438,6 +440,63 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 FileUtil.ensureDirectoryExists(filePath);
                 // 写入 Excel
                 ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "安全员信息", dtoList, SafetyOfficerDTO.class, "doc/safety_officer.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.USING_UNIT_LIST.getCode()) { //使用单位列表
+            try {
+                ArrayList<UsingUnitDTO> dtoList = new ArrayList<>();
+                List<PropertyInfo> propertyInfos = propertyInfoService.queryByConditions(searchDTO);
+
+                for (PropertyInfo propertyInfo : propertyInfos) {
+                    UsingUnitDTO usingUnitDTO = new UsingUnitDTO();
+                    usingUnitDTO.setUsingUnitName(propertyInfo.getUsingUnit());
+                    usingUnitDTO.setManagerName(propertyInfo.getUsingUnitManager());
+                    usingUnitDTO.setManagerPhone(propertyInfo.getUsingUnitManagerPhone());
+
+                    ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
+                    elevatorInfoDTO.setUsingUnitId(propertyInfo.getId());
+                    usingUnitDTO.setElevatorCount(elevatorInfoService.count(elevatorInfoDTO));
+                    usingUnitDTO.setSafetyOfficerCount(safetyOfficerService.count(new LambdaQueryWrapper<SafetyOfficer>().eq(SafetyOfficer::getUsingUnitId, propertyInfo.getId())));
+
+                    dtoList.add(usingUnitDTO);
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+                String fileName = "useing-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "使用单位信息", dtoList, UsingUnitDTO.class, "doc/using.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.COMMUNITY_LIST.getCode()) { //小区列表
+            try {
+                ArrayList<CommunityDTO> dtoList = new ArrayList<>();
+                List<Community> communities = communityService.listCommunities(searchDTO);
+
+                for (Community community : communities) {
+                    CommunityDTO communityDTO = new CommunityDTO();
+                    communityDTO.setProjectName(community.getProjectName());
+                    communityDTO.setDistrict(community.getDistrict());
+                    communityDTO.setProjectType(community.getProjectType());
+                    communityDTO.setElevatorCount(elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getCommunityId, community.getId())));
+                    dtoList.add(communityDTO);
+                }
+
+                System.out.println("list size:" + dtoList.toString());
+                String fileName = "community-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "小区信息", dtoList, SafetyOfficerDTO.class, "doc/community.xlsx");
                 updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
             } catch (Exception e) {
                 updateToFailed(exportTask.getId(), e.getMessage());

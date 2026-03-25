@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.PropertyInfoMapper;
 import com.schedule.elevator.dto.PropertyInfoDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.service.IPropertyInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, PropertyInfo>
@@ -24,7 +27,8 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
     @Transactional
     @Override
     public boolean saveOrUpdateByUnitCode(PropertyInfo entity) {
-        PropertyInfo existing = getByUnitCode(entity.getUnitCode());
+        PropertyInfo existing = this.getOne(new LambdaQueryWrapper<PropertyInfo>().eq(PropertyInfo::getUsingUnit, entity.getUsingUnit()));
+
         if (existing != null) {
             entity.setId(existing.getId());
             return this.updateById(entity);
@@ -40,7 +44,15 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
         PropertyInfo existing = this.getOne(new LambdaQueryWrapper<PropertyInfo>()
                 .eq(PropertyInfo::getUsingUnit, entity.getUsingUnit()));
 
+        if (existing.getUsingUnitManager() != null && !entity.getUsingUnitManager().equals(existing.getUsingUnitManager())) {
+            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人不一致，请确认后");
+        }
+        if (existing.getUsingUnitManagerPhone() != null && !entity.getUsingUnitManagerPhone().equals(existing.getUsingUnitManagerPhone())) {
+            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人手机不一致，请确认后");
+        }
+
         if (existing != null) {
+            this.update(entity, new LambdaQueryWrapper<PropertyInfo>().eq(PropertyInfo::getId, existing.getId()));
             return existing.getId();
         }
 
@@ -71,5 +83,19 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
 
         System.out.println("++++++++++++" + query);
         return this.page(page, query);
+    }
+
+    @Override
+    public List<PropertyInfo> queryByConditions(SearchDTO dto) {
+        LambdaQueryWrapper<PropertyInfo> query = new LambdaQueryWrapper<>();
+        query.eq(dto.getUnitCode() != null, PropertyInfo::getUnitCode, dto.getUnitCode());
+        query.like(dto.getUsingUnit() != null, PropertyInfo::getUsingUnit, dto.getUsingUnit());
+        query.like(StringUtils.isNotBlank(dto.getUsingUnitManager()), PropertyInfo::getUsingUnitManager, dto.getUsingUnitManager());
+        query.like(StringUtils.isNotBlank(dto.getUsingUnitManagerPhone()), PropertyInfo::getUsingUnitManagerPhone, dto.getUsingUnitManagerPhone());
+
+        // 排序：按创建时间倒序
+        query.orderByDesc(PropertyInfo::getCreatedAt);
+
+        return list(query);
     }
 }

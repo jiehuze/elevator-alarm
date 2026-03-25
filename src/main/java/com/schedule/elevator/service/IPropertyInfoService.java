@@ -3,7 +3,10 @@ package com.schedule.elevator.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.schedule.elevator.dto.PropertyInfoDTO;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.PropertyInfo;
+
+import java.util.List;
 
 public interface IPropertyInfoService extends IService<PropertyInfo> {
 
@@ -20,4 +23,6 @@ public interface IPropertyInfoService extends IService<PropertyInfo> {
     long getOrCreatePropertyId(PropertyInfo entity);
 
     Page<PropertyInfo> queryByConditionsPage(PropertyInfoDTO dto);
+
+    List<PropertyInfo> queryByConditions(SearchDTO dto);
 }

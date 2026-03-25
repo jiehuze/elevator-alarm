@@ -117,7 +117,9 @@ public class ElevatorInfoController {
         for (ElevatorInfo info : result.getRecords()) {
             if (info.getMaintenancePersonnelId() != null) {
                 MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
-                info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+                if (maintenancePersonnel != null) {
+                    info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+                }
             }
         }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);

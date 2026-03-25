@@ -56,7 +56,7 @@ public class UserTokenServiceImpl extends ServiceImpl<UserTokenMapper, UserToken
 //                .eq(UserToken::getUserId, userId)
                         .eq(UserToken::getToken, jti)
                         .eq(UserToken::getStatus, 1)
-                        .gt(UserToken::getExpiresAt, LocalDateTime.now())
+//                        .gt(UserToken::getExpiresAt, LocalDateTime.now())
         );
         return token != null;
     }

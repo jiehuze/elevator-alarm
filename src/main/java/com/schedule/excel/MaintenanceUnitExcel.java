@@ -44,4 +44,12 @@ public class MaintenanceUnitExcel {
     @ExcelProperty("维保单位编码")
     @ColumnWidth(30)
     private String maintenanceUnitCode;
+
+    @ExcelProperty("电梯数")
+    @ColumnWidth(15)
+    private Integer count;
+
+    @ExcelProperty("维保人数")
+    @ColumnWidth(15)
+    private Integer personCount;
 }

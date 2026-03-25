@@ -16,7 +16,9 @@ public enum ExportTypeEnum {
     ELEVATOR_INFO_LIST(6, "电梯信息list"),
     MAINTENANCE_UNIT_LIST(7, "维保单位list"),
     MAINTENANCE_PERSONNEL_LIST(8, "维修人员list"),
-    SAFETY_OFFICER_LIST(9, "安全员列表");
+    SAFETY_OFFICER_LIST(9, "安全员列表"),
+    USING_UNIT_LIST(10, "使用单位列表"),
+    COMMUNITY_LIST(11, "小区列表");
 
     private final Integer code;
     private final String description;

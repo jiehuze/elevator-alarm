@@ -56,6 +56,10 @@ public class SafetyOfficerServiceImpl extends ServiceImpl<SafetyOfficerMapper, S
         SafetyOfficer existing = this.getOne(new LambdaQueryWrapper<SafetyOfficer>()
                 .eq(SafetyOfficer::getSafetyOfficerPhone, entity.getSafetyOfficerPhone()));
 
+        if (existing.getUsingUnitId() != entity.getUsingUnitId()) {
+            throw new RuntimeException("安全员:" + entity.getSafetyOfficerName() + "，在不同使用单位");
+        }
+
         if (existing != null) {
             return existing.getId();
         }

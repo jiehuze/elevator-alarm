@@ -102,7 +102,15 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
     public long getOrCreateMaintenanceUnitId(MaintenanceUnit entity) throws Exception {
         // 1. 先查询是否已存在
         MaintenanceUnit existing = this.getOne(new LambdaQueryWrapper<MaintenanceUnit>()
-                .eq(MaintenanceUnit::getMaintenanceUnitManagerPhone, entity.getMaintenanceUnitManagerPhone()));
+                .eq(MaintenanceUnit::getMaintenanceUnit, entity.getMaintenanceUnit()));
+//                .eq(MaintenanceUnit::getMaintenanceUnitManagerPhone, entity.getMaintenanceUnitManagerPhone()));
+
+        if (!entity.getMaintenanceUnitManagerPhone().equals(existing.getMaintenanceUnitManagerPhone())) {
+            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "电话变更，请确认；");
+        }
+        if (!entity.getMaintenanceUnitManager().equals(existing.getMaintenanceUnitManager())) {
+            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "负责人:" + entity.getMaintenanceUnitManager() + "与系统内不一致，请确认；");
+        }
 
         if (existing != null) {
             return existing.getId();
@@ -110,7 +118,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
 
         boolean saved = this.save(entity);
         if (!saved) {
-            throw new RuntimeException("维保单位插入失败");
+            throw new RuntimeException("维保单位" + entity.getMaintenanceUnit() + "插入失败");
         }
 
         return entity.getId();

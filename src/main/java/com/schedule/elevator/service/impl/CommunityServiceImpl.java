@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.CommunityMapper;
+import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.Community;
 import com.schedule.elevator.service.ICommunityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community> implements ICommunityService {
@@ -18,7 +21,7 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
         entity.setProjectName(StringUtils.trim(entity.getProjectName()));
 
         LambdaQueryWrapper<Community> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(entity.getAddress()), Community::getAddress, entity.getAddress());
+//        queryWrapper.eq(StringUtils.isNotBlank(entity.getAddress()), Community::getAddress, entity.getAddress());
         queryWrapper.eq(StringUtils.isNoneBlank(entity.getProjectName()), Community::getProjectName, entity.getProjectName());
         queryWrapper.eq(StringUtils.isNotBlank(entity.getDistrict()), Community::getDistrict, entity.getDistrict());
         Community one = this.getOne(queryWrapper);
@@ -45,6 +48,20 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
                 .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
                 .eq(StringUtils.isNotBlank(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
 
+        queryWrapper.orderByDesc(Community::getCreatedAt);
+
         return this.page(page, queryWrapper);
+    }
+
+    @Override
+    public List<Community> listCommunities(SearchDTO searchDTO) {
+        LambdaQueryWrapper<Community> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(searchDTO.getProjectName()), Community::getProjectName, searchDTO.getProjectName())
+                .eq(StringUtils.isNotBlank(searchDTO.getDistrict()), Community::getDistrict, searchDTO.getDistrict())
+                .like(StringUtils.isNotBlank(searchDTO.getSafetyOfficerName()), Community::getSafetyOfficerName, searchDTO.getSafetyOfficerName())
+                .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
+                .eq(StringUtils.isNotBlank(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
+
+        return list(queryWrapper);
     }
 }
