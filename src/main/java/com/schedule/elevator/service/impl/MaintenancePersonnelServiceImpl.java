@@ -21,6 +21,11 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
 
     @Override
     public long getOrCreatePersonnelId(MaintenancePersonnel entity) {
+
+        if (entity.getPhone() == null || entity.getPhone().length() > 11) {
+            throw new RuntimeException("维修人员：" + entity.getName() + ",手机号: " + entity.getPhone() + ",长度不能超过11位");
+        }
+
         LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaintenancePersonnel::getPhone, entity.getPhone());
 

@@ -105,14 +105,16 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
                 .eq(MaintenanceUnit::getMaintenanceUnit, entity.getMaintenanceUnit()));
 //                .eq(MaintenanceUnit::getMaintenanceUnitManagerPhone, entity.getMaintenanceUnitManagerPhone()));
 
-        if (!entity.getMaintenanceUnitManagerPhone().equals(existing.getMaintenanceUnitManagerPhone())) {
-            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "电话变更，请确认；");
-        }
-        if (!entity.getMaintenanceUnitManager().equals(existing.getMaintenanceUnitManager())) {
-            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "负责人:" + entity.getMaintenanceUnitManager() + "与系统内不一致，请确认；");
-        }
+//        if (!entity.getMaintenanceUnitManagerPhone().equals(existing.getMaintenanceUnitManagerPhone())) {
+//            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "电话变更，请确认；");
+//        }
+//        if (!entity.getMaintenanceUnitManager().equals(existing.getMaintenanceUnitManager())) {
+//            throw new Exception("维保单位" + entity.getMaintenanceUnit() + "负责人:" + entity.getMaintenanceUnitManager() + "与系统内不一致，请确认；");
+//        }
 
+        //维保单位负责人和电话可以直接更新
         if (existing != null) {
+            this.update(entity, new LambdaQueryWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, entity.getId()));
             return existing.getId();
         }
 
