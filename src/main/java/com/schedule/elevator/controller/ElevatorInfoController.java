@@ -86,7 +86,7 @@ public class ElevatorInfoController {
                 elevator.setMaintenanceUnitId(0l);
                 elevator.setMaintenanceType("无");
                 elevator.setMaintenanceTeamId(0l);
-                elevator.setMaintenancePersonnelName("");
+//                elevator.setMaintenancePersonnelName("");
                 elevator.setMaintenancePersonnelId(0l);
             }
 
@@ -104,6 +104,13 @@ public class ElevatorInfoController {
     @GetMapping("/{id}")
     public BaseResponse get(@PathVariable Long id) {
         ElevatorInfo elevator = elevatorInfoService.getById(id);
+        if (elevator.getMaintenancePersonnelId() != null) {
+            MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(elevator.getMaintenancePersonnelId());
+            if (maintenancePersonnel != null) {
+                elevator.setMaintenancePersonnelName(maintenancePersonnel.getName());
+                elevator.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+            }
+        }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", elevator, null);
     }
 
@@ -118,6 +125,7 @@ public class ElevatorInfoController {
             if (info.getMaintenancePersonnelId() != null) {
                 MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
                 if (maintenancePersonnel != null) {
+                    info.setMaintenancePersonnelName(maintenancePersonnel.getName());
                     info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
                 }
             }
@@ -134,7 +142,10 @@ public class ElevatorInfoController {
         IPage<ElevatorInfo> result = elevatorInfoService.pageElevators(page, elevatorInfoDTO);
         for (ElevatorInfo info : result.getRecords()) {
             MaintenancePersonnel maintenancePersonnel = maintenancePersonnelService.getById(info.getMaintenancePersonnelId());
-            info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+            if (maintenancePersonnel != null) {
+                info.setMaintenancePersonnelName(maintenancePersonnel.getName());
+                info.setMaintenancePersonnelPhone(maintenancePersonnel.getPhone());
+            }
         }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", result, null);
     }
@@ -244,7 +255,7 @@ public class ElevatorInfoController {
                 } catch (Exception e) {
                     System.out.println("创建电梯信息失败:" + e.getMessage());
                     return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            "创建电梯信息失败：" + e.getMessage(), dto, e.getMessage());
+                            "创建电梯:" + elevatorInfo.getRegisterCode() + ",信息错误：" + e.getMessage(), dto, e.getMessage());
                 }
             }
 

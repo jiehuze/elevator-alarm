@@ -300,6 +300,11 @@ public class MaintenanceController {
      */
     @PutMapping("/person/update")
     public BaseResponse update(@RequestBody MaintenancePersonnel personnel) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, personnel.getId()));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该人员有电梯正在维保中，请先解除维保关系", null, null);
+        }
+
         maintenancePersonnelService.updateById(personnel);
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", personnel, null);
     }

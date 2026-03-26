@@ -47,6 +47,12 @@ public class SafetyOfficerController {
 
     @PutMapping("/{id}")
     public BaseResponse update(@RequestBody SafetyOfficer safetyOfficer, @PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getSafetyOfficerId, id));
+
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "该安全员已绑定电梯，请先解除绑定", null, null);
+        }
+
         boolean update = safetyOfficerService.update(safetyOfficer, new LambdaQueryWrapper<SafetyOfficer>().eq(SafetyOfficer::getId, id));
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", update, null);
     }
