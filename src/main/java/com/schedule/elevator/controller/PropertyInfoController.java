@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.PropertyInfoDTO;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.PropertyInfo;
 import com.schedule.elevator.entity.SafetyOfficer;
 import com.schedule.elevator.service.IElevatorInfoService;
@@ -42,6 +43,14 @@ public class PropertyInfoController {
 
     @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getUsingUnitId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "该使用单位已绑定电梯，请先解除绑定", null, null);
+        }
+        long safetyOfficerCount = safetyOfficerService.count(new LambdaQueryWrapper<SafetyOfficer>().eq(SafetyOfficer::getUsingUnitId, id));
+        if (safetyOfficerCount > 0) {
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "该使用单位已绑定安全员，请先解除绑定", null, null);
+        }
         boolean deleted = IPropertyInfoService.removeById(id);
         return new BaseResponse(deleted ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 deleted ? "删除成功" : "删除失败", null, null);

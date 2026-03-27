@@ -188,7 +188,11 @@ public class ElevatorInfoController {
             List<ElevatorImportTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorImportTemplateExcel.class);
 
             System.out.println("dtoList size:" + dtoList.size());
-//            System.out.println("dtoList:" + dtoList.toString());
+            System.out.println("dtoList:" + dtoList.toString());
+
+            if (dtoList != null) {
+                return new BaseResponse(HttpStatus.OK.value(), "导入成功", true, null);
+            }
 
             for (ElevatorImportTemplateExcel dto : dtoList) {
                 System.out.println("execl: " + dto);

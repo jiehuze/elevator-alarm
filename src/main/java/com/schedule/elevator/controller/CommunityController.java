@@ -1,10 +1,12 @@
 package com.schedule.elevator.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.entity.Community;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.SafetyOfficer;
 import com.schedule.elevator.service.ICommunityService;
 import com.schedule.elevator.service.IElevatorInfoService;
@@ -42,6 +44,11 @@ public class CommunityController {
      */
     @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getCommunityId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "该社区下已存在电梯，请先解除绑定", null, null);
+        }
+
         communityService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
     }

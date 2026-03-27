@@ -68,6 +68,14 @@ public class MaintenanceController {
 
     @DeleteMapping("/delete/{id}")
     public BaseResponse delete(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.OK.value(), "此维保信息下有电梯信息，请先删除电梯信息", null, null);
+        }
+        long personCount = maintenanceTeamService.count(new LambdaQueryWrapper<MaintenanceTeam>().eq(MaintenanceTeam::getMaintenanceUnitId, id));
+        if (personCount > 0) {
+            return new BaseResponse(HttpStatus.OK.value(), "此维保信息下有维保团队信息，请先删除维保团队信息", null, null);
+        }
         maintenanceUnitService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息删除成功", null, null);
     }
@@ -218,7 +226,17 @@ public class MaintenanceController {
 
     @PostMapping("/team/add")
     public BaseResponse create(@RequestBody MaintenanceTeam team) {
-        maintenanceTeamService.save(team);
+        if (team.getLevel() == 2) {
+            // 更新维保单位的 level 为 2
+            maintenanceUnitService.update(new LambdaUpdateWrapper<MaintenanceUnit>()
+                    .eq(MaintenanceUnit::getId, team.getMaintenanceUnitId())
+                    .set(MaintenanceUnit::getLevel, 2));
+        }
+        try {
+            maintenanceTeamService.save(team);
+        } catch (Exception e) {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "维保团队添加失败, 该公司在" + team.getDistrict() + "已存在维保组", null, null);
+        }
         return new BaseResponse(HttpStatus.OK.value(), "维保团队添加成功", team, null);
     }
 
@@ -258,6 +276,16 @@ public class MaintenanceController {
         }
 
         return new BaseResponse(HttpStatus.OK.value(), "添加维保团队人员成功", null, null);
+    }
+
+    @DeleteMapping("/team/{id}")
+    public BaseResponse deleteTeam(@PathVariable Long id) {
+        long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceTeamId, id));
+        if (count > 0) {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该维保组下有电梯, 无法删除", null, null);
+        }
+        maintenanceTeamService.removeById(id);
+        return new BaseResponse(HttpStatus.OK.value(), "删除维保团队成功", null, null);
     }
 
     /****************************** 人员信息 *********************************/
