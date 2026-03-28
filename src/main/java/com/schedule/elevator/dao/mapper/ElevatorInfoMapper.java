@@ -22,9 +22,6 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "FROM elevator " +
             "WHERE elevator_type IS NOT NULL " +
             "  AND elevator_type != '' " +
-//            "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
-//            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
-//            "</if> " +
             "<if test='searchDTO.district != null and searchDTO.district != \"\"'> " +
             "  AND district = #{searchDTO.district} " +
             "</if> " +

@@ -11,9 +11,14 @@ public enum ElevatorTypeEnum {
     TRACTION_PASSENGER("曳引驱动乘客电梯", "traction_passenger"),
     
     /**
-     * 曳引驱动乘客货梯
+     * 曳引驱动载货电梯
      */
-    TRACTION_CARGO("曳引驱动乘客货梯", "traction_cargo"),
+    TRACTION_CARGO("曳引驱动载货电梯", "traction_cargo"),
+    
+    /**
+     * 曳引驱动观光电梯
+     */
+    TRACTION_OBSERVATION("曳引驱动观光电梯", "traction_observation"),
     
     /**
      * 强制驱动载货电梯
@@ -21,14 +26,14 @@ public enum ElevatorTypeEnum {
     FORCED_DRIVE_CARGO("强制驱动载货电梯", "forced_drive_cargo"),
     
     /**
+     * 液压乘客电梯
+     */
+    HYDRAULIC_PASSENGER("液压乘客电梯", "hydraulic_passenger"),
+    
+    /**
      * 液压载货电梯
      */
     HYDRAULIC_CARGO("液压载货电梯", "hydraulic_cargo"),
-    
-    /**
-     * 防爆电梯
-     */
-    EXPLOSION_PROOF("防爆电梯", "explosion_proof"),
     
     /**
      * 自动扶梯
@@ -41,14 +46,19 @@ public enum ElevatorTypeEnum {
     MOVING_WALKWAY("自动人行道", "moving_walkway"),
     
     /**
-     * 杂物电梯
+     * 防爆电梯
      */
-    SERVICE_ELEVATOR("杂物电梯", "service_elevator"),
+    EXPLOSION_PROOF("防爆电梯", "explosion_proof"),
     
     /**
-     * 曳引驱动观光电梯
+     * 消防员电梯
      */
-    TRACTION_OBSERVATION("曳引驱动观光电梯", "traction_observation");
+    FIREFIGHTER_ELEVATOR("消防员电梯", "firefighter_elevator"),
+    
+    /**
+     * 杂物电梯
+     */
+    SERVICE_ELEVATOR("杂物电梯", "service_elevator");
 
     private final String description;
     private final String code;
