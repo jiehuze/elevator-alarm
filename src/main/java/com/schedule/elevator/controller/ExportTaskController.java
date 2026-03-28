@@ -38,6 +38,8 @@ public class ExportTaskController {
         task.setQueryConditions(task.toString());
         if (task.getExportType() == 1) {
             exportTaskService.exportMonthlyReportAsync(task);
+        } else if (task.getExportType() == 12) {
+            exportTaskService.exportAnalysisReportAsync(task);
         } else {
             exportTaskService.exportYearReportAsync(task);
         }

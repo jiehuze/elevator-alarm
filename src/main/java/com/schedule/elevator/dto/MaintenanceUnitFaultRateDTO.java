@@ -19,4 +19,7 @@ public class MaintenanceUnitFaultRateDTO {
 
     @ExcelProperty("故障率")
     private String faultRate;           // 故障率
+
+    @ExcelProperty("故障原因")
+    private String faultReason;
 }

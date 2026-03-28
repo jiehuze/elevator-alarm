@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -522,6 +523,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    public List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRateList(SearchDTO searchDTO) {
+        List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderMapper.getMaintenanceUnitFaultRate(searchDTO);
+        for (MaintenanceUnitFaultRateDTO item : maintenanceUnitFaultRate) {
+            // todo 获取故障原因并组合
+
+        }
+
+        return maintenanceUnitFaultRate;
+    }
+
+    @Override
     public List<UsingUnitFaultRateDTO> getUsingUnitFaultRate(SearchDTO searchDTO) {
         return workOrderMapper.getUsingUnitFaultRate(searchDTO);
     }
@@ -544,6 +556,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public List<ElevatorBrandFaultRateDTO> getHighFaultRateBrandList(SearchDTO searchDTO) {
+        return workOrderMapper.getHighFaultRateBrands(searchDTO);
+    }
+
+    @Override
+    public List<BrandFaultStatsDTO> getBrandFaultStats(SearchDTO searchDTO) {
+        ArrayList<BrandFaultStatsDTO> brandFaultStatsDTOS = new ArrayList<>();
+        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
+
+        AtomicInteger index = new AtomicInteger(1);
+        for (ElevatorBrandFaultRateDTO item : highFaultRateBrands) {
+            BrandFaultStatsDTO brandFaultStatsDTO = new BrandFaultStatsDTO();
+            brandFaultStatsDTO.setIdx(index.getAndIncrement())
+                    .setBrand(item.getBrand())
+                    .setFaultCount(item.getFaultCount());
+            brandFaultStatsDTOS.add(brandFaultStatsDTO);
+        }
+
+        return brandFaultStatsDTOS;
     }
 
     @Override

@@ -54,6 +54,8 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
+    List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRateList(@Param("searchDTO") SearchDTO searchDTO);
+
     List<UsingUnitFaultRateDTO> getUsingUnitFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
     List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
@@ -65,6 +67,11 @@ public interface IWorkOrderService extends IService<WorkOrder> {
      * @return 故障率超过50%的电梯品牌列表
      */
     String getHighFaultRateBrands(@Param("searchDTO") SearchDTO searchDTO);
+
+    List<ElevatorBrandFaultRateDTO> getHighFaultRateBrandList(SearchDTO searchDTO);
+
+    List<BrandFaultStatsDTO> getBrandFaultStats(@Param("searchDTO") SearchDTO searchDTO);
+
 
     /**
      * 查询同一电梯发生四次以上故障的统计

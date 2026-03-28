@@ -22,4 +22,6 @@ public interface IWordExportService {
     void generateMonthlyReport(SearchDTO searchDTO, String outputPath);
 
     void generateYearlyReport(SearchDTO searchDTO, String outputPath);
+
+    void generateAnalysisReport(SearchDTO searchDTO, String outputPath);
 }

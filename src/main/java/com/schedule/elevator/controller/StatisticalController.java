@@ -170,8 +170,10 @@ public class StatisticalController {
      */
     @GetMapping("/high-fault-rate-brands")
     public BaseResponse getHighFaultRateBrands(@ModelAttribute SearchDTO searchDTO) {
-        String highFaultRateBrands = workOrderService.getHighFaultRateBrands(searchDTO);
-        return new BaseResponse(HttpStatus.OK.value(), "success", highFaultRateBrands, null);
+//        String highFaultRateBrands = workOrderService.getHighFaultRateBrands(searchDTO);
+//        List<ElevatorBrandFaultRateDTO> highFaultRateBrandList = workOrderService.getHighFaultRateBrandList(searchDTO);
+        List<BrandFaultStatsDTO> brandFaultStats = workOrderService.getBrandFaultStats(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", brandFaultStats, null);
     }
 
     @GetMapping("/elevator-age-stats")

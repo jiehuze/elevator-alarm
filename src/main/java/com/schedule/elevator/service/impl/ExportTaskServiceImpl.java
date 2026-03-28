@@ -210,6 +210,28 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
     }
 
     @Override
+    public void exportAnalysisReportAsync(SearchDTO task) {
+        System.out.println("开始导出数据");
+        ExportTask exportTask = createExportTask(task);
+        try {
+            updateToProcessing(exportTask.getId());
+            SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
+            String fileName = "analysis-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String urlPath = paramDTO.getReportPath() + fileName;
+            String filePath = paramDTO.getRootPath() + urlPath;
+            FileUtil.ensureDirectoryExists(filePath);
+            wordExportService.generateAnalysisReport(searchDTO, filePath);
+
+            updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            System.out.println("数据导出完成！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            updateToFailed(exportTask.getId(), e.getMessage());
+            System.out.println("数据导出失败");
+        }
+    }
+
+    @Override
     @Async
     public void exportWorkOrderReport(SearchDTO task) {
         ExportTask exportTask = createExportTask(task);
