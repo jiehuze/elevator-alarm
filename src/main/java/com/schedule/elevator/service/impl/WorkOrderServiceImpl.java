@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.WorkOrderMapper;
 import com.schedule.elevator.dto.*;
+import com.schedule.elevator.entity.FaultCategory;
 import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
+import com.schedule.elevator.service.IFaultCategoryService;
 import com.schedule.elevator.service.IWorkOrderService;
 import com.schedule.utils.DateUtils;
 import com.schedule.utils.util;
@@ -34,6 +36,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Autowired
     protected IElevatorInfoService elevatorInfoService;
+
+    @Autowired
+    protected IFaultCategoryService faultCategoryService;
 
     private LambdaQueryWrapper<WorkOrder> buildQueryWrapper(SearchDTO dto) {
         LambdaQueryWrapper<WorkOrder> query = new LambdaQueryWrapper<>();
@@ -274,22 +279,60 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         ArrayList<WorkOrderStatisticsDTO> workOrderStatisticsDTOS = new ArrayList<>();
         WorkOrderStatisticsDTO endYearDto = new WorkOrderStatisticsDTO();
         endYearDto.setMonth("合计");
+        // 保存搜索时间范围
+        LocalDateTime originalStartTime = searchDTO.getCreateTimeStart();
+        LocalDateTime originalEndTime = searchDTO.getCreateTimeEnd();
 
         int year = searchDTO.getCreateTimeStart().getYear();
         Map<Integer, LocalDateTime[]> ranges = DateUtils.getMonthlyAndQuarterlyRanges(year);
         for (int i = 1; i <= 12; i++) {
             LocalDateTime[] lt = ranges.get(i);
-            searchDTO.setCreateTimeStart(lt[0]);
-            searchDTO.setCreateTimeEnd(lt[1]);
-            WorkOrderStatisticsDTO result = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+            
+            // 计算当前月份与搜索范围的重叠区间
+            LocalDateTime monthStart = lt[0];
+            LocalDateTime monthEnd = lt[1];
+            
+            // 取交集：当前月份范围与原始搜索范围的交集
+            LocalDateTime actualStart = monthStart.isBefore(originalStartTime) ? originalStartTime : monthStart;
+            LocalDateTime actualEnd = monthEnd.isAfter(originalEndTime) ? originalEndTime : monthEnd;
+            
+            // 判断是否有交集
+            WorkOrderStatisticsDTO result;
+            if (!actualStart.isAfter(actualEnd)) {
+                // 有交集，使用交集范围查询
+                searchDTO.setCreateTimeStart(actualStart);
+                searchDTO.setCreateTimeEnd(actualEnd);
+                result = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+            } else {
+                // 无交集，返回空结果
+                result = new WorkOrderStatisticsDTO();
+            }
+
             result.setMonth(i + "月");
             workOrderStatisticsDTOS.add(result);
 
             if (i == 3 || i == 6 || i == 9 || i == 12) {
                 LocalDateTime[] llt = ranges.get(12 + i / 3);
-                searchDTO.setCreateTimeStart(llt[0]);
-                searchDTO.setCreateTimeEnd(llt[1]);
-                WorkOrderStatisticsDTO lltResult = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+                
+                // 计算当前季度与搜索范围的重叠区间
+                LocalDateTime quarterStart = llt[0];
+                LocalDateTime quarterEnd = llt[1];
+                
+                // 取交集：当前季度范围与原始搜索范围的交集
+                LocalDateTime actualQuarterStart = quarterStart.isBefore(originalStartTime) ? originalStartTime : quarterStart;
+                LocalDateTime actualQuarterEnd = quarterEnd.isAfter(originalEndTime) ? originalEndTime : quarterEnd;
+                
+                WorkOrderStatisticsDTO lltResult;
+                if (!actualQuarterStart.isAfter(actualQuarterEnd)) {
+                    // 有交集，使用交集范围查询
+                    searchDTO.setCreateTimeStart(actualQuarterStart);
+                    searchDTO.setCreateTimeEnd(actualQuarterEnd);
+                    lltResult = workOrderMapper.getWorkOrderStatisticsByCondition(searchDTO);
+                } else {
+                    // 无交集，返回空结果
+                    lltResult = new WorkOrderStatisticsDTO();
+                }
+                
                 if (i == 3) {
                     lltResult.setMonth("一季度");
                 } else if (i == 6) {
@@ -524,10 +567,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public List<MaintenanceUnitFaultRateDTO> getMaintenanceUnitFaultRateList(SearchDTO searchDTO) {
+        Map<String, FaultCategory> faultCategoryMap = faultCategoryService.getFaultCategoryMap();
         List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderMapper.getMaintenanceUnitFaultRate(searchDTO);
         for (MaintenanceUnitFaultRateDTO item : maintenanceUnitFaultRate) {
             // todo 获取故障原因并组合
-
+            List<String> faultSubCodesByMaintenanceUnit = workOrderMapper.getFaultSubCodesByMaintenanceUnit(item.getMaintenanceUnit(), searchDTO);
+            StringBuilder res = new StringBuilder();
+            for (String faultSubCode : faultSubCodesByMaintenanceUnit) {
+                res.append(faultCategoryMap.get(faultSubCode).getFaultAnalysis() + "\n");
+            }
+            item.setFaultReason(res.toString());
         }
 
         return maintenanceUnitFaultRate;

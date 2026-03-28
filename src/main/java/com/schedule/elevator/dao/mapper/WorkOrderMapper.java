@@ -871,4 +871,30 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     })
     List<RepeatedFaultElevatorDTO> getRepeatedFaultElevators(@Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 通过维保单位查询时间范围内故障或困人工单对应的fault_records中的sub_code值（去重）
+     *
+     * @param maintenanceUnit 维保单位名称
+     * @param searchDTO 包含开始时间、结束时间、区县的搜索条件
+     * @return sub_code列表（去重）
+     */
+    @Select({
+            "<script>",
+            "SELECT DISTINCT fr.sub_code ",
+            "FROM fault_records fr ",
+            "INNER JOIN work_order wo ON fr.order_no = wo.order_no ",
+            "WHERE wo.status = 99 ",
+            "  AND wo.order_type IN (1, 2) ",  // 1:困人, 2:故障
+            "  AND wo.maintenance_unit = #{maintenanceUnit} ",
+            "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "    AND wo.district = #{searchDTO.district}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "    AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "  </if>",
+            "ORDER BY fr.sub_code",
+            "</script>"
+    })
+    List<String> getFaultSubCodesByMaintenanceUnit(@Param("maintenanceUnit") String maintenanceUnit, @Param("searchDTO") SearchDTO searchDTO);
+
 }

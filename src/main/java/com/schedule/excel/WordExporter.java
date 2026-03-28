@@ -227,8 +227,8 @@ public class WordExporter {
         // 设置run的样式
         if (!p.getRuns().isEmpty()) {
             XWPFRun run = p.getRuns().get(0);
-            run.setFontFamily("微软雅黑");
-            run.setFontSize(isHeader ? 8 : 8);
+            run.setFontFamily("仿宋");
+            run.setFontSize(isHeader ? 10 : 10);
             if (isHeader) {
                 run.setBold(true);
             }
