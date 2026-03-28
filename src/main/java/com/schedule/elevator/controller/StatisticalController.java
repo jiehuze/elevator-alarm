@@ -165,6 +165,15 @@ public class StatisticalController {
         return new BaseResponse(HttpStatus.OK.value(), "success", faultRate, null);
     }
 
+    /**
+     * 查询故障率超过50%的电梯品牌
+     */
+    @GetMapping("/high-fault-rate-brands")
+    public BaseResponse getHighFaultRateBrands(@ModelAttribute SearchDTO searchDTO) {
+        String highFaultRateBrands = workOrderService.getHighFaultRateBrands(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", highFaultRateBrands, null);
+    }
+
     @GetMapping("/elevator-age-stats")
     public BaseResponse getElevatorAgeStats(@ModelAttribute SearchDTO searchDTO) {
         List<ElevatorAgeStatisticsDTO> stats = workOrderService.getElevatorAgeStatistics(searchDTO);
@@ -187,6 +196,15 @@ public class StatisticalController {
     public BaseResponse getOrderTypeStats(@ModelAttribute SearchDTO searchDTO) {
         List<OrderTypeStatisticsDTO> statistics = workOrderService.getOrderTypeStatistics(searchDTO);
         return new BaseResponse(HttpStatus.OK.value(), "success", statistics, null);
+    }
+
+    /**
+     * 查询同一电梯发生四次以上故障的统计
+     */
+    @GetMapping("/repeated-fault-elevators")
+    public BaseResponse getRepeatedFaultElevators(@ModelAttribute SearchDTO searchDTO) {
+        List<RepeatedFaultElevatorDTO> elevators = workOrderService.getRepeatedFaultElevators(searchDTO);
+        return new BaseResponse(HttpStatus.OK.value(), "success", elevators, null);
     }
 
 

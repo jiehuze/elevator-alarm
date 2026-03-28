@@ -58,6 +58,22 @@ public interface IWorkOrderService extends IService<WorkOrder> {
 
     List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 查询故障率超过50%的电梯品牌
+     *
+     * @param searchDTO 查询条件
+     * @return 故障率超过50%的电梯品牌列表
+     */
+    String getHighFaultRateBrands(@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 查询同一电梯发生四次以上故障的统计
+     *
+     * @param searchDTO 查询条件
+     * @return 故障次数>=4的电梯列表
+     */
+    List<RepeatedFaultElevatorDTO> getRepeatedFaultElevators(@Param("searchDTO") SearchDTO searchDTO);
+
     List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(@Param("searchDTO") SearchDTO searchDTO);
 
     List<OrderTypeStatisticsDTO> getOrderTypeStatistics(@Param("searchDTO") SearchDTO searchDTO);

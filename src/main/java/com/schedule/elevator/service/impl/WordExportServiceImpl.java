@@ -194,9 +194,13 @@ public class WordExportServiceImpl implements IWordExportService {
             replaceStrMap.put("totalBrandsAll", brandElevatorStats.getTotalBrands().toString());
             replaceStrMap.put("smallBrandPercentage", brandElevatorStats.getSmallBrandPercentage().toString());
 
+            String highFaultRateBrands = workOrderService.getHighFaultRateBrands(searchDTO);
+            replaceStrMap.put("brands50", highFaultRateBrands);
+
             InputStream in = new ClassPathResource(templatePath).getInputStream();
             InputStream inputStream = DocxPlaceholderReplaceUtil.replacePlaceholderToStream(in, replaceStrMap);
 
+            List<RepeatedFaultElevatorDTO> repeatedFaultElevators = workOrderService.getRepeatedFaultElevators(searchDTO);
             List<DistrictStatisticsDTO> districtStatistics = workOrderService.getDistrictStatistics(searchDTO);
             List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
@@ -209,6 +213,7 @@ public class WordExportServiceImpl implements IWordExportService {
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
+            tableMap = TableData.buildTableData(tableMap, repeatedFaultElevators, RepeatedFaultElevatorDTO.class, "fourTimes");
             tableMap = TableData.buildTableData(tableMap, districtStatistics, DistrictStatisticsDTO.class, "DistrictFault");
             tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
             tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");

@@ -532,6 +532,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    public String getHighFaultRateBrands(SearchDTO searchDTO) {
+//        return workOrderMapper.getHighFaultRateBrands(searchDTO);
+        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
+        StringBuilder sb = new StringBuilder();
+        for (ElevatorBrandFaultRateDTO item : highFaultRateBrands) {
+            if (sb.length() == 0) {
+                sb.append(item.getBrand());
+            } else {
+                sb.append("、" + item.getBrand());
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public List<RepeatedFaultElevatorDTO> getRepeatedFaultElevators(SearchDTO searchDTO) {
+        return workOrderMapper.getRepeatedFaultElevators(searchDTO);
+    }
+
+    @Override
     public List<ElevatorAgeStatisticsDTO> getElevatorAgeStatistics(SearchDTO searchDTO) {
         return workOrderMapper.getElevatorAgeStatistics(searchDTO);
     }

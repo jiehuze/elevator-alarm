@@ -19,4 +19,7 @@ public class ElevatorBrandFaultRateDTO {
 
     @ExcelProperty("故障率")
     private String faultRate;         // 故障率（带%符号的字符串）
+
+    @ExcelProperty("总故障数")
+    private Integer totalFaultCount;  // 总故障数
 }

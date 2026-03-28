@@ -18,7 +18,8 @@ public enum ExportTypeEnum {
     MAINTENANCE_PERSONNEL_LIST(8, "维修人员list"),
     SAFETY_OFFICER_LIST(9, "安全员列表"),
     USING_UNIT_LIST(10, "使用单位列表"),
-    COMMUNITY_LIST(11, "小区列表");
+    COMMUNITY_LIST(11, "小区列表"),
+    ANALYSIS_REPORT(12, "分析报告");
 
     private final Integer code;
     private final String description;
@@ -44,6 +45,6 @@ public enum ExportTypeEnum {
      * 判断是否为报告类型
      */
     public boolean isReport() {
-        return this == MONTHLY_REPORT || this == SEMI_ANNUAL_REPORT || this == ANNUAL_REPORT || this == WORK_ORDER_REPORT;
+        return this == MONTHLY_REPORT || this == SEMI_ANNUAL_REPORT || this == ANNUAL_REPORT || this == WORK_ORDER_REPORT || this == ANALYSIS_REPORT;
     }
 }
