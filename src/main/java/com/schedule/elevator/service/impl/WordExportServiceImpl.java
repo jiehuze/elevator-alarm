@@ -191,7 +191,7 @@ public class WordExportServiceImpl implements IWordExportService {
             replaceStrMap.put("smallBrandsCount", brandElevatorStats.getSmallBrandsCount().toString());
             replaceStrMap.put("top5Brands", brandElevatorStats.getTop5Brands());
             replaceStrMap.put("top5Percentage", brandElevatorStats.getTop5Percentage().toString());
-            replaceStrMap.put("totalBrandsAll", brandElevatorStats.getTotalBrandsAll().toString());
+            replaceStrMap.put("totalBrandsAll", brandElevatorStats.getTotalBrands().toString());
             replaceStrMap.put("smallBrandPercentage", brandElevatorStats.getSmallBrandPercentage().toString());
 
             InputStream in = new ClassPathResource(templatePath).getInputStream();

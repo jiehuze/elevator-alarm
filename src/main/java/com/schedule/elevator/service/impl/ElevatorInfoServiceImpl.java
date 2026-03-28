@@ -237,9 +237,16 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
         statisticsDTO.setTop5Brands(top5Brands.toString());
         statisticsDTO.setTotalBrands(brandMarketAnalysis.getTotalBrands());
         statisticsDTO.setSmallBrandsCount(brandMarketAnalysis.getSmallBrandsCount());
-        statisticsDTO.setSmallBrandPercentage(brandMarketAnalysis.getSmallBrandPercentage());
-        statisticsDTO.setTotalBrandsAll(brandMarketAnalysis.getTotalBrandsAll());
-        statisticsDTO.setTop5Percentage(totals.multiply(new BigDecimal(100)).divide(new BigDecimal(brandMarketAnalysis.getTotalBrandsAll()), 2, RoundingMode.HALF_UP));
+        // 计算小品牌占比：smallBrandsCount * 100 / totalBrands，保留两位小数
+        BigDecimal smallBrandPercentage = BigDecimal.ZERO;
+        if (brandMarketAnalysis.getTotalBrands() != null && brandMarketAnalysis.getTotalBrands() > 0) {
+            smallBrandPercentage = new BigDecimal(brandMarketAnalysis.getSmallBrandsCount())
+                    .multiply(new BigDecimal(100))
+                    .divide(new BigDecimal(brandMarketAnalysis.getTotalBrands()), 2, RoundingMode.HALF_UP);
+        }
+        statisticsDTO.setSmallBrandPercentage(smallBrandPercentage.doubleValue());
+        statisticsDTO.setTotalElevatorCount(brandMarketAnalysis.getTotalElevatorCount());
+        statisticsDTO.setTop5Percentage(totals.multiply(new BigDecimal(100)).divide(new BigDecimal(brandMarketAnalysis.getTotalElevatorCount()), 2, RoundingMode.HALF_UP));
 
         return statisticsDTO;
     }
