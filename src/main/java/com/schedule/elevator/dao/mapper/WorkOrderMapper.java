@@ -595,6 +595,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "  GROUP BY maintenance_unit",
             ") w ON m.maintenance_unit = w.maintenance_unit ",
+            "WHERE w.fault_count IS NOT NULL ",
             "ORDER BY m.maintenance_unit",
             "</script>"
     })
@@ -647,6 +648,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "  GROUP BY e.using_unit, e.district",
             ") w ON u.using_unit = w.using_unit AND u.district = w.district ",
+            "WHERE w.fault_count IS NOT NULL ",
             "ORDER BY u.district, u.using_unit",
             "</script>"
     })
@@ -760,6 +762,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     /**
      * 按工单类型统计各类工单的数量及占比
+     *
      * @param searchDTO 查询条件，包括开始时间、结束时间和区县
      * @return 工单类型统计结果列表
      */

@@ -92,7 +92,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
     public List<MaintenanceUnit> listByQuery(SearchDTO queryDTO) {
         LambdaQueryWrapper<MaintenanceUnit> eq = new LambdaQueryWrapper<MaintenanceUnit>()
                 .eq(queryDTO.getMaintenanceUnitId() != null, MaintenanceUnit::getId, queryDTO.getMaintenanceUnitId())
-                .eq(StringUtils.isNotBlank(queryDTO.getMaintenanceUnit()), MaintenanceUnit::getMaintenanceUnit, queryDTO.getMaintenanceUnit())
+                .like(StringUtils.isNotBlank(queryDTO.getMaintenanceUnit()), MaintenanceUnit::getMaintenanceUnit, queryDTO.getMaintenanceUnit())
                 .ge(queryDTO.getLevel() != null, MaintenanceUnit::getLevel, queryDTO.getLevel());
 
         return this.list(eq);

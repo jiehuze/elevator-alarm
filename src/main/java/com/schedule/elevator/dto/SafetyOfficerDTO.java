@@ -21,4 +21,8 @@ public class SafetyOfficerDTO {
 
     @ExcelProperty("项目名称")
     private String projectName;
+
+    @ExcelProperty("电梯数")
+    private Long elevatorNum;
+
 }

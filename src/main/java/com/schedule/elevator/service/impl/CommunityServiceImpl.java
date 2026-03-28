@@ -59,7 +59,7 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
         queryWrapper.like(StringUtils.isNotBlank(searchDTO.getProjectName()), Community::getProjectName, searchDTO.getProjectName())
                 .eq(StringUtils.isNotBlank(searchDTO.getDistrict()), Community::getDistrict, searchDTO.getDistrict())
                 .like(StringUtils.isNotBlank(searchDTO.getSafetyOfficerName()), Community::getSafetyOfficerName, searchDTO.getSafetyOfficerName())
-                .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
+                .eq(searchDTO.getCommunityId() != null, Community::getId, searchDTO.getCommunityId())
                 .eq(StringUtils.isNotBlank(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
 
         return list(queryWrapper);

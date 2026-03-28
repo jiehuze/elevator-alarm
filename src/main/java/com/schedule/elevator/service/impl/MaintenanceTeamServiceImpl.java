@@ -62,6 +62,7 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
         // 1. 先查询是否已存在
         MaintenanceTeam existing = this.getOne(new LambdaQueryWrapper<MaintenanceTeam>()
                 .eq(MaintenanceTeam::getTeamName, entity.getTeamName())
+                .eq(MaintenanceTeam::getLevel, 1) //必须是一级维保组
                 .eq(MaintenanceTeam::getMaintenanceUnitId, entity.getMaintenanceUnitId()));
 
         if (existing != null) {

@@ -9,6 +9,7 @@ import com.schedule.elevator.dao.mapper.ExportTaskMapper;
 import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.ExportTypeEnum;
+import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
 import com.schedule.elevator.service.*;
@@ -361,7 +362,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
                 System.out.println("list size:" + dtoList.toString());
 
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String fileName = "elevator-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -374,18 +375,22 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             }
         } else if (searchDTO.getExportType() == ExportTypeEnum.MAINTENANCE_UNIT_LIST.getCode()) { //维保单位列表
             try {
-                List<MaintenanceUnit> dtoList = maintenanceUnitService.listByQuery(searchDTO);
+                List<MaintenanceUnit> list = maintenanceUnitService.listByQuery(searchDTO);
 
-                for (MaintenanceUnit info : dtoList) {
-                    ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
-                    elevatorInfoDTO.setMaintenanceUnitId(info.getId());
-                    info.setCount(elevatorInfoService.count(elevatorInfoDTO));
-                    long count = maintenancePersonnelService.count(new MaintenancePersonnel().setMaintenanceUnitId(info.getId()));
-                    info.setPersonCount(count);
+                List<MaintenanceUnitExcel> dtoList = new ArrayList<>();
+
+                for (MaintenanceUnit info : list) {
+                    long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, info.getId()));
+                    info.setCount(count);
+
+                    long count1 = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceUnitId, info.getId()));
+                    info.setPersonCount(count1);
+
+                    dtoList.add(MaintenanceExcelConverter.toUnitDto(info));
                 }
                 System.out.println("list size:" + dtoList.toString());
 
-                String fileName = "workorder-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String fileName = "maintenance-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -398,16 +403,17 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
             }
         } else if (searchDTO.getExportType() == ExportTypeEnum.MAINTENANCE_PERSONNEL_LIST.getCode()) { //维保人员列表
             try {
-//            String fileName = URLEncoder.encode("维修人员信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
                 List<MaintenancePersonnel> list = maintenancePersonnelService.listBySearchDTO(searchDTO);
                 List<MaintenancePersonnelExcel> dtoList = new ArrayList<>();
                 for (MaintenancePersonnel personnel : list) {
                     MaintenancePersonnelExcel dto = MaintenanceExcelConverter.toPersonDto(personnel);
+                    long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, personnel.getId()));
+                    dto.setElevatorNum(count);
                     dtoList.add(dto);
                 }
 
                 System.out.println("list size:" + dtoList.toString());
-                String fileName = "workorder-person-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String fileName = "maintenance-person-list-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -418,7 +424,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 updateToFailed(exportTask.getId(), e.getMessage());
                 throw new RuntimeException(e);
             }
-        } else if (searchDTO.getExportType() == ExportTypeEnum.SAFETY_OFFICER_LIST.getCode()) { //维保人员列表
+        } else if (searchDTO.getExportType() == ExportTypeEnum.SAFETY_OFFICER_LIST.getCode()) { //安全人员列表
             try {
                 ArrayList<SafetyOfficerDTO> dtoList = new ArrayList<>();
                 List<SafetyOfficer> safetyOfficers = safetyOfficerService.queryByConditions(searchDTO);
@@ -428,7 +434,8 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                     safetyOfficerDTO.setSafetyOfficerPhone(safetyOfficer.getSafetyOfficerPhone());
                     safetyOfficerDTO.setUsingUnit(safetyOfficer.getUsingUnit());
                     safetyOfficerDTO.setStatus(safetyOfficer.getStatus() == 1 ? "在职" : "离职");
-//                    safetyOfficerDTO.setProjectName(safetyOfficer.getProjectName());
+                    long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getSafetyOfficerId, safetyOfficer.getId()));
+                    safetyOfficerDTO.setElevatorNum(count);
 
                     dtoList.add(safetyOfficerDTO);
                 }
@@ -465,7 +472,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 }
 
                 System.out.println("list size:" + dtoList.toString());
-                String fileName = "useing-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String fileName = "using-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
                 String urlPath = paramDTO.getExportPath() + fileName;
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
@@ -485,7 +492,12 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                     CommunityDTO communityDTO = new CommunityDTO();
                     communityDTO.setProjectName(community.getProjectName());
                     communityDTO.setDistrict(community.getDistrict());
-                    communityDTO.setProjectType(community.getProjectType());
+                    if (community.getProjectType() != null) {
+                        ProjectTypeEnum byCode = ProjectTypeEnum.getByCode(community.getProjectType());
+                        if (byCode != null) {
+                            communityDTO.setProjectType(byCode.getDescription());
+                        }
+                    }
                     communityDTO.setElevatorCount(elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getCommunityId, community.getId())));
                     dtoList.add(communityDTO);
                 }
@@ -496,7 +508,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
                 // 写入 Excel
-                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "小区信息", dtoList, SafetyOfficerDTO.class, "doc/community.xlsx");
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "小区信息", dtoList, CommunityDTO.class, "doc/community.xlsx");
                 updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
             } catch (Exception e) {
                 updateToFailed(exportTask.getId(), e.getMessage());

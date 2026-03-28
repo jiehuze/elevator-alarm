@@ -1,6 +1,7 @@
 package com.schedule.excel;
 
 import com.schedule.elevator.entity.MaintenancePersonnel;
+import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.utils.DateUtils;
 
 public class MaintenanceExcelConverter {
@@ -14,6 +15,22 @@ public class MaintenanceExcelConverter {
         dto.setStatus(entity.getStatus() == 1 ? "在岗" : "离岗");
         dto.setCreatedAt(DateUtils.format(entity.getCreatedAt(), DateUtils.DATE_PATTERN));
         dto.setUpdatedAt(DateUtils.format(entity.getUpdatedAt(), DateUtils.DATE_PATTERN));
+        return dto;
+    }
+
+    public static MaintenanceUnitExcel toUnitDto(MaintenanceUnit entity) {
+        if (entity == null) return null;
+        MaintenanceUnitExcel dto = new MaintenanceUnitExcel();
+        dto.setMaintenanceUnit(entity.getMaintenanceUnit());
+        dto.setMaintenanceUnitPhone(entity.getMaintenanceUnitPhone());
+        dto.setMaintenanceUnitManager(entity.getMaintenanceUnitManager());
+        dto.setMaintenanceUnitManagerPhone(entity.getMaintenanceUnitManagerPhone());
+        dto.setCompanyAddress(entity.getCompanyAddress());
+        dto.setMaintenanceUnitType(entity.getMaintenanceUnitType());
+        dto.setMaintenanceUnitStatus("1".equals(entity.getMaintenanceUnitStatus()) ? "正常" : "注销");
+        dto.setMaintenanceUnitCode(entity.getMaintenanceUnitCode());
+        dto.setCount(entity.getCount());
+        dto.setPersonCount(entity.getPersonCount());
         return dto;
     }
 

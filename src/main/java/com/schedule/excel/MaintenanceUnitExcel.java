@@ -47,9 +47,9 @@ public class MaintenanceUnitExcel {
 
     @ExcelProperty("电梯数")
     @ColumnWidth(15)
-    private Integer count;
+    private Long count;
 
     @ExcelProperty("维保人数")
     @ColumnWidth(15)
-    private Integer personCount;
+    private Long personCount;
 }
