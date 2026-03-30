@@ -141,10 +141,15 @@ public class DateUtils {
      * @param end   结束时间
      * @return 时间差（秒），如果结束时间早于开始时间则返回负数
      */
-    public static long calculateTimeDifferenceInSeconds(LocalDateTime start, LocalDateTime end) {
+    public static Long calculateTimeDifferenceInSeconds(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null) {
-            return 0;
+            return null;
         }
+        if (end.isBefore(start)) {
+            log.error("Invalid time range: end time is before start time");
+            return null;
+        }
+
         return java.time.Duration.between(start, end).getSeconds();
     }
 

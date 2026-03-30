@@ -205,7 +205,7 @@ public class WordExportServiceImpl implements IWordExportService {
             List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
             List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
-            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRate(searchDTO);
+            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
             List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
             List<ElevatorAgeStatisticsDTO> elevatorAgeStatistics = workOrderService.getElevatorAgeStatistics(searchDTO);
@@ -283,7 +283,7 @@ public class WordExportServiceImpl implements IWordExportService {
             List<BrandFaultStatsDTO> brandFaultStats = workOrderService.getBrandFaultStats(searchDTO);
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
-            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRate(searchDTO);
+            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
             WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
 
             System.out.println("-------------------" + maintenanceUnitFaultRate);

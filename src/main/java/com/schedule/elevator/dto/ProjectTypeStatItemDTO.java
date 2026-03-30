@@ -27,7 +27,13 @@ public class ProjectTypeStatItemDTO {
 
         for (ProjectTypeCountDTO item : dto.getProjectTypeCounts()) {
             headers.add(item.getProjectName());
+            if (item.getFaultCount() == null) {
+                item.setFaultCount(0l);
+            }
             firstRows.add(item.getFaultCount().toString());
+            if (item.getCount() == null) {
+                item.setCount(0l);
+            }
             secondRows.add(item.getCount().toString());
         }
 

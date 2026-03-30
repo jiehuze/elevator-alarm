@@ -4,6 +4,7 @@ import com.schedule.elevator.entity.WorkOrder;
 import com.schedule.elevator.enums.ProjectTypeEnum;
 import com.schedule.elevator.enums.WorkOrderStatusEnum;
 import com.schedule.elevator.enums.WorkOrderTypeEnum;
+import com.schedule.utils.DateUtils;
 
 import java.time.LocalDateTime;
 
@@ -13,12 +14,13 @@ public class WorkOrderExcelConverter {
                                        LocalDateTime arriveTime,
                                        LocalDateTime rescueTime,
                                        LocalDateTime followUpTime,
+                                       LocalDateTime repairTime,
                                        LocalDateTime closeTime) {
         if (entity == null) return null;
         WorkOrderExcel dto = new WorkOrderExcel();
         dto.setOrderNo(entity.getOrderNo());
         dto.setOrderType(WorkOrderTypeEnum.getByCode(entity.getOrderType()).getDescription());
-        dto.setOrderSubType("无");
+//        dto.setOrderSubType("无");
         System.out.println("----------------workorder: " + entity);
         dto.setLocation(ProjectTypeEnum.getByCode(entity.getProjectType()).getDescription());
         dto.setRegisterCode(entity.getRegisterCode());
@@ -41,10 +43,10 @@ public class WorkOrderExcelConverter {
         dto.setMaintenancePersonnelPhone(entity.getMaintenancePersonnelPhone());
 
         dto.setAlarmTime(entity.getCreateTime());
-
         dto.setDispatchTime(dispatchTime);
         dto.setArrivalTime(arriveTime);
         dto.setRescueTime(rescueTime);
+        dto.setRepairTime(repairTime);
         dto.setFollowUpTime(followUpTime);
         dto.setCloseTime(closeTime);
 
@@ -75,14 +77,14 @@ public class WorkOrderExcelConverter {
         entity.setOrderType(orderType.getCode());
 
         // 处理工单子类型（如果有）
-        if (dto.getOrderSubType() != null && !dto.getOrderSubType().trim().equals("无")) {
-            WorkOrderTypeEnum subType = WorkOrderTypeEnum.getByDescription(dto.getOrderSubType().trim());
-            if (subType == null) {
-                throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，无效的工单子类型：" + dto.getOrderSubType() +
-                        "，有效值为：困人、故障、投诉、咨询、自行脱困、误报");
-            }
-            entity.setOrderType(subType.getCode());
-        }
+//        if (dto.getOrderSubType() != null && !dto.getOrderSubType().trim().equals("无")) {
+//            WorkOrderTypeEnum subType = WorkOrderTypeEnum.getByDescription(dto.getOrderSubType().trim());
+//            if (subType == null) {
+//                throw new IllegalArgumentException("工单号：" + dto.getOrderNo() + "，无效的工单子类型：" + dto.getOrderSubType() +
+//                        "，有效值为：困人、故障、投诉、咨询、自行脱困、误报");
+//            }
+//            entity.setOrderType(subType.getCode());
+//        }
 
         // 处理项目类型
         if (dto.getLocation() == null || dto.getLocation().trim().isEmpty()) {
@@ -117,7 +119,12 @@ public class WorkOrderExcelConverter {
         entity.setMaintenancePersonnelName(dto.getMaintenancePersonnelName());
         entity.setMaintenancePersonnelPhone(dto.getMaintenancePersonnelPhone());
         entity.setCreateTime(dto.getAlarmTime());
-        entity.setUpdateTime(LocalDateTime.now());
+        entity.setAlarmTime(dto.getAlarmTime());
+
+        entity.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(dto.getDispatchTime(), dto.getArrivalTime()));
+        entity.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(dto.getArrivalTime(), dto.getRescueTime()));
+        entity.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(dto.getRescueTime(), dto.getRepairTime()));
+
         return entity;
     }
 }

@@ -34,15 +34,15 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "    district AS district, " +
             "    COUNT(*) AS elevatorCount, " +
             "    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM elevator " +
-            "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
-            "  WHERE created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
-            "</if>), 2) AS percentage " +
+//            "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
+//            "  WHERE created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
+//            "</if>), 2) AS percentage " +
             "FROM elevator " +
             "WHERE district IS NOT NULL " +
             "  AND district != '' " +
-            "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
-            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
-            "</if> " +
+//            "<if test='searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'> " +
+//            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd} " +
+//            "</if> " +
             "GROUP BY district" +
             "</script>")
     List<Map<String, Object>> countByDistrict(@Param("searchDTO") SearchDTO searchDTO);
@@ -66,9 +66,9 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "FROM elevator ",
             "WHERE project_type IS NOT NULL ",
             "  AND project_type != '' ",
-            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
-            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
-            "</if>",
+//            "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+//            "  AND created_at BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+//            "</if>",
             "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "  AND district = #{searchDTO.district}",
             "</if>",

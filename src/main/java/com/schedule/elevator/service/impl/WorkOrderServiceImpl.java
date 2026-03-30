@@ -80,7 +80,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Page<WorkOrder> queryByConditionsPage(SearchDTO dto) {
         // 校验分页参数
         int current = (dto.getCurrent() == null || dto.getCurrent() < 1) ? 1 : dto.getCurrent();
-        int size = (dto.getSize() == null || dto.getSize() < 1 || dto.getSize() > 100) ? 10 : dto.getSize();
+        int size = (dto.getSize() == null || dto.getSize() < 1 || dto.getSize() > 1000) ? 10 : dto.getSize();
 
         Page<WorkOrder> page = new Page<>(current, size);
 
@@ -287,15 +287,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Map<Integer, LocalDateTime[]> ranges = DateUtils.getMonthlyAndQuarterlyRanges(year);
         for (int i = 1; i <= 12; i++) {
             LocalDateTime[] lt = ranges.get(i);
-            
+
             // 计算当前月份与搜索范围的重叠区间
             LocalDateTime monthStart = lt[0];
             LocalDateTime monthEnd = lt[1];
-            
+
             // 取交集：当前月份范围与原始搜索范围的交集
             LocalDateTime actualStart = monthStart.isBefore(originalStartTime) ? originalStartTime : monthStart;
             LocalDateTime actualEnd = monthEnd.isAfter(originalEndTime) ? originalEndTime : monthEnd;
-            
+
             // 判断是否有交集
             WorkOrderStatisticsDTO result;
             if (!actualStart.isAfter(actualEnd)) {
@@ -313,15 +313,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             if (i == 3 || i == 6 || i == 9 || i == 12) {
                 LocalDateTime[] llt = ranges.get(12 + i / 3);
-                
+
                 // 计算当前季度与搜索范围的重叠区间
                 LocalDateTime quarterStart = llt[0];
                 LocalDateTime quarterEnd = llt[1];
-                
+
                 // 取交集：当前季度范围与原始搜索范围的交集
                 LocalDateTime actualQuarterStart = quarterStart.isBefore(originalStartTime) ? originalStartTime : quarterStart;
                 LocalDateTime actualQuarterEnd = quarterEnd.isAfter(originalEndTime) ? originalEndTime : quarterEnd;
-                
+
                 WorkOrderStatisticsDTO lltResult;
                 if (!actualQuarterStart.isAfter(actualQuarterEnd)) {
                     // 有交集，使用交集范围查询
@@ -332,7 +332,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     // 无交集，返回空结果
                     lltResult = new WorkOrderStatisticsDTO();
                 }
-                
+
                 if (i == 3) {
                     lltResult.setMonth("一季度");
                 } else if (i == 6) {
@@ -557,7 +557,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public List<DistrictStatisticsDTO> getDistrictStatistics(SearchDTO searchDTO) {
-        return workOrderMapper.getDistrictStatistics(searchDTO);
+//        return workOrderMapper.getDistrictStatistics(searchDTO);
+        List<DistrictStatisticsDTO> districtStatistics = workOrderMapper.getDistrictStatistics(searchDTO);
+        DistrictStatisticsDTO all = new DistrictStatisticsDTO().setDistrict("总计");
+        for (DistrictStatisticsDTO item : districtStatistics) {
+            all.setElevatorCount(item.getElevatorCount() + all.getElevatorCount());
+            all.setTotalFaults(item.getTotalFaults() + all.getTotalFaults());
+            all.setTrappedMechanicalFaults(item.getTrappedMechanicalFaults() + all.getTrappedMechanicalFaults());
+            all.setTrappedNonMechanicalFaults(item.getTrappedNonMechanicalFaults() + all.getTrappedNonMechanicalFaults());
+            all.setNonTrappedMechanicalFaults(item.getNonTrappedMechanicalFaults() + all.getNonTrappedMechanicalFaults());
+            all.setNonTrappedNonMechanicalFaults(item.getNonTrappedNonMechanicalFaults() + all.getNonTrappedNonMechanicalFaults());
+            all.setOtherFaults(item.getOtherFaults() + all.getOtherFaults());
+            all.setCasualtyCount(item.getCasualtyCount() + all.getCasualtyCount());
+        }
+        districtStatistics.add(all);
+
+        return districtStatistics;
     }
 
     @Override
@@ -574,7 +589,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             List<String> faultSubCodesByMaintenanceUnit = workOrderMapper.getFaultSubCodesByMaintenanceUnit(item.getMaintenanceUnit(), searchDTO);
             StringBuilder res = new StringBuilder();
             for (String faultSubCode : faultSubCodesByMaintenanceUnit) {
-                res.append(faultCategoryMap.get(faultSubCode).getFaultAnalysis() + "\n");
+                res.append(faultSubCode + " : " + faultCategoryMap.get(faultSubCode).getFaultAnalysis() + " \n ");
             }
             item.setFaultReason(res.toString());
         }

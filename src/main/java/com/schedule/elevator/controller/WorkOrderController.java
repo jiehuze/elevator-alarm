@@ -2,6 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
@@ -268,12 +269,57 @@ public class WorkOrderController {
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
     }
 
+    @GetMapping("/sync")
+    public BaseResponse sync() {
+        SearchDTO searchDTO = new SearchDTO().setCurrent(5).setSize(1000);
+        Page<WorkOrder> workOrderPage = workOrderService.queryByConditionsPage(searchDTO);
+        for (WorkOrder workOrder : workOrderPage.getRecords()) {
+            LocalDateTime dispatchTime = null, rescueTime = null, repairTime = null, arriveTime = null;
+            List<WorkOrderProgress> progressList = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
+            for (WorkOrderProgress progress : progressList) {
+                //派单时间，计算用时
+                if (progress.getStatus().equals(WorkOrderStatusEnum.CREATED.getCode()) && progress.getIsSuccess() == 1) {
+                    workOrder.setCreateTime(progress.getCreateTime());
+                }
+                if (progress.getStatus().equals(WorkOrderStatusEnum.DISPATCHED.getCode()) && progress.getIsSuccess() == 1) {
+                    dispatchTime = progress.getCreateTime();
+                }
+                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) && progress.getIsSuccess() == 1) {
+                    arriveTime = progress.getCreateTime();
+                }
+                //救援完成时间，计算用时
+                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) && progress.getIsSuccess() == 1) {
+                    rescueTime = progress.getCreateTime();
+                }
+                //维修完成时间，计算用时
+                if (progress.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()) && progress.getIsSuccess() == 1) {
+                    repairTime = progress.getCreateTime();
+                }
+            }
+            if (dispatchTime != null && arriveTime != null) {
+                workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(dispatchTime, arriveTime));
+            }
+            if (rescueTime != null && arriveTime != null) {
+                workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(arriveTime, rescueTime));
+            }
+            if (repairTime != null && arriveTime != null) {
+                workOrder.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(arriveTime, repairTime));
+            }
+
+            System.out.println("------------ arrivetime: " + workOrder.getTimeToArrive() + " repairTime: " + workOrder.getRepairDuration() + " rescueTime: " + workOrder.getRescueDuration());
+
+            workOrderService.update(workOrder, new LambdaQueryWrapper<WorkOrder>().eq(WorkOrder::getId, workOrder.getId()));
+        }
+
+        return new BaseResponse(HttpStatus.OK.value(), "查询成功", 0, null);
+    }
+
     @GetMapping("/export-workorder-list")
     public void exportWorkOrder(@ModelAttribute SearchDTO workOrderDTO, HttpServletResponse response) throws Exception {
         // 设置响应头
         String fileName = URLEncoder.encode("历史工单", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
-        LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
+        LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, repairTime = null, closeTime = null;
         ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
 
         List<WorkOrder> workOrders = workOrderService.queryByConditions(workOrderDTO);
@@ -295,12 +341,16 @@ public class WorkOrderController {
             if (followUp != null) {
                 followUpTime = followUp.getCreateTime();
             }
+            WorkOrderProgress repair = progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode());
+            if (repair != null) {
+                repairTime = repair.getCreateTime();
+            }
             WorkOrderProgress close = progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode());
             if (close != null) {
                 closeTime = close.getCreateTime();
             }
 
-            dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, closeTime));
+            dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
         }
 
         System.out.println("list size:" + dtoList.toString());
@@ -345,21 +395,34 @@ public class WorkOrderController {
                 //更新工单记录, 0:创建工单，1:派单，2:救援人员响应成功，3:回拨安抚，4救援人员到达现场，5:救援人员救援完成，6:救援回访，7：维修回访，8:维修完成，99:结案
                 ArrayList<WorkOrderProgress> list = new ArrayList<>();
                 list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(0).setProgress("创建工单").setResult("成功").setCreateTime(workOrder.getCreateTime())); //创建工单
-                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(1).setProgress("派单").setResult("成功").setCreateTime(excel.getDispatchTime())); //派单
-                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(4).setProgress("到达现场").setResult("成功").setCreateTime(excel.getArrivalTime())); //到达现场时间
+                if (excel.getDispatchTime() != null) {
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(1).setProgress("派单").setResult("成功").setCreateTime(excel.getDispatchTime())); //派单
+                }
+                if (excel.getArrivalTime() != null) {
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(4).setProgress("到达现场").setResult("成功").setCreateTime(excel.getArrivalTime())); //到达现场时间
+                }
 
                 if (workOrder.getOrderType().equals(WorkOrderTypeEnum.FAULT.getCode())) {
                     String result = workOrder.getFailureReason();
-                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修完成").setResult("成功").setStatus(8).setCreateTime(excel.getRescueTime())); //救援人员救援完成
-                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修回访").setResult("成功").setStatus(7).setCreateTime(excel.getFollowUpTime()).setRemark(result)); //回访时间
+                    if (excel.getRescueTime() != null) {
+                        list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修完成").setResult("成功").setStatus(8).setCreateTime(excel.getRescueTime())); //救援人员救援完成
+                    }
+                    if (excel.getFollowUpTime() != null) {
+                        list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("维修回访").setResult("成功").setStatus(7).setCreateTime(excel.getFollowUpTime()).setRemark(result)); //回访时间
+                    }
                 }
                 if (workOrder.getOrderType().equals(WorkOrderTypeEnum.TRAPPED_PEOPLE.getCode())) {
                     String result = "被困人数" + workOrder.getTrappedCount() + "人，" + "受伤人数" + workOrder.getInjuredCount() + "人，" + "疑似死亡人数" + workOrder.getSuspectedDeathCount() + "人";
-                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("救援完成").setResult("成功").setStatus(5).setCreateTime(excel.getRescueTime()).setRemark(result)); //救援人员救援完成
-                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(6).setProgress("救援回访").setResult("成功").setCreateTime(excel.getFollowUpTime())); //回访时间
+                    if (excel.getRescueTime() != null) {
+                        list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setProgress("救援完成").setResult("成功").setStatus(5).setCreateTime(excel.getRescueTime()).setRemark(result)); //救援人员救援完成
+                    }
+                    if (excel.getFollowUpTime() != null) {
+                        list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(6).setProgress("救援回访").setResult("成功").setCreateTime(excel.getFollowUpTime())); //回访时间
+                    }
                 }
-                list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(99).setResult("成功").setProgress("结案").setCreateTime(excel.getCloseTime())); //结案
-
+                if (excel.getFollowUpTime() != null) {
+                    list.add(new WorkOrderProgress().setOrderNo(workOrder.getOrderNo()).setEmployeeId("1090001").setStatus(99).setResult("成功").setProgress("结案").setCreateTime(excel.getCloseTime())); //结案
+                }
                 workOrderProgressService.saveOrUpdateBatch(list);
             }
 

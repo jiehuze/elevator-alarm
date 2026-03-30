@@ -24,6 +24,9 @@ public class ElevatorTypeStatsDTO {
 
         for (ElevatorTypeStatsDTO dto : dtos) {
             headers.add(dto.getElevatorType());
+            if (dto.getElevatorCount() == null) {
+                dto.setElevatorCount(0);
+            }
             firstRows.add(dto.getElevatorCount().toString());
             total += dto.getElevatorCount();
         }

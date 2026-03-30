@@ -322,7 +322,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 String filePath = paramDTO.getRootPath() + urlPath;
                 FileUtil.ensureDirectoryExists(filePath);
 
-                LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, closeTime = null;
+                LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, repairTime = null, closeTime = null;
                 ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
 
                 List<WorkOrder> workOrders = workOrderService.queryByConditions(searchDTO);
@@ -344,12 +344,18 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                     if (followUp != null) {
                         followUpTime = followUp.getCreateTime();
                     }
+
+                    WorkOrderProgress repair = progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode());
+                    if (repair != null) {
+                        repairTime = repair.getCreateTime();
+                    }
+
                     WorkOrderProgress close = progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode());
                     if (close != null) {
                         closeTime = close.getCreateTime();
                     }
 
-                    dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, closeTime));
+                    dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
                 }
 
                 System.out.println("list size:" + dtoList.toString());
