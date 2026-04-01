@@ -27,6 +27,7 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
         Community one = this.getOne(queryWrapper);
 
         if (one != null) {
+            this.update(entity, new LambdaQueryWrapper<Community>().eq(Community::getId, one.getId()));
             return one.getId();
         } else {
             boolean save = this.save(entity);

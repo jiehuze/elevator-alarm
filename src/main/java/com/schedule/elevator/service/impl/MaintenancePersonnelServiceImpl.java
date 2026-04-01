@@ -31,6 +31,7 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
 
         MaintenancePersonnel existing = this.getOne(queryWrapper);
         if (existing != null) {
+            this.update(entity, new LambdaUpdateWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getId, entity.getId()));
             return existing.getId();
         }
 

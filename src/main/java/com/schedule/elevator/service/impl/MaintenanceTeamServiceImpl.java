@@ -67,6 +67,7 @@ public class MaintenanceTeamServiceImpl extends ServiceImpl<MaintenanceTeamMappe
 
         if (existing != null) {
 //            log.debug("维保单位已存在，ID: {}", existing.getId());
+            this.update(entity, new LambdaQueryWrapper<MaintenanceTeam>().eq(MaintenanceTeam::getId, existing.getId()));
             return existing.getId();
         }
 

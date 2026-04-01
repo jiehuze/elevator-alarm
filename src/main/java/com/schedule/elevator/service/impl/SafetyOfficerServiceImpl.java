@@ -54,9 +54,11 @@ public class SafetyOfficerServiceImpl extends ServiceImpl<SafetyOfficerMapper, S
     public long getOrCreateSafetyOfficerId(SafetyOfficer entity) {
         // 1. 先查询是否已存在
         SafetyOfficer existing = this.getOne(new LambdaQueryWrapper<SafetyOfficer>()
+                .eq(entity.getUsingUnitId() != null, SafetyOfficer::getUsingUnitId, entity.getUsingUnitId())
                 .eq(SafetyOfficer::getSafetyOfficerPhone, entity.getSafetyOfficerPhone()));
 
-        if (existing.getUsingUnitId() != entity.getUsingUnitId()) {
+        if (existing != null && !existing.getUsingUnitId().equals(entity.getUsingUnitId())) {
+            System.out.println("存在的使用单位id:" + existing.getUsingUnitId() + "，使用单位id:" + entity.getUsingUnitId());
             throw new RuntimeException("安全员:" + entity.getSafetyOfficerName() + "，在不同使用单位");
         }
 
