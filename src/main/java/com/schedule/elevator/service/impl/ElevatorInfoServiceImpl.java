@@ -11,6 +11,7 @@ import com.schedule.elevator.dto.*;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.enums.ElevatorTypeEnum;
 import com.schedule.elevator.service.IElevatorInfoService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -120,22 +121,24 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
 
     @Override
     public boolean createElevatorInfo(ElevatorInfo elevatorInfo) throws Exception {
-        // 只有当 rescueCode 非空时才做唯一性校验
-        if (StringUtils.isNotBlank(elevatorInfo.getRescueCode())) {
-            boolean exists = this.count(new LambdaQueryWrapper<ElevatorInfo>()
-                    .eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode().trim())) > 0;
-
-            if (exists) {
-                LambdaUpdateWrapper<ElevatorInfo> updateWrapper = new LambdaUpdateWrapper<>();
-                updateWrapper.eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode().trim());
-                return this.update(elevatorInfo, updateWrapper);
-            } else {
-                return this.save(elevatorInfo);
+        try {
+            if (StringUtils.isBlank(elevatorInfo.getRescueCode())) {
+                throw new IllegalArgumentException("电梯救援码不能为空");
             }
-        }
 
-        return false;
+            elevatorInfo.setRescueCode(elevatorInfo.getRescueCode().trim());
+
+            return this.saveOrUpdate(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>()
+                    .eq(ElevatorInfo::getRescueCode, elevatorInfo.getRescueCode()));
+        } catch (DuplicateKeyException e) {
+            // 唯一键冲突异常
+            throw new Exception("电梯救援码" + elevatorInfo.getRescueCode() + "已存在", e);
+        } catch (Exception e) {
+            // 其他未知异常
+            throw new Exception("创建或更新电梯" + elevatorInfo.getRegisterCode() + "信息失败：" + e.getMessage(), e);
+        }
     }
+
 
     @Override
     public Long count(ElevatorInfoDTO dto) {

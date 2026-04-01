@@ -190,10 +190,6 @@ public class ElevatorInfoController {
             System.out.println("dtoList size:" + dtoList.size());
             System.out.println("dtoList:" + dtoList.toString());
 
-            if (dtoList != null) {
-                return new BaseResponse(HttpStatus.OK.value(), "导入成功", true, null);
-            }
-
             for (ElevatorImportTemplateExcel dto : dtoList) {
                 System.out.println("execl: " + dto);
                 //读取电梯信息，并写入
@@ -254,13 +250,8 @@ public class ElevatorInfoController {
                 elevatorInfo.setUsingUnitId(UsingUnitId);
                 elevatorInfo.setSafetyOfficerId(safetyOfficerId);
 
-                try {
-                    elevatorInfoService.createElevatorInfo(elevatorInfo);
-                } catch (Exception e) {
-                    System.out.println("创建电梯信息失败:" + e.getMessage());
-                    return new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            "创建电梯:" + elevatorInfo.getRegisterCode() + ",信息错误：" + e.getMessage(), dto, e.getMessage());
-                }
+                elevatorInfoService.createElevatorInfo(elevatorInfo);
+
             }
 
             return new BaseResponse(HttpStatus.OK.value(), "成功导入 " + dtoList.size() + " 条电梯信息", null, null);

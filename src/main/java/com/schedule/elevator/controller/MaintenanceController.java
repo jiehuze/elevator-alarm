@@ -211,9 +211,8 @@ public class MaintenanceController {
                 continue;
             }
             team.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
-            MaintenancePersonnel maintenancePersonnel = new MaintenancePersonnel();
-            maintenancePersonnel.setMaintenanceTeamId(team.getId());
-            team.setNumbers(maintenancePersonnelService.count(maintenancePersonnel));
+            long count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceTeamId, team.getId()));
+            team.setNumbers(count);
         }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
     }

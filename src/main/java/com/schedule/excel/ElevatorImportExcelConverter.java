@@ -3,6 +3,7 @@ package com.schedule.excel;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.entity.*;
+import com.schedule.elevator.enums.DistrictEnum;
 import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
 import com.schedule.elevator.enums.ProjectTypeEnum;
 
@@ -32,24 +33,61 @@ public class ElevatorImportExcelConverter {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的使用状态：" + dto.getUsageStatus() + "，有效值为：在用、停用、注销");
         }
         entity.setUsageStatus(usageStatus.getCode());
-        entity.setNextInspectionDate(parseDate(dto.getNextInspectionDate()));
+
+        LocalDate nextInspectionDate = parseDate(dto.getNextInspectionDate());
+        if (dto.getNextInspectionDate() != null && nextInspectionDate == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，下次检验时间为空或格式错误，请检查");
+        }
+        entity.setNextInspectionDate(nextInspectionDate);
+
         entity.setBrand(dto.getBrand());
         entity.setModel(dto.getModel());
-        entity.setOperationStartDate(parseDate(dto.getOperationStartDate()));
+
+        LocalDate operationStartDate = parseDate(dto.getOperationStartDate());
+        if (dto.getOperationStartDate() != null && operationStartDate == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，开始运行时间为空或格式错误，请检查");
+        }
+        entity.setOperationStartDate(operationStartDate);
+
+
         entity.setMaintenanceType(dto.getMaintenanceType());
         entity.setMaintenancePersonnelName(dto.getWorkerName());
         entity.setPropertyOwner(dto.getPropertyOwner());
         entity.setFactorySerialNumber(dto.getFactorySerialNumber());
         entity.setInstallationCompany(dto.getInstallationCompany());
-        entity.setRenovationDate(parseDate(dto.getRenovationDate()));
+
+        LocalDate renovationDate = parseDate(dto.getRenovationDate());
+        if (dto.getRenovationDate() != null && renovationDate == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，大修/改造日期为空或格式错误，请检查");
+        }
+        entity.setRenovationDate(renovationDate);
+
+
         entity.setDriveType(dto.getDriveType());
         entity.setInspectionAgency(dto.getInspectionAgency());
         entity.setRegistrationAuthority(dto.getRegistrationAuthority());
-        entity.setRegistrationDate(parseDate(dto.getRegistrationDate()));
+
+        LocalDate registrationDate = parseDate(dto.getRegistrationDate());
+        if (dto.getRegistrationDate() != null && registrationDate == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用登记日期为空或格式错误，请检查");
+        }
+        entity.setRegistrationDate(registrationDate);
+
+
         entity.setLocation(dto.getAddress());
         entity.setProvince(dto.getProvince());
         entity.setCity(dto.getCity());
-        entity.setDistrict(dto.getDistrict());
+
+        // 校验区县名称是否合法
+        if (StringUtils.isNotBlank(dto.getDistrict())) {
+            DistrictEnum districtEnum = DistrictEnum.getByName(dto.getDistrict().trim());
+            if (districtEnum == null) {
+                throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的区县名称：" + dto.getDistrict() +
+                        "，有效值为：双桥区、双滦区、鹰手营子矿区、承德县、兴隆县、平泉市、滦平县、隆化县、丰宁满族自治县、宽城满族自治县、围场满族蒙古族自治县、高新区");
+            }
+            entity.setDistrict(districtEnum.getName());
+        }
+
         entity.setProjectName(dto.getProjectName());
         entity.setUsingUnit(dto.getUsingUnit());
         entity.setMaintenanceUnit(dto.getMaintenanceUnit());
