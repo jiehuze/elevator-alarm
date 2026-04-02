@@ -87,7 +87,9 @@ public class ElevatorImportExcelConverter {
             }
             entity.setDistrict(districtEnum.getName());
         }
-
+        if (dto.getProjectName() == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，项目名不能为空");
+        }
         entity.setProjectName(dto.getProjectName());
         entity.setUsingUnit(dto.getUsingUnit());
         entity.setMaintenanceUnit(dto.getMaintenanceUnit());

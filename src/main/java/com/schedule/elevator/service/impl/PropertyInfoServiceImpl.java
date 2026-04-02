@@ -44,12 +44,12 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
         PropertyInfo existing = this.getOne(new LambdaQueryWrapper<PropertyInfo>()
                 .eq(PropertyInfo::getUsingUnit, entity.getUsingUnit()));
 
-        if (existing.getUsingUnitManager() != null && !entity.getUsingUnitManager().equals(existing.getUsingUnitManager())) {
-            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人不一致，请确认后");
-        }
-        if (existing.getUsingUnitManagerPhone() != null && !entity.getUsingUnitManagerPhone().equals(existing.getUsingUnitManagerPhone())) {
-            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人手机不一致，请确认后");
-        }
+//        if (existing != null && existing.getUsingUnitManager() != null && !entity.getUsingUnitManager().equals(existing.getUsingUnitManager())) {
+//            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人不一致，请确认后");
+//        }
+//        if (existing != null && existing.getUsingUnitManagerPhone() != null && !entity.getUsingUnitManagerPhone().equals(existing.getUsingUnitManagerPhone())) {
+//            throw new RuntimeException("使用单位：" + entity.getUsingUnit() + "已存在, 使用单位的负责人手机不一致，请确认后");
+//        }
 
         if (existing != null) {
             this.update(entity, new LambdaQueryWrapper<PropertyInfo>().eq(PropertyInfo::getId, existing.getId()));
