@@ -95,6 +95,9 @@ public class ElevatorInfoController {
                 elevator.setUsingUnitId(0l);
                 elevator.setSafetyOfficerId(0l);
             }
+
+            System.out.println("-----------: elevator:" + elevator.toString());
+
             elevatorInfoService.update(elevator,
                     new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevator.getId()));
         }

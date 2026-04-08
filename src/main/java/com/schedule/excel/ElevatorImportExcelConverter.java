@@ -20,11 +20,31 @@ public class ElevatorImportExcelConverter {
 
         ElevatorInfo entity = new ElevatorInfo();
 
+        if (dto.getRescueCode() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，救援码不能为空");
+        }
         entity.setRescueCode(dto.getRescueCode());
+
+        if (dto.getRegisterCode() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRescueCode() + "，注册码不能为空");
+        }
         entity.setRegisterCode(dto.getRegisterCode());
+
+        if (dto.getElevatorNo() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯编号不能为空");
+        }
         entity.setElevatorNo(dto.getElevatorNo());
+
+        if (dto.getElevatorName() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯名称不能为空");
+        }
         entity.setElevatorName(dto.getElevatorName());
+
+        if (dto.getElevatorType() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯类型不能为空");
+        }
         entity.setElevatorType(dto.getElevatorType());
+
         if (dto.getUsageStatus() == null || dto.getUsageStatus().trim().isEmpty()) {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用状态不能为空");
         }
@@ -40,7 +60,14 @@ public class ElevatorImportExcelConverter {
         }
         entity.setNextInspectionDate(nextInspectionDate);
 
+        if (dto.getBrand() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，品牌不能为空");
+        }
         entity.setBrand(dto.getBrand());
+
+        if (dto.getModel() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，型号不能为空");
+        }
         entity.setModel(dto.getModel());
 
         LocalDate operationStartDate = parseDate(dto.getOperationStartDate());
@@ -49,11 +76,29 @@ public class ElevatorImportExcelConverter {
         }
         entity.setOperationStartDate(operationStartDate);
 
-
+        if (dto.getMaintenanceType() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，维保类型不能为空");
+        }
         entity.setMaintenanceType(dto.getMaintenanceType());
+
+        if (dto.getPropertyOwner() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，产权单位不能为空");
+        }
         entity.setMaintenancePersonnelName(dto.getWorkerName());
+
+        if (dto.getFactorySerialNumber() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，出厂编号不能为空");
+        }
         entity.setPropertyOwner(dto.getPropertyOwner());
+
+//        if (dto.getInstallationCompany() == null){
+//            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯安装单位不能为空");
+//        }
         entity.setFactorySerialNumber(dto.getFactorySerialNumber());
+
+//        if (dto.getInstallationCompany() == null){
+//            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯安装单位不能为空");
+//        }
         entity.setInstallationCompany(dto.getInstallationCompany());
 
         LocalDate renovationDate = parseDate(dto.getRenovationDate());
@@ -62,9 +107,19 @@ public class ElevatorImportExcelConverter {
         }
         entity.setRenovationDate(renovationDate);
 
-
+        if (dto.getDriveType() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，驱动方式不能为空");
+        }
         entity.setDriveType(dto.getDriveType());
+
+        if (dto.getInspectionAgency() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯检验机构不能为空");
+        }
         entity.setInspectionAgency(dto.getInspectionAgency());
+
+        if (dto.getRegistrationAuthority() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用登记机构不能为空");
+        }
         entity.setRegistrationAuthority(dto.getRegistrationAuthority());
 
         LocalDate registrationDate = parseDate(dto.getRegistrationDate());
@@ -73,9 +128,19 @@ public class ElevatorImportExcelConverter {
         }
         entity.setRegistrationDate(registrationDate);
 
-
+        if (dto.getAddress() == null){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，地址不能为空");
+        }
         entity.setLocation(dto.getAddress());
+
+        if (dto.getProvince() == null || !"河北省".equals(dto.getProvince())){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，省不能为空");
+        }
         entity.setProvince(dto.getProvince());
+
+        if (dto.getCity() == null || !"承德市".equals(dto.getCity())){
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，市不能为空");
+        }
         entity.setCity(dto.getCity());
 
         // 校验区县名称是否合法
@@ -91,7 +156,15 @@ public class ElevatorImportExcelConverter {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，项目名不能为空");
         }
         entity.setProjectName(dto.getProjectName());
+
+        if (dto.getUsingUnit() == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用单位名称不能为空");
+        }
         entity.setUsingUnit(dto.getUsingUnit());
+
+        if (dto.getMaintenanceUnit() == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，维保单位名称不能为空");
+        }
         entity.setMaintenanceUnit(dto.getMaintenanceUnit());
 
         if (StringUtils.isNotBlank(dto.getProjectType())) {
