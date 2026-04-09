@@ -70,11 +70,11 @@ public class MaintenanceController {
     public BaseResponse delete(@PathVariable Long id) {
         long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, id));
         if (count > 0) {
-            return new BaseResponse(HttpStatus.OK.value(), "此维保信息下有电梯信息，请先删除电梯信息", null, null);
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "此维保信息下有电梯信息，请先删除电梯信息", null, null);
         }
         long personCount = maintenanceTeamService.count(new LambdaQueryWrapper<MaintenanceTeam>().eq(MaintenanceTeam::getMaintenanceUnitId, id));
         if (personCount > 0) {
-            return new BaseResponse(HttpStatus.OK.value(), "此维保信息下有维保团队信息，请先删除维保团队信息", null, null);
+            return new BaseResponse(HttpStatus.FORBIDDEN.value(), "此维保信息下有维保团队信息，请先删除维保团队信息", null, null);
         }
         maintenanceUnitService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "维保信息删除成功", null, null);
