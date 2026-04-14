@@ -32,6 +32,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<if test='searchDTO.district != null and searchDTO.district != \"\"'>" +
             "AND district = #{searchDTO.district} " +
             "</if>" +
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>" +
+            "      AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}" +
+            "    </if>" +
             "<if test='searchDTO.status != null'>" +
             "AND status = #{searchDTO.status} " +
             "</if>" +
@@ -386,6 +389,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "<script>",
             "SELECT ",
             "  alarm_time AS time, ",
+            "  rescue_code AS rescueCode, ",
             "  register_code AS registerCode, ",
             "  maintenance_unit AS maintenanceUnitName, ",
             "  using_unit AS usingUnit, ",
@@ -403,6 +407,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</if>",
             "<if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "  AND district = #{searchDTO.district}",
+            "</if>",
+            "<if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "  AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "</if>",
             "ORDER BY alarm_time DESC",
             "</script>"
@@ -522,6 +529,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND district = #{searchDTO.district}",
             "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
+            "    </if>",
             "  GROUP BY district",
             ") e ON d.district_name = e.district ",
             "LEFT JOIN (",
@@ -542,6 +552,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "    </if>",
             "  GROUP BY district",
             ") w ON d.district_name = w.district ",
@@ -578,9 +591,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    COUNT(*) AS elevator_count ",
             "  FROM elevator ",
             "  WHERE maintenance_unit IS NOT NULL AND maintenance_unit != '' ",
-            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
-            "      AND district = #{searchDTO.district}",
-            "    </if>",
             "  GROUP BY maintenance_unit",
             ") m ",
             "LEFT JOIN (",
@@ -594,6 +604,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND district = #{searchDTO.district}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "    </if>",
             "  GROUP BY maintenance_unit",
             ") w ON m.maintenance_unit = w.maintenance_unit ",
@@ -647,6 +660,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND e.district = #{searchDTO.district}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "    </if>",
             "  GROUP BY e.using_unit, e.district",
             ") w ON u.using_unit = w.using_unit AND u.district = w.district ",
@@ -889,6 +905,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "     <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "       AND e.district = #{searchDTO.district}",
             "     </if>",
+            "     <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "       AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
+            "     </if>",
             "  ) AS totalFaultCount ",
             "FROM (",
             "  SELECT brand AS brand_name",
@@ -909,6 +928,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    </if>",
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND e.district = #{searchDTO.district}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "    </if>",
             "  GROUP BY e.brand",
             ") w ON b.brand_name = w.brand ",
@@ -969,6 +991,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  </if>",
             "  <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "    AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "    AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "  </if>",
             "ORDER BY fr.sub_code",
             "</script>"

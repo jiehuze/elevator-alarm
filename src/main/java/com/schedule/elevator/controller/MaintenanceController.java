@@ -328,8 +328,13 @@ public class MaintenanceController {
     @PutMapping("/person/update")
     public BaseResponse update(@RequestBody MaintenancePersonnel personnel) {
         long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, personnel.getId()));
-        if (count > 0) {
-            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该人员有电梯正在维保中，请先解除维保关系", null, null);
+//        if (count > 0) {
+//            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该人员有电梯正在维保中，请先解除维保关系", null, null);
+//        }
+        List<ElevatorInfo> list = elevatorInfoService.list(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, personnel.getId()));
+        for (ElevatorInfo info : list) {
+            info.setMaintenancePersonnelName(personnel.getName());
+            elevatorInfoService.updateById(info);
         }
 
         maintenancePersonnelService.updateById(personnel);

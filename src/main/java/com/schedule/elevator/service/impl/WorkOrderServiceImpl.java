@@ -73,6 +73,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             query.notIn(WorkOrder::getOrderType, WorkOrderTypeEnum.COMPLAINT.getCode(), WorkOrderTypeEnum.CONSULTATION.getCode()); // 不包含 3,4,投诉和咨询
         }
 
+        // 超时时长过滤（单位：分钟，需要转换为秒）
+        if (dto.getOvertimeMin() != null && dto.getOvertimeMax() != null) {
+            query.ge(WorkOrder::getTimeToArrive, dto.getOvertimeMin() * 60);
+            query.le(WorkOrder::getTimeToArrive, dto.getOvertimeMax() * 60);
+        }
+
         return query;
     }
 

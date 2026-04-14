@@ -12,6 +12,9 @@ public class OvertimeWorkOrderDTO {
     @ExcelProperty("日期时间")
     private String time;  // 完整时间：2026-01-10 10:20:20
 
+    @ExcelProperty("救援码")
+    private String rescueCode;
+
     @ExcelProperty("电梯注册代码")
     private String registerCode;
 

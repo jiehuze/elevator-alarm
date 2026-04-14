@@ -144,6 +144,12 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("运行年限最大")
     private Integer serviceLifeMax;
 
+    @ApiModelProperty("超时时间最小时长(分钟)")
+    private Integer overtimeMin;
+
+    @ApiModelProperty("超时时间最大时长(分钟)")
+    private Integer overtimeMax;
+
     @ApiModelProperty("创建开始时间")
     private LocalDateTime createTimeStart;
 

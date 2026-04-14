@@ -279,12 +279,11 @@ public class WordExportServiceImpl implements IWordExportService {
 
             List<DistrictStatisticsDTO> districtStatistics = workOrderService.getDistrictStatistics(searchDTO);
 
-
             List<BrandFaultStatsDTO> brandFaultStats = workOrderService.getBrandFaultStats(searchDTO);
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
-            List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
             List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
             WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
+            List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
 
             System.out.println("-------------------" + maintenanceUnitFaultRate);
 
@@ -293,9 +292,9 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, districtStatistics, DistrictStatisticsDTO.class, "DistrictFault");
             tableMap = TableData.buildTableData(tableMap, brandFaultStats, BrandFaultStatsDTO.class, "BrandFaultRate");
             tableMap = TableData.buildTableData(tableMap, usingUnitFaultRate, UsingUnitFaultRateDTO.class, "UsingUnitFaultRate");
-            tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
             tableMap = TableData.buildTableData(tableMap, maintenanceUnitFaultRate, MaintenanceUnitFaultRateDTO.class, "MaintenanceUnitFaultRate");
             tableMap = TableData.buildTableData(tableMap, result, WorkOrderStatisticsDTO.class, "WorkOrderStatistics");
+            tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
 
 
             List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);

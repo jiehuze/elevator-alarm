@@ -29,6 +29,9 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
             "<if test='searchDTO.district != null and searchDTO.district != \"\"'>" +
             "AND w.district = #{searchDTO.district} " +
             "</if>" +
+            "<if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>" +
+            "  AND w.maintenance_unit_id = #{searchDTO.maintenanceUnitId}" +
+            "</if>" +
             "</where>" +
             "GROUP BY f.root_code " +
             "ORDER BY faultCount DESC" +
@@ -50,6 +53,9 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
             "</if>" +
             "<if test='searchDTO.district != null and searchDTO.district != \"\"'>" +
             "AND w.district = #{searchDTO.district} " +
+            "</if>" +
+            "<if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>" +
+            "  AND w.maintenance_unit_id = #{searchDTO.maintenanceUnitId}" +
             "</if>" +
             "</where>" +
             "GROUP BY f.sub_code " +
@@ -77,6 +83,9 @@ public interface IFaultRecordMapper extends BaseMapper<FaultRecord> {
             "  <!-- 区域筛选 -->",
             "  <if test='searchDTO.district != null and searchDTO.district != \"\"'>",
             "    AND w.district = #{searchDTO.district}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "    AND w.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
             "  </if>",
             "</script>"
     })
