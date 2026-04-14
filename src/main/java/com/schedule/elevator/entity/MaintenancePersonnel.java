@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -37,6 +38,18 @@ public class MaintenancePersonnel {
 
     @TableField("status")
     private Integer status; // 在岗状态：1=在岗，0=离岗
+
+    @TableField("certificate_no")
+    private String certificateNo; // 上岗证号
+
+    @TableField("certificate_start_date")
+    private LocalDate certificateStartDate; // 上岗证有效期-开始时间
+
+    @TableField("certificate_end_date")
+    private LocalDate certificateEndDate; // 上岗证有效期-结束时间
+
+    @TableField("certificate_photo")
+    private String certificatePhoto; // 上岗证照片URL
 
     @TableField(exist = false)
     private Long count;  // 计数属性，不映射到数据库
