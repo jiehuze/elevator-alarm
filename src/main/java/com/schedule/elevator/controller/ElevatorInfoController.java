@@ -87,7 +87,7 @@ public class ElevatorInfoController {
                 elevator.setMaintenanceUnitId(0l);
                 elevator.setMaintenanceType("无");
                 elevator.setMaintenanceTeamId(0l);
-//                elevator.setMaintenancePersonnelName("");
+                elevator.setMaintenancePersonnelName("无");
                 elevator.setMaintenancePersonnelId(0l);
             }
 

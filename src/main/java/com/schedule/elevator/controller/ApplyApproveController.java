@@ -2,6 +2,7 @@ package com.schedule.elevator.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
+import com.schedule.elevator.dto.ApproveActionDTO;
 import com.schedule.elevator.dto.ApplyApproveQueryDTO;
 import com.schedule.elevator.entity.ApplyApprove;
 import com.schedule.elevator.service.IApplyApproveService;
@@ -16,7 +17,7 @@ import java.util.Map;
  * 统一审批控制器
  */
 @RestController
-@RequestMapping("/apply-approve")
+@RequestMapping("/check")
 public class ApplyApproveController {
 
     @Autowired
@@ -61,12 +62,10 @@ public class ApplyApproveController {
     /**
      * 审批通过
      */
-    @PostMapping("/approve/{id}")
-    public BaseResponse approve(@PathVariable Long id,
-                                @RequestParam Integer approveUserId,
-                                @RequestParam(required = false) String approveComment) {
+    @PostMapping("/approve")
+    public BaseResponse approve(@RequestBody ApproveActionDTO actionDTO) {
         try {
-            boolean success = applyApproveService.approve(id, approveUserId, approveComment);
+            boolean success = applyApproveService.approve(actionDTO.getId(), actionDTO.getApproveUserId(), actionDTO.getApproveComment());
             if (success) {
                 return new BaseResponse(HttpStatus.OK.value(), "审批通过", null, null);
             } else {
@@ -82,12 +81,10 @@ public class ApplyApproveController {
     /**
      * 审批拒绝
      */
-    @PostMapping("/reject/{id}")
-    public BaseResponse reject(@PathVariable Long id,
-                               @RequestParam Integer approveUserId,
-                               @RequestParam(required = false) String approveComment) {
+    @PostMapping("/reject")
+    public BaseResponse reject(@RequestBody ApproveActionDTO actionDTO) {
         try {
-            boolean success = applyApproveService.reject(id, approveUserId, approveComment);
+            boolean success = applyApproveService.reject(actionDTO.getId(), actionDTO.getApproveUserId(), actionDTO.getApproveComment());
             if (success) {
                 return new BaseResponse(HttpStatus.OK.value(), "审批已拒绝", null, null);
             } else {

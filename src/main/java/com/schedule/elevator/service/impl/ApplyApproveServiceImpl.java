@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.ApplyApproveMapper;
 import com.schedule.elevator.dto.ApplyApproveQueryDTO;
+import com.schedule.elevator.dto.MaintenanceChangeApplyDTO;
 import com.schedule.elevator.entity.ApplyApprove;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.service.IApplyApproveService;
+import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IMaintenancePersonnelService;
 import com.schedule.elevator.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,9 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
 
     @Autowired
     private IMaintenancePersonnelService maintenancePersonnelService;
+
+    @Autowired
+    private IElevatorInfoService elevatorInfoService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -106,7 +112,7 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 processEmployeeApply(applyApprove.getApplyData());
                 break;
             case 2: // 维保公司变更
-                // TODO: 实现维保公司变更逻辑
+                processMaintenanceChangeApply(applyApprove.getApplyData());
                 break;
             case 3: // 注销脱保
                 // TODO: 实现注销脱保逻辑
@@ -140,6 +146,65 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
 
         // 保存到数据库
         maintenancePersonnelService.save(personnel);
+    }
+
+    /**
+     * 处理维保单位变更申请
+     */
+    private void processMaintenanceChangeApply(String applyData) {
+        MaintenanceChangeApplyDTO changeDTO = JSON.parseObject(applyData, MaintenanceChangeApplyDTO.class);
+        if (changeDTO == null) {
+            System.out.println("维保单位变更申请数据格式错误");
+        }
+
+        // 校验必填字段
+        if (changeDTO.getMaintenanceUnitId() == null) {
+            System.out.println("维保单位ID不能为空");
+        }
+        if (StringUtils.isBlank(changeDTO.getMaintenanceUnit())) {
+            System.out.println("维保单位名称不能为空");
+        }
+        if (changeDTO.getElevatorList() == null || changeDTO.getElevatorList().isEmpty()) {
+            System.out.println("电梯列表不能为空");
+        }
+
+        // 遍历电梯列表，更新每台电梯的维保信息
+        for (ElevatorInfo elevatorInfo : changeDTO.getElevatorList()) {
+            if (elevatorInfo.getId() == null) {
+                System.out.println("电梯ID不能为空");
+                continue;
+            }
+            if (changeDTO.getMaintenanceUnitExpired() == null) {
+                System.out.println("维保到期状态不能为空");
+                continue;
+            }
+
+            // 根据救援码查询电梯
+            ElevatorInfo elevator = new ElevatorInfo();
+
+            if (changeDTO.getMaintenanceUnitExpired()) {
+                elevator.setMaintenanceUnit("");
+                elevator.setMaintenanceUnitId(0l);
+                elevator.setMaintenanceType("无");
+                elevator.setMaintenanceTeamId(0l);
+                elevator.setMaintenancePersonnelName("无");
+                elevator.setMaintenancePersonnelId(0l);
+                elevator.setUsageStatus(4);
+                elevator.setMaintenanceUnitExpired(true);
+            } else {
+                // 更新电梯维保信息
+//                elevator.setMaintenanceType(changeDTO.getMaintenanceType());
+                elevator.setMaintenanceUnitId(changeDTO.getMaintenanceUnitId());
+                elevator.setMaintenanceUnit(changeDTO.getMaintenanceUnit());
+                elevator.setMaintenanceTeamId(changeDTO.getMaintenanceTeamId());
+                elevator.setMaintenancePersonnelId(changeDTO.getMaintenancePersonnelId());
+                elevator.setMaintenancePersonnelName(changeDTO.getMaintenancePersonnelName());
+                elevator.setUsageStatus(1);
+                elevator.setMaintenanceUnitExpired(false);
+            }
+
+            elevatorInfoService.update(elevator, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getId, elevatorInfo.getId()));
+        }
     }
 
     @Override
