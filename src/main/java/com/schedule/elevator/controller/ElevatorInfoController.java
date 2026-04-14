@@ -13,6 +13,7 @@ import com.schedule.elevator.entity.*;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
 import com.schedule.excel.ElevatorImportTemplateExcel;
+import com.schedule.excel.ElevatorImportValidationResult;
 import com.schedule.utils.ExcelUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +190,10 @@ public class ElevatorInfoController {
 
             // 2. 导入解析
             List<ElevatorImportTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorImportTemplateExcel.class);
+//            List<ElevatorImportValidationResult> elevatorImportValidationResults = ElevatorImportExcelConverter.validateImportData(dtoList);
+//            if (elevatorImportValidationResults != null && !elevatorImportValidationResults.isEmpty()){
+//                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "数据验证失败", elevatorImportValidationResults, null);
+//            }
 
             System.out.println("dtoList size:" + dtoList.size());
             System.out.println("dtoList:" + dtoList.toString());

@@ -10,6 +10,8 @@ import com.schedule.elevator.enums.ProjectTypeEnum;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ElevatorImportExcelConverter {
     /**
@@ -336,21 +338,187 @@ public class ElevatorImportExcelConverter {
 
     // ---- 工具方法 ----
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER_SHORT = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     private static LocalDate parseDate(String dateStr) {
         if (dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         }
+        String trimmed = dateStr.trim();
         try {
-            return LocalDate.parse(dateStr.trim(), DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            // 可选：记录日志或抛出业务异常
-            return null;
+            // 先尝试标准格式 yyyy-MM-dd
+            return LocalDate.parse(trimmed, DATE_FORMATTER);
+        } catch (DateTimeParseException e1) {
+            try {
+                // 再尝试短格式 yyyy-M-d（支持单数月/日，如 2026-3-9）
+                return LocalDate.parse(trimmed, DATE_FORMATTER_SHORT);
+            } catch (DateTimeParseException e2) {
+                // 可选：记录日志或抛出业务异常
+                return null;
+            }
         }
     }
 
     private static String formatDate(LocalDate date) {
         return date != null ? date.format(DATE_FORMATTER) : null;
+    }
+
+    /**
+     * 校验导入数据列表，只返回校验失败的结果（包含错误信息和行号）
+     *
+     * @param dtoList 导入数据列表
+     * @return 校验失败的结果列表，如果全部通过则返回空列表
+     */
+    public static List<ElevatorImportValidationResult> validateImportData(List<ElevatorImportTemplateExcel> dtoList) {
+        List<ElevatorImportValidationResult> errorResults = new ArrayList<>();
+        if (dtoList == null || dtoList.isEmpty()) {
+            return errorResults;
+        }
+
+        for (int i = 0; i < dtoList.size(); i++) {
+            ElevatorImportTemplateExcel dto = dtoList.get(i);
+            ElevatorImportValidationResult result = new ElevatorImportValidationResult();
+            result.setRowNum(i + 3); // Excel行号从3开始（第1行是表头，第2行是数据开始）
+            result.setOriginalData(dto);
+
+            if (dto == null) {
+                result.addError("第" + result.getRowNum() + "行数据为空");
+                errorResults.add(result);
+                continue;
+            }
+
+            // 记录标识信息
+            result.setRegisterCode(dto.getRegisterCode());
+            result.setRescueCode(dto.getRescueCode());
+
+            // 校验必填字段
+            validateRequiredField(result, dto.getRescueCode(), "救援码");
+            validateRequiredField(result, dto.getRegisterCode(), "注册码");
+            validateRequiredField(result, dto.getElevatorNo(), "电梯编号");
+            validateRequiredField(result, dto.getElevatorName(), "电梯名称");
+            validateRequiredField(result, dto.getElevatorType(), "电梯类型");
+            validateRequiredField(result, dto.getBrand(), "品牌");
+            validateRequiredField(result, dto.getModel(), "型号");
+            validateRequiredField(result, dto.getMaintenanceType(), "维保类型");
+            validateRequiredField(result, dto.getPropertyOwner(), "产权单位");
+            validateRequiredField(result, dto.getFactorySerialNumber(), "出厂编号");
+            validateRequiredField(result, dto.getDriveType(), "驱动方式");
+            validateRequiredField(result, dto.getInspectionAgency(), "电梯检验机构");
+            validateRequiredField(result, dto.getRegistrationAuthority(), "使用登记机构");
+            validateRequiredField(result, dto.getAddress(), "地址");
+            validateRequiredField(result, dto.getProjectName(), "项目名");
+            validateRequiredField(result, dto.getUsingUnit(), "使用单位名称");
+            validateRequiredField(result, dto.getMaintenanceUnit(), "维保单位名称");
+
+            // 校验使用状态
+            if (StringUtils.isBlank(dto.getUsageStatus())) {
+                result.addError("使用状态不能为空");
+            } else {
+                ElevatorUsageStatusEnum usageStatus = ElevatorUsageStatusEnum.getByDescription(dto.getUsageStatus().trim());
+                if (usageStatus == null) {
+                    result.addError("无效的使用状态：" + dto.getUsageStatus() + "，有效值为：在用、停用、注销");
+                }
+            }
+
+            // 校验日期格式
+            validateDateFormat(result, dto.getNextInspectionDate(), "下次检验时间");
+            validateDateFormat(result, dto.getOperationStartDate(), "开始运行时间");
+            validateDateFormat(result, dto.getRenovationDate(), "大修/改造日期");
+            validateDateFormat(result, dto.getRegistrationDate(), "使用登记日期");
+
+            // 校验省市区
+            if (StringUtils.isBlank(dto.getProvince())) {
+                result.addError("省不能为空");
+            } else if (!"河北省".equals(dto.getProvince())) {
+                result.addError("省必须是河北省");
+            }
+
+            if (StringUtils.isBlank(dto.getCity())) {
+                result.addError("市不能为空");
+            } else if (!"承德市".equals(dto.getCity())) {
+                result.addError("市必须是承德市");
+            }
+
+            // 校验区县
+            if (StringUtils.isBlank(dto.getDistrict())) {
+                result.addError("区/县不能为空");
+            } else {
+                DistrictEnum districtEnum = DistrictEnum.getByName(dto.getDistrict().trim());
+                if (districtEnum == null) {
+                    result.addError("无效的区县名称：" + dto.getDistrict() +
+                            "，有效值为：双桥区、双滦区、鹰手营子矿区、承德县、兴隆县、平泉市、滦平县、隆化县、丰宁满族自治县、宽城满族自治县、围场满族蒙古族自治县、高新区");
+                }
+            }
+
+            // 校验项目类型
+            if (StringUtils.isNotBlank(dto.getProjectType())) {
+                ProjectTypeEnum projectType = ProjectTypeEnum.getByDescription(dto.getProjectType().trim());
+                if (projectType == null) {
+                    result.addError("无效的项目类型：" + dto.getProjectType() +
+                            "，有效值为：住宅区、办公楼、商业区、宾馆饭店、医院、学校、交通场所、文体娱场馆、其他");
+                }
+            }
+
+            // 只添加校验失败的结果
+            if (!result.isValid()) {
+                errorResults.add(result);
+            }
+        }
+
+        return errorResults;
+    }
+
+    /**
+     * 获取校验失败的结果列表
+     *
+     * @param validationResults 所有校验结果
+     * @return 仅包含校验失败的结果
+     */
+    public static List<ElevatorImportValidationResult> getInvalidResults(List<ElevatorImportValidationResult> validationResults) {
+        List<ElevatorImportValidationResult> invalidResults = new ArrayList<>();
+        for (ElevatorImportValidationResult result : validationResults) {
+            if (!result.isValid()) {
+                invalidResults.add(result);
+            }
+        }
+        return invalidResults;
+    }
+
+    /**
+     * 获取校验通过的结果列表
+     *
+     * @param validationResults 所有校验结果
+     * @return 仅包含校验通过的结果
+     */
+    public static List<ElevatorImportValidationResult> getValidResults(List<ElevatorImportValidationResult> validationResults) {
+        List<ElevatorImportValidationResult> validResults = new ArrayList<>();
+        for (ElevatorImportValidationResult result : validationResults) {
+            if (result.isValid()) {
+                validResults.add(result);
+            }
+        }
+        return validResults;
+    }
+
+    /**
+     * 校验必填字段
+     */
+    private static void validateRequiredField(ElevatorImportValidationResult result, String value, String fieldName) {
+        if (StringUtils.isBlank(value)) {
+            result.addError(fieldName + "不能为空");
+        }
+    }
+
+    /**
+     * 校验日期格式
+     */
+    private static void validateDateFormat(ElevatorImportValidationResult result, String dateStr, String fieldName) {
+        if (StringUtils.isNotBlank(dateStr)) {
+            LocalDate date = parseDate(dateStr);
+            if (date == null) {
+                result.addError(fieldName + "格式错误，正确格式为：yyyy-MM-dd");
+            }
+        }
     }
 
 }
