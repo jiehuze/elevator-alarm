@@ -238,6 +238,11 @@ public class ElevatorInfo {
     private String videoChannelCode;
 
     /**
+     * 注册证书地址
+     */
+    private String regCert;
+
+    /**
      * 记录创建时间
      */
     @TableField("created_at")

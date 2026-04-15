@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,6 +51,21 @@ public class MaintenanceUnit implements Serializable {
 
     @TableField("maintenance_unit_code_url")
     private String maintenanceUnitCodeUrl; // 维保单位编码（营业执照）照片
+
+    @TableField("license_no")
+    private String licenseNo; // 特种设备安装许可证编号
+
+    @TableField("license_img")
+    private String licenseImg; // 特种设备安装许可证图片
+
+    @TableField("license_start")
+    private LocalDate licenseStart;  // 特种设备安装许可证开始时间
+
+    @TableField("license_end")
+    private LocalDate licenseEnd; // 特种设备安装许可证结束时间
+
+    @TableField("license_level")
+    private String licenseLevel; // 特种设备安装许可证等级
 
     @TableField("level")
     private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位

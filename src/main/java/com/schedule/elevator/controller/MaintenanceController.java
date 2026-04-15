@@ -82,7 +82,8 @@ public class MaintenanceController {
 
     @PutMapping("/update")
     public BaseResponse update(@RequestBody MaintenanceUnit maintenance) {
-        maintenanceUnitService.updateById(maintenance);
+//        maintenanceUnitService.updateById(maintenance);
+        maintenanceUnitService.update(maintenance, new LambdaUpdateWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, maintenance.getId()));
         return new BaseResponse(HttpStatus.OK.value(), "维保信息更新成功", maintenance, null);
     }
 

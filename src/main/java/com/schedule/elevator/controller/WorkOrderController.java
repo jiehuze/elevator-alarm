@@ -144,21 +144,21 @@ public class WorkOrderController {
             HashMap<Integer, WorkOrderProgress> wMap = workOrderProgressService.queryMapByOrderNo(handleDTO.getOrderNo());
 
             //到达现场时间，计算用时
-            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) && handleDTO.getIsSuccess() == 1) {
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode())) {
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
                 if (progress != null) {
                     workOrder.setTimeToArrive(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
                 }
             }
             //救援完成时间，计算用时
-            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode())) {
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
                 if (progress != null) {
                     workOrder.setRescueDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
                 }
             }
             //维修完成时间，计算用时
-            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()) && handleDTO.getIsSuccess() == 1) {
+            if (handleDTO.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode())) {
                 WorkOrderProgress progress = wMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
                 if (progress != null) {
                     workOrder.setRepairDuration(DateUtils.calculateTimeDifferenceInSeconds(progress.getCreateTime(), LocalDateTime.now()));
@@ -271,28 +271,28 @@ public class WorkOrderController {
 
     @GetMapping("/sync")
     public BaseResponse sync() {
-        SearchDTO searchDTO = new SearchDTO().setCurrent(5).setSize(1000);
+        SearchDTO searchDTO = new SearchDTO().setCurrent(4).setSize(1000);
         Page<WorkOrder> workOrderPage = workOrderService.queryByConditionsPage(searchDTO);
         for (WorkOrder workOrder : workOrderPage.getRecords()) {
             LocalDateTime dispatchTime = null, rescueTime = null, repairTime = null, arriveTime = null;
             List<WorkOrderProgress> progressList = workOrderProgressService.queryByOrderNo(workOrder.getOrderNo());
             for (WorkOrderProgress progress : progressList) {
                 //派单时间，计算用时
-                if (progress.getStatus().equals(WorkOrderStatusEnum.CREATED.getCode()) && progress.getIsSuccess() == 1) {
+                if (progress.getStatus().equals(WorkOrderStatusEnum.CREATED.getCode())) {
                     workOrder.setCreateTime(progress.getCreateTime());
                 }
-                if (progress.getStatus().equals(WorkOrderStatusEnum.DISPATCHED.getCode()) && progress.getIsSuccess() == 1) {
+                if (progress.getStatus().equals(WorkOrderStatusEnum.DISPATCHED.getCode())) {
                     dispatchTime = progress.getCreateTime();
                 }
-                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()) && progress.getIsSuccess() == 1) {
+                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode())) {
                     arriveTime = progress.getCreateTime();
                 }
                 //救援完成时间，计算用时
-                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()) && progress.getIsSuccess() == 1) {
+                if (progress.getStatus().equals(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode())) {
                     rescueTime = progress.getCreateTime();
                 }
                 //维修完成时间，计算用时
-                if (progress.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()) && progress.getIsSuccess() == 1) {
+                if (progress.getStatus().equals(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode())) {
                     repairTime = progress.getCreateTime();
                 }
             }
