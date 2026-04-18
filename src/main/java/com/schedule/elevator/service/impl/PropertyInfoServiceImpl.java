@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.schedule.elevator.dao.mapper.PropertyInfoMapper;
 import com.schedule.elevator.dto.PropertyInfoDTO;
 import com.schedule.elevator.dto.SearchDTO;
+import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.PropertyInfo;
+import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IPropertyInfoService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,9 @@ import java.util.List;
 @Service
 public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, PropertyInfo>
         implements IPropertyInfoService {
+
+    @Autowired
+    private IElevatorInfoService elevatorInfoService;
 
     @Override
     public PropertyInfo getByUnitCode(String unitCode) {
@@ -31,6 +37,15 @@ public class PropertyInfoServiceImpl extends ServiceImpl<PropertyInfoMapper, Pro
 
         if (existing != null) {
             entity.setId(existing.getId());
+
+            //更新电梯信息
+            if (entity.getId() != null) {
+                ElevatorInfo elevatorInfo = new ElevatorInfo();
+                elevatorInfo.setUsingUnit(entity.getUsingUnit());
+                elevatorInfo.setUsingUnitId(existing.getId());
+                elevatorInfoService.update(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getUsingUnitId, existing.getId()));
+            }
+
             return this.updateById(entity);
         } else {
             return this.save(entity);

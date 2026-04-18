@@ -174,7 +174,7 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 System.out.println("电梯ID不能为空");
                 continue;
             }
-            if (changeDTO.getMaintenanceUnitExpired() == null) {
+            if (changeDTO.getMaintenanceUnitChanged() == null) {
                 System.out.println("维保到期状态不能为空");
                 continue;
             }
@@ -182,7 +182,7 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
             // 根据救援码查询电梯
             ElevatorInfo elevator = new ElevatorInfo();
 
-            if (changeDTO.getMaintenanceUnitExpired()) {
+            if (changeDTO.getMaintenanceUnitChanged()) {
                 elevator.setMaintenanceUnit("");
                 elevator.setMaintenanceUnitId(0l);
                 elevator.setMaintenanceType("无");

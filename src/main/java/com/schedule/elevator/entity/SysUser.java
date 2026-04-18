@@ -27,6 +27,12 @@ public class SysUser {
     @TableField("description")
     private String description;
 
+    @TableField("maintenance_unit_id")
+    private Long maintenanceUnitId;
+
+    @TableField(exist = false)
+    private String maintenanceUnit;
+
     @TableField("created_at")
     private LocalDateTime createdAt;
 

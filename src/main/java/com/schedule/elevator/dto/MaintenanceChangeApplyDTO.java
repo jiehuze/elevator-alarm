@@ -58,7 +58,7 @@ public class MaintenanceChangeApplyDTO implements Serializable {
     /**
      * 维保单位是否脱保：0-否，1-是
      */
-    private Boolean maintenanceUnitExpired;
+    private Boolean maintenanceUnitChanged;
 
     /**
      * 照片URL

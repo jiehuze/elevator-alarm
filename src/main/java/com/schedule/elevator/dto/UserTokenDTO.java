@@ -10,4 +10,5 @@ public class UserTokenDTO extends UserToken implements java.io.Serializable {
     private String username;
     private String employeeId;
     private String roles;
+    private Long maintenanceUnitId;
 }

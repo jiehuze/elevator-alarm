@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.schedule.common.BaseResponse;
 import com.schedule.elevator.dto.SysUserDTO;
 import com.schedule.elevator.dto.UserTokenDTO;
+import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.elevator.entity.SysUser;
 import com.schedule.elevator.entity.UserToken;
+import com.schedule.elevator.service.IMaintenanceUnitService;
 import com.schedule.elevator.service.ISysUserService;
 import com.schedule.elevator.service.IUserTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,25 @@ public class SysUserController {
     @Autowired
     private IUserTokenService userTokenService;
 
+    @Autowired
+    private IMaintenanceUnitService maintenanceUnitService;
+
     /**
      * 注册用户
      */
     @PostMapping("/register")
     public BaseResponse register(@RequestBody SysUser user) {
+        if (user == null || user.getUsername() == null || user.getPassword() == null || user.getRoles() == null)
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "用户名和密码,角色不能为空", null, null);
+        if (user.getRoles().contains("maintenance")) {
+            if (user.getMaintenanceUnitId() == null) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "维护单位用户需要选择维护单位", null, null);
+            }
+            MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(user.getMaintenanceUnitId());
+            if (maintenanceUnit == null) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "维护单位不存在", null, null);
+            }
+        }
         SysUser register = sysUserService.register(user);
 
         return new BaseResponse(HttpStatus.OK.value(), "注册成功", register, null);
@@ -59,6 +75,12 @@ public class SysUserController {
     @GetMapping("/list")
     public BaseResponse listAll(@ModelAttribute SysUserDTO query) {
         Page<SysUser> list = sysUserService.querySysUserPage(query);
+        for (SysUser user : list.getRecords()) {
+            if (user.getMaintenanceUnitId() != null) {
+                MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(user.getMaintenanceUnitId());
+                user.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
+            }
+        }
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);
     }
@@ -94,6 +116,7 @@ public class SysUserController {
         userTokenDTO.setRoles(auth.getRoles());
         userTokenDTO.setEmployeeId(auth.getEmployeeId());
         userTokenDTO.setUsername(auth.getUsername());
+        userTokenDTO.setMaintenanceUnitId(auth.getMaintenanceUnitId());
 
         return new BaseResponse(HttpStatus.OK.value(), "登录成功", userTokenDTO, null);
     }

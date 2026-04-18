@@ -59,6 +59,13 @@ public class CommunityController {
     @PutMapping("/update")
     public BaseResponse update(@RequestBody Community community) {
         communityService.updateById(community);
+        if (community.getProjectName() != null && community.getId() != null) {
+            ElevatorInfo elevatorInfo = new ElevatorInfo();
+            elevatorInfo.setCommunityId(community.getId());
+            elevatorInfo.setProjectName(community.getProjectName());
+
+            elevatorInfoService.update(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getCommunityId, community.getId()));
+        }
         return new BaseResponse(HttpStatus.OK.value(), "更新成功", community, null);
     }
 

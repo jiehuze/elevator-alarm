@@ -190,10 +190,10 @@ public class ElevatorInfoController {
 
             // 2. 导入解析
             List<ElevatorImportTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorImportTemplateExcel.class);
-//            List<ElevatorImportValidationResult> elevatorImportValidationResults = ElevatorImportExcelConverter.validateImportData(dtoList);
-//            if (elevatorImportValidationResults != null && !elevatorImportValidationResults.isEmpty()){
-//                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "数据验证失败", elevatorImportValidationResults, null);
-//            }
+            List<ElevatorImportValidationResult> elevatorImportValidationResults = ElevatorImportExcelConverter.validateImportData(dtoList);
+            if (elevatorImportValidationResults != null && !elevatorImportValidationResults.isEmpty()) {
+                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "数据验证失败", elevatorImportValidationResults, null);
+            }
 
             System.out.println("dtoList size:" + dtoList.size());
             System.out.println("dtoList:" + dtoList.toString());
@@ -206,7 +206,6 @@ public class ElevatorInfoController {
                     return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "电梯使用状态错误", dto, null);
                 }
                 System.out.println("elevatorInfo: " + elevatorInfo.toString());
-
 
                 if (StringUtils.isBlank(elevatorInfo.getElevatorNo()) ||
                         StringUtils.isBlank(elevatorInfo.getRescueCode())) {

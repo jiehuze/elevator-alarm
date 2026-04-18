@@ -99,6 +99,11 @@ public class PropertyInfoController {
     @PutMapping("/update")
     public BaseResponse update(@RequestBody PropertyInfo entity) {
         boolean updated = IPropertyInfoService.updateById(entity);
+        if (entity.getId() != null && entity.getUsingUnit() != null) {
+            ElevatorInfo elevatorInfo = new ElevatorInfo();
+            elevatorInfo.setUsingUnit(entity.getUsingUnit());
+            elevatorInfoService.update(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getUsingUnitId, entity.getId()));
+        }
 
         return new BaseResponse(updated ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 updated ? "更新成功" : "更新失败", entity, null);

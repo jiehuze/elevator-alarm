@@ -79,6 +79,7 @@ public class MaintenanceUnitServiceImpl extends ServiceImpl<MaintenanceMapper, M
         Page<MaintenanceUnit> page = new Page<>(current, size);
         LambdaQueryWrapper<MaintenanceUnit> queryWrapper = new LambdaQueryWrapper<>();
 
+        queryWrapper.eq(mt.getId() != null, MaintenanceUnit::getId, mt.getId());
         queryWrapper.like(StringUtils.isNotBlank(mt.getMaintenanceUnit()), MaintenanceUnit::getMaintenanceUnit, mt.getMaintenanceUnit());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitManager()), MaintenanceUnit::getMaintenanceUnitManager, mt.getMaintenanceUnitManager());
         queryWrapper.eq(StringUtils.isNotBlank(mt.getMaintenanceUnitManagerPhone()), MaintenanceUnit::getMaintenanceUnitManagerPhone, mt.getMaintenanceUnitManagerPhone());
