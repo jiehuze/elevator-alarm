@@ -31,11 +31,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.schedule.utils.ExcelUtil.isExcelFile;
 
@@ -319,36 +316,31 @@ public class WorkOrderController {
         // 设置响应头
         String fileName = URLEncoder.encode("历史工单", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
-        LocalDateTime dispatchTime = null, arriveTime = null, rescueTime = null, followUpTime = null, repairTime = null, closeTime = null;
         ArrayList<WorkOrderExcel> dtoList = new ArrayList<>();
 
         List<WorkOrder> workOrders = workOrderService.queryByConditions(workOrderDTO);
         for (WorkOrder workOrder : workOrders) {
             HashMap<Integer, WorkOrderProgress> progressHashMap = workOrderProgressService.queryMapByOrderNo(workOrder.getOrderNo());
-            WorkOrderProgress dispatch = progressHashMap.get(WorkOrderStatusEnum.DISPATCHED.getCode());
-            if (dispatch != null) {
-                dispatchTime = dispatch.getCreateTime();
-            }
-            WorkOrderProgress arrive = progressHashMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode());
-            if (arrive != null) {
-                arriveTime = arrive.getCreateTime();
-            }
-            WorkOrderProgress rescue = progressHashMap.get(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode());
-            if (rescue != null) {
-                rescueTime = rescue.getCreateTime();
-            }
-            WorkOrderProgress followUp = progressHashMap.get(WorkOrderStatusEnum.RESCUE_FOLLOW_UP.getCode());
-            if (followUp != null) {
-                followUpTime = followUp.getCreateTime();
-            }
-            WorkOrderProgress repair = progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode());
-            if (repair != null) {
-                repairTime = repair.getCreateTime();
-            }
-            WorkOrderProgress close = progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode());
-            if (close != null) {
-                closeTime = close.getCreateTime();
-            }
+
+            LocalDateTime dispatchTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.DISPATCHED.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            LocalDateTime arriveTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.RESCUE_ARRIVED.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            LocalDateTime rescueTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.RESCUE_COMPLETED.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            LocalDateTime followUpTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.RESCUE_FOLLOW_UP.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            LocalDateTime repairTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            LocalDateTime closeTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode()))
+                    .map(WorkOrderProgress::getCreateTime).orElse(null);
+
+            dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
 
             dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
         }

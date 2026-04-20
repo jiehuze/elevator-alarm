@@ -192,4 +192,19 @@ public class DateUtils {
         return ranges;
     }
 
+    /**
+     * 将秒数转换为"分钟+秒"格式
+     *
+     * @param seconds 秒数
+     * @return 格式化后的字符串，如："5分30秒"；如果为null则返回空字符串
+     */
+    public static String formatSecondsToMinutesAndSeconds(Long seconds) {
+        if (seconds == null) {
+            return "";
+        }
+        long minutes = seconds / 60;
+        long secs = seconds % 60;
+        return minutes + "分" + secs + "秒";
+    }
+
 }

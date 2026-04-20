@@ -452,6 +452,14 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  GROUP BY rescue_code ",
             "  HAVING COUNT(*) >= 2 ",
             ") ",
+            "    AND status = 99 ",
+            "    AND order_type NOT IN (5, 6) ",  // 排除自行脱困和误报工单
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
             "ORDER BY w.rescue_code, w.create_time",
             "</script>"
     })
@@ -591,6 +599,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    COUNT(*) AS elevator_count ",
             "  FROM elevator ",
             "  WHERE maintenance_unit IS NOT NULL AND maintenance_unit != '' ",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND district = #{searchDTO.district}",
+            "    </if>",
             "  GROUP BY maintenance_unit",
             ") m ",
             "LEFT JOIN (",

@@ -212,8 +212,14 @@ public class MaintenanceController {
                 continue;
             }
             team.setMaintenanceUnit(maintenanceUnit.getMaintenanceUnit());
-            long count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceTeamId, team.getId()));
-            team.setNumbers(count);
+
+            if (searchTeam.getLevel() == 2) {
+                long count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getSubMaintenanceTeamId, team.getId()));
+                team.setNumbers(count);
+            } else {
+                long count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceTeamId, team.getId()));
+                team.setNumbers(count);
+            }
         }
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", maintenanceTeams, null);
     }

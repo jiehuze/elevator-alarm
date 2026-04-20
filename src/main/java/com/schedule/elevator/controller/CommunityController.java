@@ -11,6 +11,7 @@ import com.schedule.elevator.entity.SafetyOfficer;
 import com.schedule.elevator.service.ICommunityService;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.ISafetyOfficerService;
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -95,6 +96,7 @@ public class CommunityController {
             for (Community community : result.getRecords()) {
                 ElevatorInfoDTO elevatorInfoDTO = new ElevatorInfoDTO();
                 elevatorInfoDTO.setCommunityId(community.getId());
+                elevatorInfoDTO.setMaintenanceUnitId(searchInfo.getMaintenanceUnitId());
 
                 community.setCount(elevatorInfoService.count(elevatorInfoDTO));
             }

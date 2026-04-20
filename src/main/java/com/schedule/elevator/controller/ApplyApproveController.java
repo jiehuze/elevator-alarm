@@ -32,6 +32,16 @@ public class ApplyApproveController {
         return new BaseResponse(HttpStatus.OK.value(), "success", page, null);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public BaseResponse delete(@PathVariable Long id) {
+        boolean success = applyApproveService.removeById(id);
+        if (success) {
+            return new BaseResponse(HttpStatus.OK.value(), "删除成功", null, null);
+        } else {
+            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "删除失败", null, null);
+        }
+    }
+
     /**
      * 根据申请单号查询
      */

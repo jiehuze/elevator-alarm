@@ -50,6 +50,14 @@ public class WorkOrderExcelConverter {
         dto.setFollowUpTime(followUpTime);
         dto.setCloseTime(closeTime);
 
+        dto.setTimeToArrive(DateUtils.formatSecondsToMinutesAndSeconds(entity.getTimeToArrive()));
+
+        if (entity.getOrderType() != null && entity.getOrderType().equals(WorkOrderTypeEnum.FAULT.getCode())) {
+            dto.setTimeToHandle(DateUtils.formatSecondsToMinutesAndSeconds(entity.getRepairDuration()));
+        } else if (entity.getOrderType() != null && entity.getOrderType().equals(WorkOrderTypeEnum.TRAPPED_PEOPLE.getCode())) {
+            dto.setTimeToHandle(DateUtils.formatSecondsToMinutesAndSeconds(entity.getRescueDuration()));
+        }
+
         return dto;
     }
 

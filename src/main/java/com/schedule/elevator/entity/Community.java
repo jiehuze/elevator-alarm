@@ -67,4 +67,7 @@ public class Community implements Serializable {
 
     @TableField(exist = false)
     private Long count;  // 计数属性，不映射到数据库
+
+    @TableField(exist = false)
+    private Long maintenanceUnitId;  // 计数属性，不映射到数据库
 }

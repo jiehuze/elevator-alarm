@@ -61,7 +61,7 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
         updateWrapper.set(entity.getName() != null, MaintenancePersonnel::getName, entity.getName());
         updateWrapper.set(entity.getStatus() != null, MaintenancePersonnel::getStatus, entity.getStatus());
         updateWrapper.set(entity.getPhone() != null, MaintenancePersonnel::getPhone, entity.getPhone());
-        updateWrapper.set(StringUtils.hasText(entity.getCompany()), MaintenancePersonnel::getCompany, entity.getCompany());
+        updateWrapper.set(StringUtils.hasText(entity.getMaintenanceUnit()), MaintenancePersonnel::getMaintenanceUnit, entity.getMaintenanceUnit());
 
         return update(updateWrapper);
     }
@@ -104,7 +104,7 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
                 .eq(entity.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, entity.getMaintenanceUnitId())
                 .eq(entity.getMaintenancePersonnelId() != null, MaintenancePersonnel::getId, entity.getMaintenancePersonnelId())
                 .eq(entity.getStatus() != null, MaintenancePersonnel::getStatus, entity.getStatus())
-                .like(StringUtils.hasText(entity.getMaintenanceUnit()), MaintenancePersonnel::getCompany, entity.getMaintenanceUnit())
+                .like(StringUtils.hasText(entity.getMaintenanceUnit()), MaintenancePersonnel::getMaintenanceUnit, entity.getMaintenanceUnit())
                 .like(StringUtils.hasText(entity.getMaintenancePersonnelPhone()), MaintenancePersonnel::getPhone, entity.getMaintenancePersonnelPhone())
                 .like(StringUtils.hasText(entity.getMaintenancePersonnelName()), MaintenancePersonnel::getName, entity.getMaintenancePersonnelName())
                 .orderByDesc(MaintenancePersonnel::getCreatedAt);
@@ -135,8 +135,8 @@ public class MaintenancePersonnelServiceImpl extends ServiceImpl<MaintenancePers
     public List<MaintenancePersonnel> listBySearchDTO(SearchDTO searchDTO) {
         LambdaQueryWrapper<MaintenancePersonnel> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(searchDTO.getMaintenanceUnitId() != null, MaintenancePersonnel::getMaintenanceUnitId, searchDTO.getMaintenanceUnitId())
-                .like(StringUtils.hasText(searchDTO.getMaintenanceUnit()), MaintenancePersonnel::getCompany, searchDTO.getMaintenanceUnit())
-                .orderByAsc(MaintenancePersonnel::getCompany);
+                .like(StringUtils.hasText(searchDTO.getMaintenanceUnit()), MaintenancePersonnel::getMaintenanceUnit, searchDTO.getMaintenanceUnit())
+                .orderByAsc(MaintenancePersonnel::getMaintenanceUnit);
 
         return this.list(queryWrapper);
     }

@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.schedule.utils.ExcelUtil.isExcelFile;
 
@@ -192,14 +193,16 @@ public class ElevatorInfoController {
             List<ElevatorImportTemplateExcel> dtoList = ExcelUtil.importExcel(file, ElevatorImportTemplateExcel.class);
             List<ElevatorImportValidationResult> elevatorImportValidationResults = ElevatorImportExcelConverter.validateImportData(dtoList);
             if (elevatorImportValidationResults != null && !elevatorImportValidationResults.isEmpty()) {
-                return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "数据验证失败", elevatorImportValidationResults, null);
+                return new BaseResponse(96000, "数据验证失败", elevatorImportValidationResults, null);
             }
 
             System.out.println("dtoList size:" + dtoList.size());
             System.out.println("dtoList:" + dtoList.toString());
 
+            AtomicInteger index = new AtomicInteger(2);
             for (ElevatorImportTemplateExcel dto : dtoList) {
                 System.out.println("execl: " + dto);
+                int rowNum = index.getAndIncrement();
                 //读取电梯信息，并写入
                 ElevatorInfo elevatorInfo = ElevatorImportExcelConverter.toElevatorEntity(dto);
                 if (elevatorInfo == null) {
@@ -216,7 +219,16 @@ public class ElevatorInfoController {
                 ElevatorInfo ele = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRegisterCode(elevatorInfo.getRegisterCode()));
                 if (ele != null) {
                     if (!ele.getRescueCode().equals(elevatorInfo.getRescueCode())) {
-                        return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该电梯已存在,救援码不一致", dto, null);
+                        ElevatorImportValidationResult existResult = new ElevatorImportValidationResult();
+                        existResult.addError("该电梯已存在,救援码不一致");
+                        existResult.setRowNum(rowNum);
+                        existResult.setRegisterCode(elevatorInfo.getRegisterCode());
+                        existResult.setRescueCode(elevatorInfo.getRescueCode());
+                        existResult.setOriginalData(dto);
+                        elevatorImportValidationResults.add(existResult);
+
+                        return new BaseResponse(96000, "数据验证失败", elevatorImportValidationResults, null);
+
                     }
                 }
 

@@ -24,8 +24,8 @@ public class MaintenancePersonnel {
     @TableField("phone")
     private String phone; // 手机号
 
-    @TableField("company")
-    private String company; // 维保单位名称（冗余字段）
+    @TableField("maintenance_unit")
+    private String maintenanceUnit; // 维保单位名称（冗余字段）
 
     @TableField("maintenance_unit_id")
     private Long maintenanceUnitId; // 维保单位ID（关联 maintenance_units 表）

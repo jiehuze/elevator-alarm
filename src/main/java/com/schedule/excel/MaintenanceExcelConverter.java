@@ -11,7 +11,7 @@ public class MaintenanceExcelConverter {
         MaintenancePersonnelExcel dto = new MaintenancePersonnelExcel();
         dto.setName(entity.getName());
         dto.setPhone(entity.getPhone());
-        dto.setCompany(entity.getCompany());
+        dto.setCompany(entity.getMaintenanceUnit());
         dto.setStatus(entity.getStatus() == 1 ? "在岗" : "离岗");
         dto.setCreatedAt(DateUtils.format(entity.getCreatedAt(), DateUtils.DATE_PATTERN));
         dto.setUpdatedAt(DateUtils.format(entity.getUpdatedAt(), DateUtils.DATE_PATTERN));

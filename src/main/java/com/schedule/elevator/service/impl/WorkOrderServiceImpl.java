@@ -74,8 +74,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         // 超时时长过滤（单位：分钟，需要转换为秒）
-        if (dto.getOvertimeMin() != null && dto.getOvertimeMax() != null) {
+        if (dto.getOvertimeMin() != null) {
             query.ge(WorkOrder::getTimeToArrive, dto.getOvertimeMin() * 60);
+        }
+
+        if (dto.getOvertimeMax() != null) {
             query.le(WorkOrder::getTimeToArrive, dto.getOvertimeMax() * 60);
         }
 
