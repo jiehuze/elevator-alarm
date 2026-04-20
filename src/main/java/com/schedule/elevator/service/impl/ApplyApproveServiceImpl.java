@@ -112,10 +112,8 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 processEmployeeApply(applyApprove.getApplyData());
                 break;
             case 2: // 维保公司变更
-                processMaintenanceChangeApply(applyApprove.getApplyData());
-                break;
             case 3: // 注销脱保
-                // TODO: 实现注销脱保逻辑
+                processMaintenanceChangeApply(applyApprove);
                 break;
             default:
                 throw new IllegalArgumentException("未知的申请类型：" + applyApprove.getApplyType());
@@ -151,8 +149,8 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
     /**
      * 处理维保单位变更申请
      */
-    private void processMaintenanceChangeApply(String applyData) {
-        MaintenanceChangeApplyDTO changeDTO = JSON.parseObject(applyData, MaintenanceChangeApplyDTO.class);
+    private void processMaintenanceChangeApply(ApplyApprove applyApprove) {
+        MaintenanceChangeApplyDTO changeDTO = JSON.parseObject(applyApprove.getApplyData(), MaintenanceChangeApplyDTO.class);
         if (changeDTO == null) {
             System.out.println("维保单位变更申请数据格式错误");
         }
@@ -174,15 +172,15 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 System.out.println("电梯ID不能为空");
                 continue;
             }
-            if (changeDTO.getMaintenanceUnitChanged() == null) {
-                System.out.println("维保到期状态不能为空");
-                continue;
-            }
+//            if (changeDTO.getMaintenanceUnitChanged() == null) {
+//                System.out.println("维保到期状态不能为空");
+//                continue;
+//            }
 
             // 根据救援码查询电梯
             ElevatorInfo elevator = new ElevatorInfo();
 
-            if (changeDTO.getMaintenanceUnitChanged()) {
+            if (applyApprove.getApplyType() == 3) { // 注销
                 elevator.setMaintenanceUnit("");
                 elevator.setMaintenanceUnitId(0l);
                 elevator.setMaintenanceType("无");

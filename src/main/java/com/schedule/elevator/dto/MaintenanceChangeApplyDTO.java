@@ -56,11 +56,6 @@ public class MaintenanceChangeApplyDTO implements Serializable {
     private String maintenancePersonnelPhone;
 
     /**
-     * 维保单位是否脱保：0-否，1-是
-     */
-    private Boolean maintenanceUnitChanged;
-
-    /**
      * 照片URL
      */
     private String photoUrl;
