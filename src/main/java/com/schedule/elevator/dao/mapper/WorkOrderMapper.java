@@ -995,7 +995,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "FROM fault_records fr ",
             "INNER JOIN work_order wo ON fr.order_no = wo.order_no ",
             "WHERE wo.status = 99 ",
-            "  AND wo.order_type IN (1, 2) ",  // 1:困人, 2:故障
+            "  AND wo.order_type IN (1, 2, 5, 6) ",  // 1:困人, 2:故障
             "  AND wo.maintenance_unit = #{maintenanceUnit} ",
             "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "    AND wo.district = #{searchDTO.district}",

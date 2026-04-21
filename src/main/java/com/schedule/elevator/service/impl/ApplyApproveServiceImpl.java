@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -246,8 +248,26 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
         // 申请单号模糊查询
         query.like(StringUtils.isNotBlank(queryDTO.getApplyNo()), ApplyApprove::getApplyNo, queryDTO.getApplyNo());
 
-        // 申请类型
         query.eq(queryDTO.getApplyType() != null, ApplyApprove::getApplyType, queryDTO.getApplyType());
+        // 申请类型
+        // 申请类型（支持逗号分隔的多个值）
+        if (StringUtils.isNotBlank(queryDTO.getApplyTypes())) {
+            String[] applyTypes = queryDTO.getApplyTypes().split(",");
+            List<Integer> typeList = new ArrayList<>();
+            for (String type : applyTypes) {
+                String trimmed = type.trim();
+                if (StringUtils.isNotBlank(trimmed)) {
+                    try {
+                        typeList.add(Integer.parseInt(trimmed));
+                    } catch (NumberFormatException e) {
+                        // 忽略无效的类型值
+                    }
+                }
+            }
+            if (!typeList.isEmpty()) {
+                query.in(ApplyApprove::getApplyType, typeList);
+            }
+        }
 
         // 申请人ID
         query.eq(queryDTO.getApplyUserId() != null, ApplyApprove::getApplyUserId, queryDTO.getApplyUserId());

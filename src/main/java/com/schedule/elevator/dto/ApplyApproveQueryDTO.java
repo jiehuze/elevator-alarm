@@ -24,6 +24,11 @@ public class ApplyApproveQueryDTO implements Serializable {
     private Integer applyType;
 
     /**
+     * 申请类型 1员工变更2维保公司变更3注销脱保,使用逗号分割
+     */
+    private String applyTypes;
+
+    /**
      * 申请人ID
      */
     private Integer applyUserId;

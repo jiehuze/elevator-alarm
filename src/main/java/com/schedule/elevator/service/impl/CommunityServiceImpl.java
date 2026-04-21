@@ -49,6 +49,14 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
                 .eq(searchDTO.getId() != null, Community::getId, searchDTO.getId())
                 .eq(StringUtils.isNotBlank(searchDTO.getProjectType()), Community::getProjectType, searchDTO.getProjectType());
 
+        // 根据维保单位ID查询对应的小区（使用子查询）
+        if (searchDTO.getMaintenanceUnitId() != null) {
+            queryWrapper.exists(
+                    "SELECT 1 FROM elevator e WHERE e.community_id = communities.id AND e.maintenance_unit_id = {0} AND e.community_id IS NOT NULL",
+                    searchDTO.getMaintenanceUnitId()
+            );
+        }
+
         queryWrapper.orderByDesc(Community::getCreatedAt);
 
         return this.page(page, queryWrapper);

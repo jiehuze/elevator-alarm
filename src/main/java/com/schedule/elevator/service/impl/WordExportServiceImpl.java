@@ -205,11 +205,23 @@ public class WordExportServiceImpl implements IWordExportService {
             List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
             List<OvertimeWorkOrderDTO> overtimeWorkOrders = workOrderService.getOvertimeWorkOrders(searchDTO);
-            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
             List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
             List<ElevatorAgeStatisticsDTO> elevatorAgeStatistics = workOrderService.getElevatorAgeStatistics(searchDTO);
             List<WorkOrderStatisticsDTO> monthAVGTIme = workOrderService.getWorkOrderStatsForMonth(searchDTO);
+
+            List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
+            ArrayList<MaintenanceUnitFaultRateWithoutReason> maintenanceUnitFaultRateWithoutReasonsList = new ArrayList<>();
+            for (MaintenanceUnitFaultRateDTO faultRateDTO : maintenanceUnitFaultRate) {
+                MaintenanceUnitFaultRateWithoutReason maintenanceUnitFaultRateWithoutReason = new MaintenanceUnitFaultRateWithoutReason();
+                maintenanceUnitFaultRateWithoutReason.setIdx(faultRateDTO.getIdx());
+                maintenanceUnitFaultRateWithoutReason.setFaultCount(faultRateDTO.getFaultCount());
+                maintenanceUnitFaultRateWithoutReason.setFaultRate(faultRateDTO.getFaultRate());
+                maintenanceUnitFaultRateWithoutReason.setMaintenanceUnit(faultRateDTO.getMaintenanceUnit());
+                maintenanceUnitFaultRateWithoutReason.setElevatorCount(faultRateDTO.getElevatorCount());
+                maintenanceUnitFaultRateWithoutReasonsList.add(maintenanceUnitFaultRateWithoutReason);
+            }
+
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
@@ -218,7 +230,7 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
             tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");
             tableMap = TableData.buildTableData(tableMap, overtimeWorkOrders, OvertimeWorkOrderDTO.class, "OvertimeWorkOrder");
-            tableMap = TableData.buildTableData(tableMap, maintenanceUnitFaultRate, MaintenanceUnitFaultRateDTO.class, "MaintenanceUnitFaultRate");
+            tableMap = TableData.buildTableData(tableMap, maintenanceUnitFaultRateWithoutReasonsList, MaintenanceUnitFaultRateWithoutReason.class, "MaintenanceUnitFaultRate");
             tableMap = TableData.buildTableData(tableMap, usingUnitFaultRate, UsingUnitFaultRateDTO.class, "UsingUnitFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorBrandFaultRate, ElevatorBrandFaultRateDTO.class, "ElevatorBrandFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorAgeStatistics, ElevatorAgeStatisticsDTO.class, "ElevatorAgeStats");

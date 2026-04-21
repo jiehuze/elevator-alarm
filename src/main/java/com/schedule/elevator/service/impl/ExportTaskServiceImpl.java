@@ -171,7 +171,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         try {
             updateToProcessing(exportTask.getId());
             SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
-            String fileName = "month-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String fileName = "month-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".docx";
             String urlPath = paramDTO.getReportPath() + fileName;
             String filePath = paramDTO.getRootPath() + urlPath;
             FileUtil.ensureDirectoryExists(filePath);
@@ -194,7 +194,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         try {
             updateToProcessing(exportTask.getId());
             SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
-            String fileName = "year-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String fileName = "year-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".docx";
             String urlPath = paramDTO.getReportPath() + fileName;
             String filePath = paramDTO.getRootPath() + urlPath;
             FileUtil.ensureDirectoryExists(filePath);
@@ -216,7 +216,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         try {
             updateToProcessing(exportTask.getId());
             SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
-            String fileName = "analysis-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm")) + ".docx";
+            String fileName = "analysis-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".docx";
             String urlPath = paramDTO.getReportPath() + fileName;
             String filePath = paramDTO.getRootPath() + urlPath;
             FileUtil.ensureDirectoryExists(filePath);
@@ -345,9 +345,6 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
                     LocalDateTime closeTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.CLOSED.getCode()))
                             .map(WorkOrderProgress::getCreateTime).orElse(null);
-
-                    dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
-
 
                     dtoList.add(WorkOrderExcelConverter.toDto(workOrder, dispatchTime, arriveTime, rescueTime, followUpTime, repairTime, closeTime));
                 }
