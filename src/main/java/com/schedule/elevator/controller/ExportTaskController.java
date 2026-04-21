@@ -36,6 +36,8 @@ public class ExportTaskController {
         task.setIsReport(true);
         task.setTimeRange(DateUtils.format(task.getStartTime(), DateUtils.DATE_PATTERN) + "-" + DateUtils.format(task.getEndTime(), DateUtils.DATE_PATTERN));
         task.setQueryConditions(task.toString());
+        System.out.println("-----------input: " + task.toString());
+//        return new BaseResponse(HttpStatus.OK.value(), "开始导出，在导出管理中查看", task, null);
         if (task.getExportType() == 1) {
             exportTaskService.exportMonthlyReportAsync(task);
         } else if (task.getExportType() == 12) {

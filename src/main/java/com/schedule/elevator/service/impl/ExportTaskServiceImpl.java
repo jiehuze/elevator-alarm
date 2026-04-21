@@ -215,7 +215,7 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
         ExportTask exportTask = createExportTask(task);
         try {
             updateToProcessing(exportTask.getId());
-            SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict());
+            SearchDTO searchDTO = new SearchDTO().setCreateTimeStart(task.getStartTime()).setCreateTimeEnd(task.getEndTime()).setDistrict(task.getDistrict()).setMaintenanceUnitId(task.getMaintenanceUnitId());
             String fileName = "analysis-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".docx";
             String urlPath = paramDTO.getReportPath() + fileName;
             String filePath = paramDTO.getRootPath() + urlPath;

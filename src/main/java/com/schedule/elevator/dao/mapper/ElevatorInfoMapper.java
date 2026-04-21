@@ -22,9 +22,12 @@ public interface ElevatorInfoMapper extends BaseMapper<ElevatorInfo> {
             "FROM elevator " +
             "WHERE elevator_type IS NOT NULL " +
             "  AND elevator_type != '' " +
-            "<if test='searchDTO.district != null and searchDTO.district != \"\"'> " +
-            "  AND district = #{searchDTO.district} " +
-            "</if> " +
+            "   <if test='searchDTO.district != null and searchDTO.district != \"\"'> " +
+            "       AND district = #{searchDTO.district} " +
+            "   </if> " +
+            "   <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>"+
+            "       AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}"+
+            "   </if>"+
             "GROUP BY elevator_type" +
             "</script>")
     List<Map<String, Object>> countByElevatorType(@Param("searchDTO") SearchDTO searchDTO);
