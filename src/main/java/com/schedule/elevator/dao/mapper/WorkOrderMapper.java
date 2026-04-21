@@ -602,6 +602,9 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND district = #{searchDTO.district}",
             "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
+            "    </if>",
             "  GROUP BY maintenance_unit",
             ") m ",
             "LEFT JOIN (",
@@ -692,7 +695,8 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     @Select({
             "<script>",
             "SELECT ",
-            "  ROW_NUMBER() OVER (ORDER BY b.brand_name) AS idx, ",
+//            "  ROW_NUMBER() OVER (ORDER BY b.brand_name) AS idx, ",
+            "  ROW_NUMBER() OVER (ORDER BY IF(b.brand_name = '其他', 1, 0), b.brand_name) AS idx, ",
             "  b.brand_name AS brand, ",
             "  COALESCE(b.elevator_count, 0) AS elevatorCount, ",
             "  COALESCE(w.fault_count, 0) AS faultCount, ",
@@ -713,18 +717,22 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "  END AS faultRate ",
             "FROM (",
             "  SELECT ",
-            "    brand AS brand_name, ",
+//            "    brand AS brand_name, ",
+            "    IFNULL(brand, '其他') AS brand_name, ",
             "    COUNT(*) AS elevator_count ",
             "  FROM elevator ",
-            "  WHERE brand IS NOT NULL AND brand != '' ",
+//            "  WHERE brand IS NOT NULL AND brand != '' ",
+            "  WHERE rescue_code IS NOT NULL ",
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND district = #{searchDTO.district}",
             "    </if>",
-            "  GROUP BY brand",
+//            "  GROUP BY brand",
+            "  GROUP BY IFNULL(brand, '其他')",
             ") b ",
             "LEFT JOIN (",
             "  SELECT ",
-            "    e.brand, ",
+//            "    e.brand, ",
+            "    IFNULL(e.brand, '其他') AS brand, ",
             "    COUNT(*) AS fault_count ",
             "  FROM work_order wo ",
             "  JOIN elevator e ON wo.rescue_code = e.rescue_code ",  // 通过救援码关联
@@ -735,10 +743,12 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
             "      AND e.district = #{searchDTO.district}",
             "    </if>",
-            "  GROUP BY e.brand",
+//            "  GROUP BY e.brand",
+            "  GROUP BY IFNULL(e.brand, '其他')",
             ") w ON b.brand_name = w.brand ",
             "WHERE w.fault_count > 0 ",
-            "ORDER BY b.brand_name",
+//            "ORDER BY b.brand_name",
+            "ORDER BY IF(b.brand_name = '其他', 1, 0), b.brand_name",
             "</script>"
     })
     List<ElevatorBrandFaultRateDTO> getElevatorBrandFaultRate(@Param("searchDTO") SearchDTO searchDTO);
@@ -950,6 +960,41 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "</script>"
     })
     List<ElevatorBrandFaultRateDTO> getHighFaultRateBrands(@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 统计各品牌电梯的故障数（按故障数降序，"其他"品牌排在最后）
+     *
+     * @param searchDTO 包含开始时间、结束时间、区县等搜索条件
+     * @return 品牌故障统计列表
+     */
+    @Select({
+            "<script>",
+            "SELECT",
+            "    ROW_NUMBER() OVER (ORDER BY IF(brand = '其他', 1, 0), fault_count DESC, brand) AS idx,",
+            "    brand,",
+            "    fault_count AS faultCount",
+            "FROM (",
+            "    SELECT",
+            "        IFNULL(e.brand, '其他') AS brand,",
+            "        COUNT(*) AS fault_count",
+            "    FROM work_order wo",
+            "    LEFT JOIN elevator e ON wo.rescue_code = e.rescue_code",
+            "    WHERE wo.status = 99",
+            "    <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "      AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "      AND e.district = #{searchDTO.district}",
+            "    </if>",
+            "    <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "      AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
+            "    </if>",
+            "    GROUP BY IFNULL(e.brand, '其他')",
+            ") t",
+            "ORDER BY idx",
+            "</script>"
+    })
+    List<BrandFaultStatsDTO> getBrandFaultStatistics(@Param("searchDTO") SearchDTO searchDTO);
 
     /**
      * 查询同一电梯发生四次以上故障的统计

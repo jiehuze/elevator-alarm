@@ -638,17 +638,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public List<BrandFaultStatsDTO> getBrandFaultStats(SearchDTO searchDTO) {
-        ArrayList<BrandFaultStatsDTO> brandFaultStatsDTOS = new ArrayList<>();
-        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
-
-        AtomicInteger index = new AtomicInteger(1);
-        for (ElevatorBrandFaultRateDTO item : highFaultRateBrands) {
-            BrandFaultStatsDTO brandFaultStatsDTO = new BrandFaultStatsDTO();
-            brandFaultStatsDTO.setIdx(index.getAndIncrement())
-                    .setBrand(item.getBrand())
-                    .setFaultCount(item.getFaultCount());
-            brandFaultStatsDTOS.add(brandFaultStatsDTO);
-        }
+//        ArrayList<BrandFaultStatsDTO> brandFaultStatsDTOS = new ArrayList<>();
+//        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
+//
+//        AtomicInteger index = new AtomicInteger(1);
+//        for (ElevatorBrandFaultRateDTO item : highFaultRateBrands) {
+//            BrandFaultStatsDTO brandFaultStatsDTO = new BrandFaultStatsDTO();
+//            brandFaultStatsDTO.setIdx(index.getAndIncrement())
+//                    .setBrand(item.getBrand())
+//                    .setFaultCount(item.getFaultCount());
+//            brandFaultStatsDTOS.add(brandFaultStatsDTO);
+//        }
+        List<BrandFaultStatsDTO> brandFaultStatsDTOS = workOrderMapper.getBrandFaultStatistics(searchDTO);
 
         return brandFaultStatsDTOS;
     }
