@@ -64,6 +64,7 @@ public class CommunityController {
             ElevatorInfo elevatorInfo = new ElevatorInfo();
             elevatorInfo.setCommunityId(community.getId());
             elevatorInfo.setProjectName(community.getProjectName());
+            elevatorInfo.setSafetyOfficerId(community.getSafetyOfficerId());
 
             elevatorInfoService.update(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getCommunityId, community.getId()));
         }
