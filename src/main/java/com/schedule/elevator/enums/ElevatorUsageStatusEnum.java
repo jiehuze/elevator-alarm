@@ -18,7 +18,12 @@ public enum ElevatorUsageStatusEnum {
     /**
      * 注销
      */
-    CANCELLED(3, "注销");
+    CANCELLED(3, "注销"),
+
+    /**
+     * 脱保
+     */
+    OUT_OF_SERVICE(4, "脱保");
 
     private final Integer code;
     private final String description;

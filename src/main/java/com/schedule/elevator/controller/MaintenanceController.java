@@ -120,6 +120,9 @@ public class MaintenanceController {
         long elevatorCount = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, id));
         unit.setCount(elevatorCount);
 
+        if (searchDTO.getLevel() == null) {
+            searchDTO.setLevel(1);
+        }
         List<MaintenanceTeam> teams = maintenanceTeamService.getByTeamAndUnitId(id, searchDTO);
 
         for (MaintenanceTeam team : teams) {
@@ -182,20 +185,21 @@ public class MaintenanceController {
 
         // 人员信息
         MaintenancePersonnel person = maintenancePersonnelService.getById(maintenanceQueryDTO.getMaintenancePersonnelId());
-
-        // 团队信息
-        MaintenanceTeam team = maintenanceTeamService.getById(person.getMaintenanceTeamId());
-        if (team != null) {
-            maintenanceQueryDTO.setMaintenanceTeamId(team.getId());
-        } else {
-            team = maintenanceTeamService.getById(maintenanceQueryDTO.getMaintenanceTeamId());
+        if (person != null) {
+            // 团队信息
+            MaintenanceTeam team = maintenanceTeamService.getById(person.getMaintenanceTeamId());
+            if (team != null) {
+                maintenanceQueryDTO.setMaintenanceTeamId(team.getId());
+            } else {
+                team = maintenanceTeamService.getById(maintenanceQueryDTO.getMaintenanceTeamId());
+            }
+            // 单位信息
+            MaintenanceUnit unit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
+            // 返回
+            info.put("unit", unit);
+            info.put("team", team);
+            info.put("person", person);
         }
-        // 单位信息
-        MaintenanceUnit unit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
-        // 返回
-        info.put("unit", unit);
-        info.put("team", team);
-        info.put("person", person);
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", info, null);
     }
@@ -297,7 +301,7 @@ public class MaintenanceController {
     /****************************** 人员信息 *********************************/
     @GetMapping("/persons")
     public BaseResponse getMaintenancePersons(@RequestParam(defaultValue = "1") int current,
-                                              @RequestParam(defaultValue = "10") int size,
+                                              @RequestParam(defaultValue = "200") int size,
                                               @ModelAttribute SearchDTO searchDTO) {
         IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchDTO, current, size);
         for (MaintenancePersonnel person : maintenanceTeamPage.getRecords()) {
