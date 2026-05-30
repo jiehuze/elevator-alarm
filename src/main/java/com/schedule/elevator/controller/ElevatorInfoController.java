@@ -10,6 +10,7 @@ import com.schedule.elevator.dto.ElevatorInfoDTO;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.dto.SearchDTO;
 import com.schedule.elevator.entity.*;
+import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
 import com.schedule.elevator.service.*;
 import com.schedule.excel.ElevatorImportExcelConverter;
 import com.schedule.excel.ElevatorImportTemplateExcel;
@@ -90,6 +91,9 @@ public class ElevatorInfoController {
                 elevator.setMaintenanceTeamId(0l);
                 elevator.setMaintenancePersonnelName("无");
                 elevator.setMaintenancePersonnelId(0l);
+                elevator.setUsageStatus(ElevatorUsageStatusEnum.OUT_OF_SERVICE.getCode());
+            } else {
+                elevator.setUsageStatus(ElevatorUsageStatusEnum.IN_USE.getCode());
             }
 
             if (elevator.getUsingUnitExpired()) {

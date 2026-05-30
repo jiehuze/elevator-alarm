@@ -12,6 +12,7 @@ import com.schedule.elevator.entity.ApplyApprove;
 import com.schedule.elevator.entity.ElevatorInfo;
 import com.schedule.elevator.entity.MaintenancePersonnel;
 import com.schedule.elevator.entity.SysUser;
+import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
 import com.schedule.elevator.service.IApplyApproveService;
 import com.schedule.elevator.service.IElevatorInfoService;
 import com.schedule.elevator.service.IMaintenancePersonnelService;
@@ -189,7 +190,7 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 elevator.setMaintenanceTeamId(0l);
                 elevator.setMaintenancePersonnelName("无");
                 elevator.setMaintenancePersonnelId(0l);
-                elevator.setUsageStatus(4);
+                elevator.setUsageStatus(ElevatorUsageStatusEnum.OUT_OF_SERVICE.getCode());
                 elevator.setMaintenanceUnitExpired(true);
             } else {
                 // 更新电梯维保信息
@@ -199,7 +200,7 @@ public class ApplyApproveServiceImpl extends ServiceImpl<ApplyApproveMapper, App
                 elevator.setMaintenanceTeamId(changeDTO.getMaintenanceTeamId());
                 elevator.setMaintenancePersonnelId(changeDTO.getMaintenancePersonnelId());
                 elevator.setMaintenancePersonnelName(changeDTO.getMaintenancePersonnelName());
-                elevator.setUsageStatus(1);
+                elevator.setUsageStatus(ElevatorUsageStatusEnum.IN_USE.getCode());
                 elevator.setMaintenanceUnitExpired(false);
             }
 

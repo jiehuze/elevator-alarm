@@ -67,6 +67,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         query.eq(StringUtils.isNotBlank(dto.getRescueCode()), WorkOrder::getRescueCode, dto.getRescueCode());
         query.eq(dto.getMaintenanceUnitId() != null, WorkOrder::getMaintenanceUnitId, dto.getMaintenanceUnitId());
         query.like(StringUtils.isNotBlank(dto.getUsingUnit()), WorkOrder::getUsingUnit, dto.getUsingUnit());
+        query.like(StringUtils.isNotBlank(dto.getMaintenanceUnit()), WorkOrder::getMaintenanceUnit, dto.getMaintenanceUnit());
+        query.eq(dto.getLevel() != null, WorkOrder::getRescueLevel, dto.getLevel());
 
         if (dto.getHistoryWorkOrder() != null) {
             query.eq(WorkOrder::getStatus, WorkOrderStatusEnum.CLOSED.getCode());

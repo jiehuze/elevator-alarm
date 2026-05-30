@@ -120,7 +120,7 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("导出条件")
     private String queryConditions; // 导出条件
 
-    @ApiModelProperty("维保单位级别,1：一级维保单位，2：二级维保单位")
+    @ApiModelProperty("维保单位级别,1：一级维保单位，2：二级维保单位,也是救援级别")
     private Integer level; // 维保单位级别,1：一级维保单位，2：二级维保单位
 
     @ApiModelProperty("小区id")
@@ -164,6 +164,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
 
     @ApiModelProperty("未绑定人员")
     private Boolean unbound;
+
+    @ApiModelProperty("未绑定使用单位")
+    private Boolean unboundUsingUint;
 
     @ApiModelProperty("时间排序")
     private String timeOrder;

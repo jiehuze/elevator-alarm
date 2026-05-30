@@ -71,6 +71,14 @@ public class ElevatorInfoServiceImpl extends ServiceImpl<ElevatorInfoMapper, Ele
             );
         }
 
+        if (elevatorInfoDTO.getUnboundUsingUint() != null && elevatorInfoDTO.getUnboundUsingUint() == true) {
+            queryWrapper.and(wrapper ->
+                    wrapper.isNull(ElevatorInfo::getUsingUnitId)
+                            .or()
+                            .isNull(ElevatorInfo::getUsingUnit)
+            );
+        }
+
         if (elevatorInfoDTO.getElevatorIds() != null) {
             queryWrapper.and(wrapper ->
                     wrapper.in(ElevatorInfo::getId, elevatorInfoDTO.getElevatorIds())

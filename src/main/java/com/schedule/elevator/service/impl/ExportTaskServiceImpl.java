@@ -339,6 +339,10 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
 
                     LocalDateTime followUpTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.RESCUE_FOLLOW_UP.getCode()))
                             .map(WorkOrderProgress::getCreateTime).orElse(null);
+                    if (workOrder.getOrderType() == WorkOrderTypeEnum.FAULT.getCode()) {
+                        followUpTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_FOLLOW_UP.getCode()))
+                                .map(WorkOrderProgress::getCreateTime).orElse(null);
+                    }
 
                     LocalDateTime repairTime = Optional.ofNullable(progressHashMap.get(WorkOrderStatusEnum.MAINTENANCE_COMPLETED.getCode()))
                             .map(WorkOrderProgress::getCreateTime).orElse(null);
