@@ -294,6 +294,24 @@ public class MaintenanceController {
         if (count > 0) {
             return new BaseResponse(HttpStatus.BAD_REQUEST.value(), "该维保组下有电梯, 无法删除", null, null);
         }
+        // 删除维保组下的人员,只有二级单位才删除人员
+        MaintenanceTeam maintenanceTeam = maintenanceTeamService.getById(id);
+        if (maintenanceTeam != null) {
+            if (maintenanceTeam.getLevel() == 2) {
+                List<MaintenancePersonnel> list = maintenancePersonnelService.list(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getSubMaintenanceTeamId, id));
+                for (MaintenancePersonnel personnel : list) {
+                    personnel.setSubMaintenanceTeamId(0l);
+                    maintenancePersonnelService.updateById(personnel);
+                }
+            } else if (maintenanceTeam.getLevel() == 1) {
+                List<MaintenancePersonnel> list = maintenancePersonnelService.list(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceTeamId, id));
+                for (MaintenancePersonnel personnel : list) {
+                    personnel.setMaintenanceTeamId(0l);
+                    maintenancePersonnelService.updateById(personnel);
+                }
+            }
+        }
+
         maintenanceTeamService.removeById(id);
         return new BaseResponse(HttpStatus.OK.value(), "删除维保团队成功", null, null);
     }
