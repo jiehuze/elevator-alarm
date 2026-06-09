@@ -84,19 +84,21 @@ public class ElevatorInfoController {
     @PutMapping("/batchUpdate")
     public BaseResponse batchUpdate(@RequestBody List<ElevatorInfo> elevatorList) {
         for (ElevatorInfo elevator : elevatorList) {
-            if (elevator.getMaintenanceUnitExpired()) {
-                elevator.setMaintenanceUnit("");
-                elevator.setMaintenanceUnitId(0l);
-                elevator.setMaintenanceType("无");
-                elevator.setMaintenanceTeamId(0l);
-                elevator.setMaintenancePersonnelName("无");
-                elevator.setMaintenancePersonnelId(0l);
-                elevator.setUsageStatus(ElevatorUsageStatusEnum.OUT_OF_SERVICE.getCode());
-            } else {
-                elevator.setUsageStatus(ElevatorUsageStatusEnum.IN_USE.getCode());
+            if (elevator.getMaintenanceUnitExpired() != null) {
+                if (elevator.getMaintenanceUnitExpired()) {
+                    elevator.setMaintenanceUnit("");
+                    elevator.setMaintenanceUnitId(0l);
+                    elevator.setMaintenanceType("无");
+                    elevator.setMaintenanceTeamId(0l);
+                    elevator.setMaintenancePersonnelName("无");
+                    elevator.setMaintenancePersonnelId(0l);
+                    elevator.setUsageStatus(ElevatorUsageStatusEnum.OUT_OF_SERVICE.getCode());
+                } else {
+                    elevator.setUsageStatus(ElevatorUsageStatusEnum.IN_USE.getCode());
+                }
             }
 
-            if (elevator.getUsingUnitExpired()) {
+            if (elevator.getUsingUnitExpired() != null && elevator.getUsingUnitExpired()) {
                 elevator.setUsingUnit("");
                 elevator.setUsingUnitId(0l);
                 elevator.setSafetyOfficerId(0l);
