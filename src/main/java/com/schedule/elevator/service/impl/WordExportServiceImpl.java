@@ -209,7 +209,6 @@ public class WordExportServiceImpl implements IWordExportService {
             List<UsingUnitFaultRateDTO> usingUnitFaultRate = workOrderService.getUsingUnitFaultRate(searchDTO);
             List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderService.getElevatorBrandFaultRate(searchDTO);
             List<ElevatorAgeStatisticsDTO> elevatorAgeStatistics = workOrderService.getElevatorAgeStatistics(searchDTO);
-            List<WorkOrderStatisticsDTO> monthAVGTIme = workOrderService.getWorkOrderStatsForMonth(searchDTO);
 
             List<MaintenanceUnitFaultRateDTO> maintenanceUnitFaultRate = workOrderService.getMaintenanceUnitFaultRateList(searchDTO);
             ArrayList<MaintenanceUnitFaultRateWithoutReason> maintenanceUnitFaultRateWithoutReasonsList = new ArrayList<>();
@@ -238,7 +237,6 @@ public class WordExportServiceImpl implements IWordExportService {
             tableMap = TableData.buildTableData(tableMap, usingUnitFaultRate, UsingUnitFaultRateDTO.class, "UsingUnitFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorBrandFaultRate, ElevatorBrandFaultRateDTO.class, "ElevatorBrandFaultRate");
             tableMap = TableData.buildTableData(tableMap, elevatorAgeStatistics, ElevatorAgeStatisticsDTO.class, "ElevatorAgeStats");
-            tableMap = TableData.buildTableData(tableMap, monthAVGTIme, WorkOrderStatisticsDTO.class, "monthAVGTIme");
 
 
             List<ElevatorTypeStatsDTO> elevatorTypeStatsList = elevatorInfoService.statsByElevatorType(searchDTO);
@@ -248,6 +246,9 @@ public class WordExportServiceImpl implements IWordExportService {
             ProjectTypeStatItemDTO projectTypeStats = workOrderService.getProjectTypeStats(searchDTO);
             TableData projectTypeTableData = ProjectTypeStatItemDTO.buildTableData(projectTypeStats);
             tableMap.put("ProjectTypeStats", projectTypeTableData);
+
+            List<WorkOrderStatisticsDTO> monthAVGTIme = workOrderService.getWorkOrderStatsForMonth(searchDTO);
+            tableMap = TableData.buildTableData(tableMap, monthAVGTIme, WorkOrderStatisticsDTO.class, "monthAVGTIme");
 
 
             WordExporter.generateWordFromTemplateStreamWithMultipleTables(inputStream, tableMap, outputPath);

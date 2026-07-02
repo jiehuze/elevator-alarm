@@ -401,6 +401,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
             "WHERE time_to_arrive IS NOT NULL ",
             "  AND alarm_time IS NOT NULL ",
             "  AND status = 99 ",
+            "  AND order_type = 1 ",
             "  AND time_to_arrive > 1800 ",  // 30分钟 = 1800秒
             "<if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
             "  AND alarm_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",

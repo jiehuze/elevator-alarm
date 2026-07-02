@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.schedule.elevator.dto.MaintenanceDTO;
 import com.schedule.elevator.entity.*;
 import com.schedule.elevator.enums.DistrictEnum;
+import com.schedule.elevator.enums.ElevatorTypeEnum;
 import com.schedule.elevator.enums.ElevatorUsageStatusEnum;
 import com.schedule.elevator.enums.ProjectTypeEnum;
 
@@ -45,7 +46,12 @@ public class ElevatorImportExcelConverter {
         if (dto.getElevatorType() == null) {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，电梯类型不能为空");
         }
-        entity.setElevatorType(dto.getElevatorType());
+        ElevatorTypeEnum elevatorType = ElevatorTypeEnum.getByDescription(dto.getElevatorType().trim());
+        if (elevatorType == null) {
+            throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的电梯类型：" + dto.getElevatorType() +
+                    "，有效值为：曳引驱动乘客电梯、曳引驱动载货电梯、曳引驱动观光电梯、强制驱动载货电梯、液压乘客电梯、液压载货电梯、自动扶梯、自动人行道、防爆电梯、消防员电梯、杂物电梯");
+        }
+        entity.setElevatorType(elevatorType.getCode());
 
         if (dto.getUsageStatus() == null || dto.getUsageStatus().trim().isEmpty()) {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用状态不能为空");
@@ -278,7 +284,9 @@ public class ElevatorImportExcelConverter {
         dto.setRegisterCode(entity.getRegisterCode());
         dto.setElevatorNo(entity.getElevatorNo());
         dto.setElevatorName(entity.getElevatorName());
-        dto.setElevatorType(entity.getElevatorType());
+        if (ElevatorTypeEnum.getByCode(entity.getElevatorType()) != null) {
+            dto.setElevatorType(ElevatorTypeEnum.getByCode(entity.getElevatorType()).getDescription());
+        }
         dto.setUsageStatus(ElevatorUsageStatusEnum.getByCode(entity.getUsageStatus()).getDescription());
         dto.setNextInspectionDate(formatDate(entity.getNextInspectionDate()));
         dto.setBrand(entity.getBrand());
@@ -397,6 +405,13 @@ public class ElevatorImportExcelConverter {
             validateRequiredField(result, dto.getElevatorNo(), "电梯编号");
             validateRequiredField(result, dto.getElevatorName(), "电梯名称");
             validateRequiredField(result, dto.getElevatorType(), "电梯类型");
+            if (StringUtils.isNotBlank(dto.getElevatorType())) {
+                ElevatorTypeEnum elevatorType = ElevatorTypeEnum.getByDescription(dto.getElevatorType().trim());
+                if (elevatorType == null) {
+                    result.addError("无效的电梯类型：" + dto.getElevatorType() +
+                            "，有效值为：曳引驱动乘客电梯、曳引驱动载货电梯、曳引驱动观光电梯、强制驱动载货电梯、液压乘客电梯、液压载货电梯、自动扶梯、自动人行道、防爆电梯、消防员电梯、杂物电梯");
+                }
+            }
             validateRequiredField(result, dto.getBrand(), "品牌");
             validateRequiredField(result, dto.getModel(), "型号");
             validateRequiredField(result, dto.getMaintenanceType(), "维保类型");
