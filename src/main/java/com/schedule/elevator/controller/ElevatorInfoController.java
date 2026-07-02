@@ -227,7 +227,7 @@ public class ElevatorInfoController {
                     if (!ele.getRescueCode().equals(elevatorInfo.getRescueCode())) {
                         ElevatorImportValidationResult existResult = new ElevatorImportValidationResult();
                         existResult.addError("该电梯已存在,救援码不一致");
-                        existResult.setRowNum(rowNum);
+                        existResult.setRowNum(rowNum+1);
                         existResult.setRegisterCode(elevatorInfo.getRegisterCode());
                         existResult.setRescueCode(elevatorInfo.getRescueCode());
                         existResult.setOriginalData(dto);

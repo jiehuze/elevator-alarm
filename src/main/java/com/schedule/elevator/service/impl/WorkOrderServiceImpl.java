@@ -621,9 +621,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public String getHighFaultRateBrands(SearchDTO searchDTO) {
 //        return workOrderMapper.getHighFaultRateBrands(searchDTO);
-        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
+        List<ElevatorBrandFaultRateDTO> elevatorBrandFaultRate = workOrderMapper.getElevatorBrandFaultRate(searchDTO);
+//        List<ElevatorBrandFaultRateDTO> highFaultRateBrands = workOrderMapper.getHighFaultRateBrands(searchDTO);
         StringBuilder sb = new StringBuilder();
-        for (ElevatorBrandFaultRateDTO item : highFaultRateBrands) {
+        for (ElevatorBrandFaultRateDTO item : elevatorBrandFaultRate) {
+            if (item.getFaultCount() * 100 / item.getElevatorCount() < 50) { //统计大于50%的电梯
+                continue;
+            }
+
             if (sb.length() == 0) {
                 sb.append(item.getBrand());
             } else {

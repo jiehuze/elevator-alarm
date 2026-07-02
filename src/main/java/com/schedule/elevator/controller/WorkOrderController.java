@@ -61,6 +61,9 @@ public class WorkOrderController {
     @Autowired
     private IFaultRecordService faultRecordService;
 
+    @Autowired
+    private ICommunityService communityService;
+
     /**
      * 创建工单
      *
@@ -231,6 +234,13 @@ public class WorkOrderController {
         System.out.println("workOrder:" + workOrder.getRescueCode());
         if (StringUtils.isNotBlank(workOrder.getRescueCode())) {
             ElevatorInfo elevatorInfo = elevatorInfoService.searchElevatorInfo(new SearchDTO().setRescueCode(workOrder.getRescueCode()));
+
+            if (elevatorInfo != null && elevatorInfo.getCommunityId() != null) {
+                Community community = communityService.getOne(new LambdaQueryWrapper<Community>().eq(Community::getId, elevatorInfo.getCommunityId()));
+                workOrder.setElevatorAddress(community.getAddress());
+                elevatorInfo.setLocation(community.getAddress());
+            }
+
             map.put("elevator", elevatorInfo);
         }
         map.put("workOrder", workOrder);

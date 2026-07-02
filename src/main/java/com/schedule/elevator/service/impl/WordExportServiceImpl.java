@@ -123,6 +123,7 @@ public class WordExportServiceImpl implements IWordExportService {
 
             WorkOrderStatisticsDTO result = workOrderService.getWorkOrderStatisticsByCondition(searchDTO);
 
+            searchDTO.setFaultTimes(2); // 设置故障次数为2次,月报
             List<SecondaryFaultStatsDTO> ordersByDuplicateRescueCode = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
 
 //
@@ -200,7 +201,7 @@ public class WordExportServiceImpl implements IWordExportService {
             InputStream in = new ClassPathResource(templatePath).getInputStream();
             InputStream inputStream = DocxPlaceholderReplaceUtil.replacePlaceholderToStream(in, replaceStrMap);
 
-            List<RepeatedFaultElevatorDTO> repeatedFaultElevators = workOrderService.getRepeatedFaultElevators(searchDTO);
+//            List<RepeatedFaultElevatorDTO> repeatedFaultElevators = workOrderService.getRepeatedFaultElevators(searchDTO);
             List<DistrictStatisticsDTO> districtStatistics = workOrderService.getDistrictStatistics(searchDTO);
             List<TimeSlotStatsDTO> stats = workOrderService.getFaultStatsByTimeSlot(searchDTO);
             List<TimeConsumptionStatsDTO> timeConsumptionStats = workOrderService.getTimeConsumptionStats(searchDTO);
@@ -222,10 +223,13 @@ public class WordExportServiceImpl implements IWordExportService {
                 maintenanceUnitFaultRateWithoutReasonsList.add(maintenanceUnitFaultRateWithoutReason);
             }
 
+            searchDTO.setFaultTimes(4); //年报是4次以上
+            List<SecondaryFaultStatsDTO> ordersByDuplicateRescueCode = workOrderService.getOrdersByDuplicateRescueCode(searchDTO);
 
             // 构建映射
             Map<String, TableData> tableMap = new HashMap<>();
-            tableMap = TableData.buildTableData(tableMap, repeatedFaultElevators, RepeatedFaultElevatorDTO.class, "fourTimes");
+//            tableMap = TableData.buildTableData(tableMap, repeatedFaultElevators, RepeatedFaultElevatorDTO.class, "fourTimes");
+            tableMap = TableData.buildTableData(tableMap, ordersByDuplicateRescueCode, SecondaryFaultStatsDTO.class, "fourTimes");
             tableMap = TableData.buildTableData(tableMap, districtStatistics, DistrictStatisticsDTO.class, "DistrictFault");
             tableMap = TableData.buildTableData(tableMap, stats, TimeSlotStatsDTO.class, "TimeSlotStats");
             tableMap = TableData.buildTableData(tableMap, timeConsumptionStats, TimeConsumptionStatsDTO.class, "TimeConsumptionStats");

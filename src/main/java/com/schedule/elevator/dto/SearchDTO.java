@@ -180,6 +180,9 @@ public class SearchDTO extends ExportTaskDTO implements Serializable {
     @ApiModelProperty("关键词")
     private String keyword;
 
+    @ApiModelProperty("关键词")
+    private Integer faultTimes; //故障次数
+
     @ApiModelProperty("ids")
     private List<Integer> elevatorIds;
 
