@@ -11,6 +11,10 @@ public class SysUserDTO extends SysUser implements Serializable {
 
     private String newPassword;
 
+    private String captchaKey;
+
+    private String captchaCode;
+
     @ApiModelProperty("页码，默认1")
     private Integer current = 1;
 

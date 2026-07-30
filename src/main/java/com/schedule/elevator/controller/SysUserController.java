@@ -101,8 +101,19 @@ public class SysUserController {
      * 示例：登录逻辑（仅查用户，验证密码需在 Security 中处理）
      */
     @PostMapping("/login")
-    public BaseResponse login(@RequestBody SysUser sysUser) {
-        SysUser auth = sysUserService.auth(sysUser);
+    public BaseResponse login(@RequestBody SysUserDTO sysUserDTO) {
+        if (!CaptchaController.validateCaptcha(sysUserDTO.getCaptchaKey(), sysUserDTO.getCaptchaCode())) {
+            return new BaseResponse(HttpStatus.UNAUTHORIZED.value(), "验证码错误或已过期", null, null);
+        }
+
+        try {
+            String decryptedPassword = com.schedule.util.AesDecryptUtil.decrypt(sysUserDTO.getPassword(), sysUserDTO.getCaptchaCode());
+            sysUserDTO.setPassword(decryptedPassword);
+        } catch (Exception e) {
+            return new BaseResponse(HttpStatus.UNAUTHORIZED.value(), "密码检验错误", null, null);
+        }
+
+        SysUser auth = sysUserService.auth(sysUserDTO);
         if (auth == null) {
             return new BaseResponse(HttpStatus.UNAUTHORIZED.value(), "账号或者密码错误", null, null);
         }

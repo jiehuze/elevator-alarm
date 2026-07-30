@@ -270,7 +270,7 @@ public class WorkOrderController {
     public BaseResponse listProgress(@RequestParam String orderNo) {
         List<WorkOrderProgress> list = progressService.lambdaQuery()
                 .eq(WorkOrderProgress::getOrderNo, orderNo)
-                .orderByAsc(WorkOrderProgress::getUpdateTime)
+                .orderByAsc(WorkOrderProgress::getCreateTime)
                 .list();
 
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", list, null);

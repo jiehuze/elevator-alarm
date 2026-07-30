@@ -51,7 +51,7 @@ public class ElevatorImportExcelConverter {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，无效的电梯类型：" + dto.getElevatorType() +
                     "，有效值为：曳引驱动乘客电梯、曳引驱动载货电梯、曳引驱动观光电梯、强制驱动载货电梯、液压乘客电梯、液压载货电梯、自动扶梯、自动人行道、防爆电梯、消防员电梯、杂物电梯");
         }
-        entity.setElevatorType(elevatorType.getCode());
+        entity.setElevatorType(elevatorType.getDescription());
 
         if (dto.getUsageStatus() == null || dto.getUsageStatus().trim().isEmpty()) {
             throw new IllegalArgumentException("电梯：" + dto.getRegisterCode() + "，使用状态不能为空");
@@ -284,9 +284,10 @@ public class ElevatorImportExcelConverter {
         dto.setRegisterCode(entity.getRegisterCode());
         dto.setElevatorNo(entity.getElevatorNo());
         dto.setElevatorName(entity.getElevatorName());
-        if (ElevatorTypeEnum.getByCode(entity.getElevatorType()) != null) {
-            dto.setElevatorType(ElevatorTypeEnum.getByCode(entity.getElevatorType()).getDescription());
-        }
+//        if (ElevatorTypeEnum.getByCode(entity.getElevatorType()) != null) {
+//            dto.setElevatorType(ElevatorTypeEnum.getByCode(entity.getElevatorType()).getDescription());
+//        }
+        dto.setElevatorType(entity.getElevatorType());
         dto.setUsageStatus(ElevatorUsageStatusEnum.getByCode(entity.getUsageStatus()).getDescription());
         dto.setNextInspectionDate(formatDate(entity.getNextInspectionDate()));
         dto.setBrand(entity.getBrand());
