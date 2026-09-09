@@ -537,6 +537,47 @@ public class ExportTaskServiceImpl extends ServiceImpl<ExportTaskMapper, ExportT
                 updateToFailed(exportTask.getId(), e.getMessage());
                 throw new RuntimeException(e);
             }
+        } else if (searchDTO.getExportType() == ExportTypeEnum.RESCUE_GRID_LIST.getCode()) { //救援网格列表，与 /maintenance/teams?level=2 接口数据一致
+            try {
+                // 救援网格展示的是救援组(二级维保班组)，默认查询 level=2
+                Integer level = searchDTO.getLevel() != null ? searchDTO.getLevel() : 2;
+                List<MaintenanceTeam> teams = maintenanceTeamService.list(new LambdaQueryWrapper<MaintenanceTeam>()
+                        .eq(searchDTO.getMaintenanceUnitId() != null, MaintenanceTeam::getMaintenanceUnitId, searchDTO.getMaintenanceUnitId())
+                        .like(StringUtils.isNotBlank(searchDTO.getMaintenanceTeam()), MaintenanceTeam::getTeamName, searchDTO.getMaintenanceTeam())
+                        .like(StringUtils.isNotBlank(searchDTO.getMaintenanceTeamLeader()), MaintenanceTeam::getLeaderName, searchDTO.getMaintenanceTeamLeader())
+                        .eq(MaintenanceTeam::getLevel, level)
+                        .orderByAsc(MaintenanceTeam::getMaintenanceUnitId));
+
+                List<MaintenanceRescueExcel> dtoList = new ArrayList<>();
+                for (MaintenanceTeam team : teams) {
+                    MaintenanceUnit unit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
+                    if (unit == null) {
+                        continue;
+                    }
+                    team.setMaintenanceUnit(unit.getMaintenanceUnit());
+
+                    long count;
+                    if (team.getLevel() == 2) {
+                        count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getSubMaintenanceTeamId, team.getId()));
+                    } else {
+                        count = maintenancePersonnelService.count(new LambdaQueryWrapper<MaintenancePersonnel>().eq(MaintenancePersonnel::getMaintenanceTeamId, team.getId()));
+                    }
+                    team.setNumbers(count);
+
+                    dtoList.add(MaintenanceExcelConverter.toRescueGridDto(team));
+                }
+
+                String fileName = "救援网格-" + DateUtils.format(LocalDateTime.now(), "yyMMddHHmmss") + ".xlsx";
+                String urlPath = paramDTO.getExportPath() + fileName;
+                String filePath = paramDTO.getRootPath() + urlPath;
+                FileUtil.ensureDirectoryExists(filePath);
+                // 写入 Excel
+                ExcelUtil.exportExcelToTargetWithTemplate(filePath, fileName, "救援网格", dtoList, MaintenanceRescueExcel.class, "doc/maintenance_rescue.xlsx");
+                updateToSuccess(exportTask.getId(), fileName, urlPath, FileUtil.getFileSizeInKB(filePath), 0);
+            } catch (Exception e) {
+                updateToFailed(exportTask.getId(), e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
 }

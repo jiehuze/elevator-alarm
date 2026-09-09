@@ -1,6 +1,7 @@
 package com.schedule.excel;
 
 import com.schedule.elevator.entity.MaintenancePersonnel;
+import com.schedule.elevator.entity.MaintenanceTeam;
 import com.schedule.elevator.entity.MaintenanceUnit;
 import com.schedule.utils.DateUtils;
 
@@ -31,6 +32,17 @@ public class MaintenanceExcelConverter {
         dto.setMaintenanceUnitCode(entity.getMaintenanceUnitCode());
         dto.setCount(entity.getCount());
         dto.setPersonCount(entity.getPersonCount());
+        return dto;
+    }
+
+    public static MaintenanceRescueExcel toRescueGridDto(MaintenanceTeam entity) {
+        if (entity == null) return null;
+        MaintenanceRescueExcel dto = new MaintenanceRescueExcel();
+        dto.setMaintenanceUnit(entity.getMaintenanceUnit());
+        dto.setTeamName(entity.getTeamName());
+        dto.setLeaderName(entity.getLeaderName());
+        dto.setLeaderPhone(entity.getLeaderPhone());
+        dto.setNumbers(entity.getNumbers());
         return dto;
     }
 

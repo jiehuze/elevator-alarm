@@ -84,6 +84,12 @@ public class MaintenanceController {
     public BaseResponse update(@RequestBody MaintenanceUnit maintenance) {
 //        maintenanceUnitService.updateById(maintenance);
         maintenanceUnitService.update(maintenance, new LambdaUpdateWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, maintenance.getId()));
+        if (maintenance.getMaintenanceUnit() != null && maintenance.getId() != null) {
+            ElevatorInfo elevatorInfo = new ElevatorInfo();
+            elevatorInfo.setMaintenanceUnit(maintenance.getMaintenanceUnit());
+            elevatorInfo.setMaintenanceUnitId(maintenance.getId());
+            elevatorInfoService.update(elevatorInfo, new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenanceUnitId, elevatorInfo.getMaintenanceUnitId()));
+        }
         return new BaseResponse(HttpStatus.OK.value(), "维保信息更新成功", maintenance, null);
     }
 
@@ -94,10 +100,7 @@ public class MaintenanceController {
     }
 
     @GetMapping("/list")
-    public BaseResponse list(
-            @RequestParam(defaultValue = "1") int current,
-            @RequestParam(defaultValue = "10") int size,
-            @ModelAttribute MaintenanceUnit searchInfo) {
+    public BaseResponse list(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue = "10") int size, @ModelAttribute MaintenanceUnit searchInfo) {
         IPage<MaintenanceUnit> result = maintenanceUnitService.page(searchInfo, current, size);
 
         if (result != null) {
@@ -172,10 +175,7 @@ public class MaintenanceController {
 
     @GetMapping("/team/nearby")
     public BaseResponse getNearby(@ModelAttribute NearbyMaintenanceDTO nearbyMaintenanceDTO) {
-        List<NearbyMaintenanceDTO> nearby = maintenanceUnitService.getNearby(
-                nearbyMaintenanceDTO.getLatitude(),
-                nearbyMaintenanceDTO.getLongitude(),
-                nearbyMaintenanceDTO.getDistanceKm());
+        List<NearbyMaintenanceDTO> nearby = maintenanceUnitService.getNearby(nearbyMaintenanceDTO.getLatitude(), nearbyMaintenanceDTO.getLongitude(), nearbyMaintenanceDTO.getDistanceKm());
         return new BaseResponse(HttpStatus.OK.value(), "查询成功", nearby, null);
     }
 
@@ -206,9 +206,7 @@ public class MaintenanceController {
 
     /****************************** 分组信息 *********************************/
     @GetMapping("/teams")
-    public BaseResponse getMaintenanceTeams(@RequestParam(defaultValue = "1") int current,
-                                            @RequestParam(defaultValue = "10") int size,
-                                            @ModelAttribute MaintenanceTeam searchTeam) {
+    public BaseResponse getMaintenanceTeams(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue = "10") int size, @ModelAttribute MaintenanceTeam searchTeam) {
         IPage<MaintenanceTeam> maintenanceTeams = maintenanceTeamService.page(searchTeam, current, size);
         for (MaintenanceTeam team : maintenanceTeams.getRecords()) {
             MaintenanceUnit maintenanceUnit = maintenanceUnitService.getById(team.getMaintenanceUnitId());
@@ -238,9 +236,7 @@ public class MaintenanceController {
     public BaseResponse create(@RequestBody MaintenanceTeam team) {
         if (team.getLevel() == 2) {
             // 更新维保单位的 level 为 2
-            maintenanceUnitService.update(new LambdaUpdateWrapper<MaintenanceUnit>()
-                    .eq(MaintenanceUnit::getId, team.getMaintenanceUnitId())
-                    .set(MaintenanceUnit::getLevel, 2));
+            maintenanceUnitService.update(new LambdaUpdateWrapper<MaintenanceUnit>().eq(MaintenanceUnit::getId, team.getMaintenanceUnitId()).set(MaintenanceUnit::getLevel, 2));
         }
         try {
             maintenanceTeamService.save(team);
@@ -318,9 +314,7 @@ public class MaintenanceController {
 
     /****************************** 人员信息 *********************************/
     @GetMapping("/persons")
-    public BaseResponse getMaintenancePersons(@RequestParam(defaultValue = "1") int current,
-                                              @RequestParam(defaultValue = "200") int size,
-                                              @ModelAttribute SearchDTO searchDTO) {
+    public BaseResponse getMaintenancePersons(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue = "200") int size, @ModelAttribute SearchDTO searchDTO) {
         IPage<MaintenancePersonnel> maintenanceTeamPage = maintenancePersonnelService.pagePersonnels(searchDTO, current, size);
         for (MaintenancePersonnel person : maintenanceTeamPage.getRecords()) {
             long count = elevatorInfoService.count(new LambdaQueryWrapper<ElevatorInfo>().eq(ElevatorInfo::getMaintenancePersonnelId, person.getId()));
@@ -372,8 +366,7 @@ public class MaintenanceController {
 
 
     @GetMapping("/export-person")
-    public void exportPerson(@ModelAttribute SearchDTO searchDTO,
-                             HttpServletResponse response) throws Exception {
+    public void exportPerson(@ModelAttribute SearchDTO searchDTO, HttpServletResponse response) throws Exception {
 
         String fileName = URLEncoder.encode("维修人员信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         List<MaintenancePersonnel> list = maintenancePersonnelService.listBySearchDTO(searchDTO);
@@ -390,8 +383,7 @@ public class MaintenanceController {
     }
 
     @GetMapping("/export-unit")
-    public void exportUnit(@ModelAttribute SearchDTO queryDTO,
-                           HttpServletResponse response) throws Exception {
+    public void exportUnit(@ModelAttribute SearchDTO queryDTO, HttpServletResponse response) throws Exception {
         // 设置响应头
         String fileName = URLEncoder.encode("维保单位信息", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
@@ -403,10 +395,7 @@ public class MaintenanceController {
     }
 
     @PostMapping("/upload")
-    public BaseResponse uploadFile(@RequestParam("files") MultipartFile[] files,
-                                   @RequestParam("type") Integer type,
-                                   @RequestParam("maintenanceUnitId") Long maintenanceUnitId,
-                                   @RequestParam("maintenanceUnitCode") String maintenanceUnitCode) {
+    public BaseResponse uploadFile(@RequestParam("files") MultipartFile[] files, @RequestParam("type") Integer type, @RequestParam("maintenanceUnitId") Long maintenanceUnitId, @RequestParam("maintenanceUnitCode") String maintenanceUnitCode) {
         try {
             if (files == null || files.length == 0) {
                 throw new IllegalArgumentException("至少上传一个文件");
@@ -458,8 +447,7 @@ public class MaintenanceController {
             MaintenanceUnit maintenanceUnit = new MaintenanceUnit().setId(maintenanceUnitId);
             switch (type) {
                 case 1:
-                    maintenanceUnit.setMaintenanceUnitCode(maintenanceUnitCode)
-                            .setMaintenanceUnitCodeUrl(fileNames.toString());
+                    maintenanceUnit.setMaintenanceUnitCode(maintenanceUnitCode).setMaintenanceUnitCodeUrl(fileNames.toString());
                     break;
                 case 2:
                     maintenanceUnit.setMaintenanceUnitManagerPhone(fileNames.toString());
@@ -481,8 +469,7 @@ public class MaintenanceController {
     }
 
     @PostMapping("/upload/photo")
-    public BaseResponse uploadPhoto(@RequestParam("files") MultipartFile[] files,
-                                    @RequestParam("maintenanceUnitId") Long maintenanceUnitId) {
+    public BaseResponse uploadPhoto(@RequestParam("files") MultipartFile[] files, @RequestParam("maintenanceUnitId") Long maintenanceUnitId) {
         try {
             if (files == null || files.length == 0) {
                 throw new IllegalArgumentException("至少上传一个文件");

@@ -19,7 +19,8 @@ public enum ExportTypeEnum {
     SAFETY_OFFICER_LIST(9, "安全员列表"),
     USING_UNIT_LIST(10, "使用单位列表"),
     COMMUNITY_LIST(11, "小区列表"),
-    ANALYSIS_REPORT(12, "分析报告");
+    ANALYSIS_REPORT(12, "分析报告"),
+    RESCUE_GRID_LIST(13, "救援网格列表");
 
     private final Integer code;
     private final String description;
