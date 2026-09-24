@@ -1057,4 +1057,34 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     })
     List<String> getFaultSubCodesByMaintenanceUnit(@Param("maintenanceUnit") String maintenanceUnit, @Param("searchDTO") SearchDTO searchDTO);
 
+    /**
+     * 通过电梯品牌查询时间范围内故障或困人工单对应的fault_records中的sub_code值（去重）
+     *
+     * @param brand     电梯品牌（与 getBrandFaultStatistics 一致，品牌为空时归入"其他"）
+     * @param searchDTO 包含开始时间、结束时间、区县的搜索条件
+     * @return sub_code列表（去重）
+     */
+    @Select({
+            "<script>",
+            "SELECT DISTINCT fr.sub_code ",
+            "FROM fault_records fr ",
+            "INNER JOIN work_order wo ON fr.order_no = wo.order_no ",
+            "LEFT JOIN elevator e ON wo.rescue_code = e.rescue_code ",
+            "WHERE wo.status = 99 ",
+            "  AND wo.order_type IN (1, 2, 5, 6) ",  // 1:困人, 2:故障
+            "  AND IFNULL(e.brand, '其他') = #{brand} ",
+            "  <if test='searchDTO != null and searchDTO.district != null and searchDTO.district != \"\"'>",
+            "    AND wo.district = #{searchDTO.district}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.createTimeStart != null and searchDTO.createTimeEnd != null'>",
+            "    AND wo.create_time BETWEEN #{searchDTO.createTimeStart} AND #{searchDTO.createTimeEnd}",
+            "  </if>",
+            "  <if test='searchDTO != null and searchDTO.maintenanceUnitId != null'>",
+            "    AND wo.maintenance_unit_id = #{searchDTO.maintenanceUnitId}",
+            "  </if>",
+            "ORDER BY fr.sub_code",
+            "</script>"
+    })
+    List<String> getFaultSubCodesByBrand(@Param("brand") String brand, @Param("searchDTO") SearchDTO searchDTO);
+
 }

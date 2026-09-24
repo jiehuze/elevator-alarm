@@ -15,4 +15,7 @@ public class BrandFaultStatsDTO {
 
     @ExcelProperty("故障数")
     private Integer faultCount;
+
+    @ExcelProperty("故障原因")
+    private String faultReason;
 }

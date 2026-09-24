@@ -656,7 +656,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 //                    .setFaultCount(item.getFaultCount());
 //            brandFaultStatsDTOS.add(brandFaultStatsDTO);
 //        }
+        Map<String, FaultCategory> faultCategoryMap = faultCategoryService.getFaultCategoryMap();
         List<BrandFaultStatsDTO> brandFaultStatsDTOS = workOrderMapper.getBrandFaultStatistics(searchDTO);
+        for (BrandFaultStatsDTO item : brandFaultStatsDTOS) {
+            List<String> faultSubCodesByBrand = workOrderMapper.getFaultSubCodesByBrand(item.getBrand(), searchDTO);
+            StringBuilder res = new StringBuilder();
+            for (String faultSubCode : faultSubCodesByBrand) {
+                res.append(faultSubCode + " : " + faultCategoryMap.get(faultSubCode).getFaultAnalysis() + " \n ");
+            }
+            item.setFaultReason(res.toString());
+        }
 
         return brandFaultStatsDTOS;
     }
